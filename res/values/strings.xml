@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Car-Kei-Bo -Fuel mileage recorder-</string>
+    <string name="title_config">Configuration</string>
+    <string name="title_carlist">My Car list</string>
+    <string name="title_addcar">Add My Car</string>
+    <string name="title_fuelMileageAdd">Add Fuel mileage data</string>
+    <string name="title_fuelMileageList">Fuel mileage list</string>
+    <string name="label_carName">Car Name</string>
+    <string name="label_cb_setdfault">Set Default Car</string>
+    <string name="label_hint_inputYourCarName">input your car name....</string>
+    <string name="label_btn_addCar">Add Car</string>
+    <string name="label_btn_cancel">Cancel</string>
+    <string name="label_btn_addfuelmileagerecord">Add Fuel mileage record....</string>
+    <string name="label_amountOfOil">Amount of oil</string>
+    <string name="label_odometer">ODOMETER</string>
+    <string name="label_unitPrice">Unit Price</string>
+    <string name="label_dateOfRefuel">Date of Refuel</string>
+    <string name="label_btn_addRefuelRecord">Add Refuel record</string>
+    <string name="lael_btn_cancel_AddRefuelRecord">Cancel</string>
+
+</resources>
