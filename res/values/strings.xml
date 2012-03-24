@@ -18,5 +18,11 @@
     <string name="label_dateOfRefuel">Date of Refuel</string>
     <string name="label_btn_addRefuelRecord">Add Refuel record</string>
     <string name="lael_btn_cancel_AddRefuelRecord">Cancel</string>
+    <string name="label_UNIT_distance_kirometer">km</string>
+    <string name="label_UNIT_distance_mile">mile</string>
+    <string name="label_UNIT_fuel_litter">Litter</string>
+    <string name="label_UNIT_fuel_gallon">Gallon</string>
+    <string name="label_UNIT_money_jpy">JPY</string>
+    <string name="label_UNIT_money_usd">U.S.D.</string>
 
 </resources>

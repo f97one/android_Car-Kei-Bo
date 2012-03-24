@@ -18,5 +18,9 @@
     <string name="label_dateOfRefuel">給油日</string>
     <string name="label_btn_addRefuelRecord">給油記録を追加</string>
     <string name="lael_btn_cancel_AddRefuelRecord">キャンセル</string>
+    <string name="label_UNIT_fuel_litter">リットル</string>
+    <string name="label_UNIT_fuel_gallon">ガロン</string>
+    <string name="label_UNIT_money_jpy">円</string>
+    <string name="label_UNIT_money_usd">米ドル</string>
 
 </resources>
