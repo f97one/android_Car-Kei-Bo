@@ -7,7 +7,7 @@
     <TextView
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:text="@string/label_carName" />
+        android:text="@string/label_carName" android:textSize="10pt"/>
 
     <AutoCompleteTextView
         android:id="@+id/textview_addCarName"
