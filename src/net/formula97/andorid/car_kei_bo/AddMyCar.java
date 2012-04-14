@@ -9,16 +9,24 @@ import android.widget.TextView;
 public class AddMyCar extends Activity {
 
 	// ウィジェットを扱うための定義
-	TextView textview_addCarName = (TextView)findViewById(R.id.textview_addCarName);
-	CheckBox checkbox_setDefault = (CheckBox)findViewById(R.id.checkBox_SetDefault);
-	Button button_addCar = (Button)findViewById(R.id.button_addCar);
-	Button button_cancel_addCar = (Button)findViewById(R.id.button_cancel_addCar);
+	TextView textview_addCarName;
+	CheckBox checkbox_setDefault;
+	Button button_addCar;
+	Button button_cancel_addCar;
 
     /** Called when the activity is first created. */
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.addcar);
+
+        // ウィジェットを扱うための定義
+        //   プログラムから扱うための定数を検索してセット
+		textview_addCarName = (TextView)findViewById(R.id.textview_addCarName);
+		checkbox_setDefault = (CheckBox)findViewById(R.id.checkBox_SetDefault);
+		button_addCar = (Button)findViewById(R.id.button_addCar);
+		button_cancel_addCar = (Button)findViewById(R.id.button_cancel_addCar);
+
     }
 
 	/* (非 Javadoc)
