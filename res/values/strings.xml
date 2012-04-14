@@ -24,5 +24,9 @@
     <string name="label_UNIT_fuel_gallon">Gallon</string>
     <string name="label_UNIT_money_jpy">JPY</string>
     <string name="label_UNIT_money_usd">U.S.D.</string>
+    <string name="opmenu_close_app">Close App.</string>
+    <string name="opmenu_call_preference">Preference</string>
+    <string name="opmenu_carlist">My Car List</string>
+    <string name="opmenu_addcar">Add My Car</string>
 
 </resources>
