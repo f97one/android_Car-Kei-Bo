@@ -2,6 +2,8 @@ package net.formula97.andorid.car_kei_bo;
 
 import android.app.Activity;
 import android.os.Bundle;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.TextView;
@@ -59,5 +61,21 @@ public class AddMyCar extends Activity {
 		// ボタンの幅を、取得した画面幅の1/2にセット
 		button_addCar.setWidth(displayWidth / 2);
 		button_cancel_addCar.setWidth(displayWidth / 2);
+	}
+
+	/* (非 Javadoc)
+	 * @see android.app.Activity#onCreateOptionsMenu(android.view.Menu)
+	 */
+	@Override
+	public boolean onCreateOptionsMenu(Menu menu) {
+		// TODO 自動生成されたメソッド・スタブ
+		super.onCreateOptionsMenu(menu);
+
+        // MenuInflater型のオブジェクトを、getMenuInflater()で初期化
+        MenuInflater inflater = getMenuInflater();
+
+        // res/menu/menu.xmlの記述に従い、メニューを展開する
+        inflater.inflate(R.menu.optionsmenu, menu);
+        return true;
 	}
 }
