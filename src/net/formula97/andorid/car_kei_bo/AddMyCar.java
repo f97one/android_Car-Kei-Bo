@@ -1,9 +1,12 @@
 package net.formula97.andorid.car_kei_bo;
 
 import android.app.Activity;
+import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.TextView;
@@ -77,5 +80,42 @@ public class AddMyCar extends Activity {
         // res/menu/menu.xmlの記述に従い、メニューを展開する
         inflater.inflate(R.menu.optionsmenu, menu);
         return true;
+	}
+
+	/* (非 Javadoc)
+	 * @see android.app.Activity#onOptionsItemSelected(android.view.MenuItem)
+	 */
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+		/*
+		 * switch文でそれぞれのメニューに対するアクションへ分岐する。
+		 * メニュー項目を増やしたら、アクションを追加すること。
+		 * ....て、別クラスにすれば修正箇所を集約できると思うが、できんのか？
+		 */
+//		Intent omh = new Intent(this, OptionsMenuHandler.class);
+//		startActivityForResult(omh, item.getItemId());
+
+//		// OptionsMenuHandlerのオブジェクトインスタンスをつくる
+//		OptionsMenuHandler omh = new OptionsMenuHandler();
+//
+		switch (item.getItemId()) {
+		case R.id.optionsmenu_closeAPP:
+//			omh.opMenuCloseAPP();
+			finish();
+			return true;
+		case R.id.optionsmenu_call_preference:
+//			omh.opMenuCallPreference();
+			return true;
+		case R.id.optionsmenu_addcar:
+//			omh.opMenuAddCar();
+			return true;
+		case R.id.optionsmenu_carlist:
+//			omh.opMenuCarList();
+			return true;
+		default:
+			return false;
+		}
+
+//		return super.onOptionsItemSelected(item);
 	}
 }
