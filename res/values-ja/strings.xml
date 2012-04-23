@@ -22,12 +22,14 @@
     <string name="label_UNIT_fuel_gallon">ガロン</string>
     <string name="label_UNIT_money_jpy">円</string>
     <string name="label_UNIT_money_usd">米ドル</string>
-    <string name="opmenu_close_app">アプリを終了</string>
+    <string name="label_fuelmileage">燃費： </string><string name="label_runningcost">ランニングコスト： </string><string name="opmenu_close_app">アプリを終了</string>
     <string name="opmenu_call_preference">設定</string>
     <string name="opmenu_carlist">クルマリスト</string>
     <string name="opmenu_addcar">クルマを追加</string>
     <string name="config_title_price">価格の単位</string>
     <string name="config_title_distance">距離の単位</string>
     <string name="config_title_volume">容量の単位</string>
+    
+    
 
 </resources>
