@@ -28,5 +28,8 @@
     <string name="opmenu_call_preference">Preference</string>
     <string name="opmenu_carlist">My Car List</string>
     <string name="opmenu_addcar">Add My Car</string>
+    <string name="config_title_price">Price Unit</string>
+    <string name="config_title_distance">Distance Unit</string>
+    <string name="config_title_volume">Volume Unit(liquid)</string>
 
 </resources>
