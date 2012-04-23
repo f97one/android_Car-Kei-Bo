@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android" android:orderingFromXml="true">
+    <ListPreference android:title="@string/config_title_price"/>
+    <ListPreference android:title="@string/config_title_distance"/>
+    <ListPreference android:title="@string/config_title_volume"/>
+    
+
+</PreferenceScreen>
