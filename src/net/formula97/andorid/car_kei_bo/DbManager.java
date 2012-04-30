@@ -153,4 +153,60 @@ public class DbManager extends SQLiteOpenHelper {
 			return true;
 		}
 	}
+	/*
+	 * やっていることは上と同じだが、渡したCAR_IDにデフォルトフラグがあるかを調べ、
+	 * フラグがたっていればtrue、そうでなければfalseを返す
+	 */
+	protected boolean isExistDefaultCarFlag(SQLiteDatabase db, int carId) {
+		// クエリを格納する変数を定義
+		// 検索フィールド名と検索値は配列にしないと怒られるので、配列に下記に書き直している。
+		Cursor q;
+		String[] columns = {"DEFAULT"};
+		String where = "CAR_ID = ?";
+		// CAR_IDはintだが、query()がString[]であることを要求しているので、valueOf()でStringに変換する
+		String[] args = {String.valueOf(carId)};
+
+		q = db.query(CAR_MASTER, columns, where, args, null, null, null);
+
+		int defaultFlag = q.getInt(0);
+
+		if (defaultFlag == 0) {
+			return false;
+		} else {
+			return true;
+		}
+	}
+
+	/*
+	 * 入力されたクルマの名前から、CAR_IDを返す
+	 */
+	protected int getCarId(SQLiteDatabase db, String carName) {
+		// クエリを格納する変数を定義
+		// 検索フィールド名と検索値は配列にしないと怒られるので、配列に下記に書き直している。
+		Cursor q;
+		String[] columns = {"CAR_ID"};
+		String where = "CAR_NAME = ?";
+		String[] args = {carName};
+
+		q = db.query(CAR_MASTER, columns, where, args, null, null, null);
+
+		return q.getInt(0);
+	}
+
+	/*
+	 * 入力されたクルマのCAR_IDから、CAR_NAMEを返す
+	 */
+	protected String getCarName(SQLiteDatabase db, int carId) {
+		// クエリを格納する変数を定義
+		// 検索フィールド名と検索値は配列にしないと怒られるので、配列に下記に書き直している。
+		Cursor q;
+		String[] columns = {"CAR_NAME"};
+		String where = "CAR_ID = ?";
+		// CAR_IDはintだが、query()がString[]であることを要求しているので、valueOf()でStringに変換する
+		String[] args = {String.valueOf(carId)};
+
+		q = db.query(CAR_MASTER, columns, where, args, null, null, null);
+
+		return q.getString(0);
+	}
 }
