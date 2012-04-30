@@ -3,7 +3,9 @@
  */
 package net.formula97.andorid.car_kei_bo;
 
+import android.content.ContentValues;
 import android.content.Context;
+import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteDatabase.CursorFactory;
 import android.database.sqlite.SQLiteOpenHelper;
@@ -17,6 +19,11 @@ public class DbManager extends SQLiteOpenHelper {
 
 	private static final String DATABASE_NAME = "fuel_mileage.db";
 	private static final int DB_VERSION = 1;
+
+	// テーブルの名称を定義
+	private static final String LUB_MASTER = "LUB_MASTER";
+	private static final String COSTS_MASTER = "COSTS_MASTER";
+	private static final String CAR_MASTER = "CAR_MASTER";
 
 	public DbManager(Context context) {
 		super(context, DATABASE_NAME, null, DB_VERSION);
@@ -77,4 +84,73 @@ public class DbManager extends SQLiteOpenHelper {
 		onCreate(db);
 	}
 
+	/*
+	 * クルマのレコードを追加する
+	 *
+	 */
+	public int addNewCar(SQLiteDatabase db, String carName, boolean isDefaultCar) {
+		// insert()の戻り値を格納する変数を、0で初期化する
+		int resultInsert = 0;
+
+		// レコードを追加する
+		ContentValues value = new ContentValues();
+		value.put("CAR_NAME", carName);
+		value.put("DEFAULT", isDefaultCar);
+		db.insert(CAR_MASTER, null, value);
+
+		return resultInsert;
+	}
+
+	/*
+	 * 重複チェックその１
+	 *   同一名称の車がないかをチェックする。
+	 *   trueだと重複があり、falseだと重複はない。
+	 *   SQL文にすると以下のとおり。
+	 *     SELECT CAR_NAME FROM CAR_MASTER WHERE CAR_NAME = '$carName';
+	 */
+	protected boolean isExistSameNameCar(SQLiteDatabase db, String carName) {
+		// クエリを格納する変数を定義
+		// 検索フィールド名と検索値は配列にしないと怒られるので、配列に下記に書き直している。
+		Cursor q;
+		String[] columns = {"CAR_NAME"};
+		String where = "CAR_NAME = ?";
+		String[] args = {carName};
+
+		q = db.query(CAR_MASTER, columns, where, args, null, null, null);
+
+		// 検索結果の総数を調査
+		int count = q.getCount();
+
+		// 総数が0（＝検索結果がない）の場合はfalseを、そうでない場合はtrueを返す
+		if (count == 0) {
+			return false;
+		} else {
+			return true;
+		}
+	}
+
+	/*
+	 * 重複チェックその２
+	 *   すでにデフォルトカーフラグがセットされているか否かをチェックする。
+	 *   trueだとチェック済み、falseはチェックなし
+	 *
+	 */
+	protected boolean isExistDefaultCarFlag(SQLiteDatabase db, String carName) {
+		// クエリを格納する変数を定義
+		// 検索フィールド名と検索値は配列にしないと怒られるので、配列に下記に書き直している。
+		Cursor q;
+		String[] columns = {"DEFAULT"};
+		String where = "CAR_NAME = ?";
+		String[] args = {carName};
+
+		q = db.query(CAR_MASTER, columns, where, args, null, null, null);
+
+		int defaultFlag = q.getInt(0);
+
+		if (defaultFlag == 0) {
+			return false;
+		} else {
+			return true;
+		}
+	}
 }
