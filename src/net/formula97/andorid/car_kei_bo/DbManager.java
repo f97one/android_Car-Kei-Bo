@@ -238,4 +238,40 @@ public class DbManager extends SQLiteOpenHelper {
 
 		return rq;
 	}
+
+	/*
+	 * デフォルトカーフラグを変更する
+	 */
+	public int changeDefaultCar(SQLiteDatabase db, int carId) {
+		// クエリを格納する変数の定義
+		ContentValues cv = new ContentValues();
+		String where = "CAR_ID = ?";
+		String[] args = {""};
+		int result;
+
+		// 安全のためトランザクションを開始する
+		db.beginTransaction();
+		try {
+			// まず、すべてのデフォルトカーフラグを降ろす
+			cv.put("DEFAULT", 0);
+			result = db.update(CAR_MASTER, cv, null, null);
+
+			// 次に、carIdで指定されたレコードのみに
+			cv.clear();
+			cv.put("DEFAULT", 1);
+			result = db.update(CAR_MASTER, cv, where, args);
+
+			// トランザクションの正常終了を宣言
+			db.setTransactionSuccessful();
+		} finally {
+			// トランザクションを終了する。
+			// 例外発生とかでトランザクションが正常に完結しなかった場合（＝setTransactionSuccessful()が呼ばれていない）は、
+			// endTransaction()を呼んだところでロールバックされる。
+			db.endTransaction();
+		}
+
+		return result;
+	}
+
+
 }
