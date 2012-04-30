@@ -95,7 +95,12 @@ public class DbManager extends SQLiteOpenHelper {
 		// レコードを追加する
 		ContentValues value = new ContentValues();
 		value.put("CAR_NAME", carName);
-		value.put("DEFAULT", isDefaultCar);
+		// defaultCarにtrueが渡されている場合は1を、そうでない場合は0をputする
+		if (isDefaultCar == true) {
+			value.put("DEFAULT", 1);
+		} else {
+			value.put("DEFAULT", 0);
+		}
 		db.insert(CAR_MASTER, null, value);
 
 		return resultInsert;
