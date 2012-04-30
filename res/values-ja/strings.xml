@@ -29,6 +29,7 @@
     <string name="config_title_price">価格の単位</string>
     <string name="config_title_distance">距離の単位</string>
     <string name="config_title_volume">容量の単位</string>
+    <string name="tv_label_defaultcar">デフォルトのクルマ：</string>
     
     
 
