@@ -209,4 +209,28 @@ public class DbManager extends SQLiteOpenHelper {
 
 		return q.getString(0);
 	}
+
+	/*
+	 * リストビューに表示する以下の内容を得る
+	 *   ・クルマの名前
+	 *   ・現在の燃費
+	 *   ・現在のランニングコスト
+	 */
+	protected Cursor getCurrentMileageData(SQLiteDatabase db) {
+		// クエリを格納する変数を定義
+		Cursor rq;
+		String sql;
+
+		// query()は複数テーブルをまたぐクエリができない？みたいなので、rawQuery()を使う。
+		// 以下はそのためのSQL文を組み立てている。
+		sql  = "SELECT A.CAR_NAME,  sum(B.ODOMETER) / sum(B.LUB_AMOUNT), avg(C.RUNNING_COST) FROM CAR_MASTER A, LUB_MASTER B, COSTS_MASTER C ";
+		sql += "AND B.DATE = C.DATE ";
+		sql += "AND A.CAR_ID = B.CAR_ID ";
+		sql += "ORDER BY A.CAR_ID";
+
+		// rawQuery()にSQL文を投入
+		rq = db.rawQuery(sql, null);
+
+		return rq;
+	}
 }
