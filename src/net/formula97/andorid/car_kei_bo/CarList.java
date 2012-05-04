@@ -3,13 +3,22 @@
  */
 package net.formula97.andorid.car_kei_bo;
 
+import java.util.List;
+import java.util.Map;
+
 import android.app.Activity;
 import android.content.Intent;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.widget.Button;
+import android.widget.ListView;
+import android.widget.SimpleAdapter;
+import android.widget.SimpleCursorAdapter;
+import android.widget.TextView;
 import android.preference.PreferenceActivity;
 
 /**
@@ -18,11 +27,17 @@ import android.preference.PreferenceActivity;
  */
 public class CarList extends Activity {
 
-	/**
+	private DbManager dbman = new DbManager(this);
+	public static SQLiteDatabase db;
+
+	// ウィジェットを扱うための定義
+    Button button_addFuelRecord;
+    ListView listView_CarList;
+    TextView tv_label_value_defaultcar;
+    /**
 	 *
 	 */
 	public CarList() {
-		// TODO 自動生成されたコンストラクター・スタブ
 	}
 
 	/* (非 Javadoc)
@@ -35,7 +50,10 @@ public class CarList extends Activity {
         setContentView(R.layout.carlist);
 
         // ウィジェット
-        Button button_addFuelRecord = (Button)findViewById(R.id.button_addFuelRecord);
+        //   プログラムから扱うための定数を検索してセット
+        button_addFuelRecord = (Button)findViewById(R.id.button_addFuelRecord);
+        listView_CarList = (ListView)findViewById(R.id.listView_CarList);
+        tv_label_value_defaultcar = (TextView)findViewById(R.id.tv_label_value_defaultcar);
 
 	}
 
@@ -86,4 +104,58 @@ public class CarList extends Activity {
 			return false;
 		}
 	}
+
+	/* (非 Javadoc)
+	 * @see android.app.Activity#onPause()
+	 */
+	@Override
+	protected void onPause() {
+		// TODO 自動生成されたメソッド・スタブ
+		super.onPause();
+		db.close();
+	}
+
+	/* (非 Javadoc)
+	 * @see android.app.Activity#onDestroy()
+	 */
+	@Override
+	protected void onDestroy() {
+		// TODO 自動生成されたメソッド・スタブ
+		super.onDestroy();
+		db.close();
+	}
+
+	/* (非 Javadoc)
+	 * @see android.app.Activity#onResume()
+	 */
+	@Override
+	protected void onResume() {
+		// TODO 自動生成されたメソッド・スタブ
+		super.onResume();
+
+        // 編集可能な状態でDBを開く
+		db = dbman.getWritableDatabase();
+
+		// クルマリストとデフォルトカーの表示処理
+        //ListView listView_CarList = (ListView)findViewById(R.id.listView_CarList);
+        //TextView tv_label_value_defaultcar = (TextView)findViewById(R.id.tv_label_value_defaultcar);
+
+        // クルマリストのArrayをつくる
+        //   count()の結果が1レコード以上ないとAdapterが作成できないので、CAR_MASTERに１レコード以上あるかを調べ、
+        //   あった場合のみAdapterをつくる
+        if (dbman.hasCarRecords(db)) {
+            Cursor cCarList = dbman.getCurrentMileageData(db);
+	        cCarList.moveToFirst();
+	        String[] from = {"A.CAR_NAME", "CURRENT_FUEL_MILEAGE", "CURRENT_RUNNING_CONSTS"};
+	        int[] to = {R.id.ctv_element_CarName, R.id.tv_value_FuelMileage, R.id.tv_value_RunningCosts};
+
+	        SimpleCursorAdapter sca = new SimpleCursorAdapter(getApplicationContext(), R.layout.listviewelement_carlist, cCarList, from, to);
+	        listView_CarList.setAdapter(sca);
+
+	        // デフォルトカーの名前を取得してセット
+
+	        tv_label_value_defaultcar.setText(dbman.getDefaultCarId(db));
+        }
+	}
+
 }
