@@ -6,6 +6,7 @@ package net.formula97.andorid.car_kei_bo;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
+import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteDatabase.CursorFactory;
 import android.database.sqlite.SQLiteOpenHelper;
@@ -37,31 +38,38 @@ public class DbManager extends SQLiteOpenHelper {
 	@Override
 	public void onCreate(SQLiteDatabase db) {
 		// テーブル作成
-		//   LUB_MASTERテーブル
-		String create_lub_master = "CREATE TABLE IF NOT EXISTS LUB_MASTER ";
-		create_lub_master += "(RECORD_ID INTEGER PRIMARY KEY AUTOINCREMENT, ";
-		create_lub_master += "DATE TEXT, CAR_ID INTEGER, ";
-		create_lub_master += "LUB_AMOUNT REAL, ";
-		create_lub_master += "UNIT_PRICE REAL, ";
-		create_lub_master += "ODOMETER REAL, ";
-		create_lub_master += "COMMENTS TEXT);";
+		String create_lub_master;
+		String create_costs_master;
+		String create_car_master;
 
-		db.execSQL(create_lub_master);
+		// DDL
+		//   LUB_MASTERテーブル
+		create_lub_master = "CREATE TABLE IF NOT EXISTS LUB_MASTER " +
+				"(RECORD_ID INTEGER PRIMARY KEY AUTOINCREMENT, " +
+				"DATE TEXT, " +
+				"CAR_ID INTEGER, " +
+				"LUB_AMOUNT REAL DEFAULT 0, " +
+				"UNIT_PRICE REAL DEFAULT 0, " +
+				"ODOMETER REAL, " +
+				"COMMENTS TEXT);";
 
 		//   COSTS_MASTERテーブル
-		String create_costs_master = "CREATE TABLE IF NOT EXISTS COSTS_MASTER ";
-		create_costs_master += "(RECORD_ID INTEGER PRIMARY KEY AUTOINCREMENT, ";
-		create_costs_master += "DATE TEXT, ";
-		create_costs_master += "RUNNING_COST REAL);";
-
-		db.execSQL(create_costs_master);
+		create_costs_master = "CREATE TABLE IF NOT EXISTS COSTS_MASTER " +
+				"(RECORD_ID INTEGER PRIMARY KEY AUTOINCREMENT, " +
+				"DATE TEXT, " +
+				"RUNNING_COST REAL DEFAULT 0);";
 
 		//   CAR_MASTERテーブル
-		String create_car_master = "CREATE TABLE IF NOT EXISTS CAR_MASTER ";
-		create_car_master += "(CAR_ID INTEGER PRIMARY KEY AUTOINCREMENT, ";
-		create_car_master += "CAR_NAME TEXT, ";
-		create_car_master += "DEFAULT_FLAG INTEGER);";
+		create_car_master = "CREATE TABLE IF NOT EXISTS CAR_MASTER " +
+				"(CAR_ID INTEGER PRIMARY KEY AUTOINCREMENT, " +
+				"CAR_NAME TEXT, " +
+				"DEFAULT_FLAG INTEGER DEFAULT 0, " +
+				"CURRENT_FUEL_MILEAGE INTEGER DEFAULT 0, " +
+				"CURRENT_RUNNING_COST INTEGER DEFAULT 0);";
 
+		// DDLをexecSQLで実行する
+		db.execSQL(create_lub_master);
+		db.execSQL(create_costs_master);
 		db.execSQL(create_car_master);
 	}
 
@@ -88,9 +96,9 @@ public class DbManager extends SQLiteOpenHelper {
 	 * クルマのレコードを追加する
 	 *
 	 */
-	public int addNewCar(SQLiteDatabase db, String carName, boolean isDefaultCar) {
-		// insert()の戻り値を格納する変数を、0で初期化する
-		int resultInsert = 0;
+	protected long addNewCar(SQLiteDatabase db, String carName, boolean isDefaultCar) {
+		// insertOrThrow()の戻り値を格納する変数を、0で初期化する
+		long result = 0;
 
 		// レコードを追加する
 		ContentValues value = new ContentValues();
@@ -101,9 +109,24 @@ public class DbManager extends SQLiteOpenHelper {
 		} else {
 			value.put("DEFAULT_FLAG", 0);
 		}
-		db.insert(CAR_MASTER, null, value);
 
-		return resultInsert;
+		// トランザクション開始
+		db.beginTransaction();
+		try {
+			// 失敗したら例外を投げるinsertOrThrowでレコードをINSERT
+			result = db.insertOrThrow(CAR_MASTER, null, value);
+
+			// 例外が投げられなければ、トランザクション成功をセット
+			db.setTransactionSuccessful();
+		} catch (SQLException e) {
+			Log.w(DATABASE_NAME, "Car record insert failed, ");
+		} finally {
+			// トランザクション終了
+			// INSERTに失敗した場合は、endTransaction()を呼んだところでロールバックされる
+			db.endTransaction();
+		}
+
+		return result;
 	}
 
 	/*
@@ -122,6 +145,7 @@ public class DbManager extends SQLiteOpenHelper {
 		String[] args = {carName};
 
 		q = db.query(CAR_MASTER, columns, where, args, null, null, null);
+		q.moveToFirst();
 
 		// 検索結果の総数を調査
 		int count = q.getCount();
@@ -140,17 +164,18 @@ public class DbManager extends SQLiteOpenHelper {
 	 *   trueだとチェック済み、falseはチェックなし
 	 *
 	 */
-	protected boolean isExistDefaultCarFlag(SQLiteDatabase db, String carName) {
+	protected boolean isExistDefaultCarFlag(SQLiteDatabase db) {
 		// クエリを格納する変数を定義
 		// 検索フィールド名と検索値は配列にしないと怒られるので、配列に書き直している。
 		Cursor q;
-		String[] columns = {"DEFAULT_FLAG"};
-		String where = "CAR_NAME = ?";
-		String[] args = {carName};
+		//String[] columns = {"DEFAULT_FLAG"};
+		String where = "DEFAULT_FLAG = ?";
+		String[] args = {"1"};
 
-		q = db.query(CAR_MASTER, columns, where, args, null, null, null);
+		q = db.query(CAR_MASTER, null, where, args, null, null, null);
+		q.moveToFirst();
 
-		int defaultFlag = q.getInt(0);
+		int defaultFlag = q.getCount();
 
 		if (defaultFlag == 0) {
 			return false;
@@ -172,6 +197,7 @@ public class DbManager extends SQLiteOpenHelper {
 		String[] args = {String.valueOf(carId)};
 
 		q = db.query(CAR_MASTER, columns, where, args, null, null, null);
+		q.moveToFirst();
 
 		int defaultFlag = q.getInt(0);
 
@@ -194,6 +220,7 @@ public class DbManager extends SQLiteOpenHelper {
 		String[] args = {carName};
 
 		q = db.query(CAR_MASTER, columns, where, args, null, null, null);
+		q.moveToFirst();
 
 		return q.getInt(0);
 	}
@@ -211,6 +238,7 @@ public class DbManager extends SQLiteOpenHelper {
 		String[] args = {String.valueOf(carId)};
 
 		q = db.query(CAR_MASTER, columns, where, args, null, null, null);
+		q.moveToFirst();
 
 		return q.getString(0);
 	}
@@ -228,6 +256,7 @@ public class DbManager extends SQLiteOpenHelper {
 		String[] args = {String.valueOf(1)};
 
 		q = db.query(CAR_MASTER, columns, where, args, null, null, null);
+		q.moveToFirst();
 
 		return q.getString(0);
 	}
@@ -245,6 +274,7 @@ public class DbManager extends SQLiteOpenHelper {
 		String[] args = {String.valueOf(1)};
 
 		q = db.query(CAR_MASTER, columns, where, args, null, null, null);
+		q.moveToFirst();
 
 		return q.getInt(0);
 	}
@@ -262,14 +292,15 @@ public class DbManager extends SQLiteOpenHelper {
 
 		// query()は複数テーブルをまたぐクエリができない？みたいなので、rawQuery()を使う。
 		// 以下はそのためのSQL文を組み立てている。
-		sql = "SELECT CAR_MASTER.CAR_NAME,  sum(LUB_MASTER.ODOMETER) / sum(LUB_MASTER.LUB_AMOUNT), " +
-				"avg(COSTS_MASTER.RUNNING_COST) FROM CAR_MASTER, LUB_MASTER, COSTS_MASTER " +
+		sql = "SELECT CAR_MASTER.CAR_ID AS _id, CAR_MASTER.CAR_NAME,  sum(LUB_MASTER.ODOMETER) / sum(LUB_MASTER.LUB_AMOUNT) AS CURRENT_FUEL_MILEAGE, " +
+				"avg(COSTS_MASTER.RUNNING_COST) AS CURRENT_RUNNING_COSTS FROM CAR_MASTER, LUB_MASTER, COSTS_MASTER " +
 				"WHERE LUB_MASTER.DATE = COSTS_MASTER.DATE " +
 				"AND CAR_MASTER.CAR_ID = LUB_MASTER.CAR_ID " +
 				"ORDER BY CAR_MASTER.CAR_ID";
 
 		// rawQuery()にSQL文を投入
 		rq = db.rawQuery(sql, null);
+		rq.moveToFirst();
 
 		return rq;
 	}
@@ -277,7 +308,7 @@ public class DbManager extends SQLiteOpenHelper {
 	/*
 	 * デフォルトカーフラグを変更する
 	 */
-	public int changeDefaultCar(SQLiteDatabase db, int carId) {
+	protected int changeDefaultCar(SQLiteDatabase db, int carId) {
 		// クエリを格納する変数の定義
 		ContentValues cv = new ContentValues();
 		String where = "CAR_ID = ?";
@@ -309,15 +340,42 @@ public class DbManager extends SQLiteOpenHelper {
 	}
 
 	/*
+	 * デフォルトフラグを一律下げる処理
+	 */
+	protected int clearAllDefaultFlags(SQLiteDatabase db) {
+		// クエリを格納する変数の定義
+		ContentValues cv = new ContentValues();
+		int result;
+
+		// 安全のためトランザクションを開始する
+		db.beginTransaction();
+		try {
+			cv.put("DEFAULT_FLAG", 0);
+			result = db.update(CAR_MASTER, cv, null, null);
+
+			// トランザクションの正常終了を宣言
+			db.setTransactionSuccessful();
+		} finally {
+			// トランザクションを終了する。
+			// 例外発生とかでトランザクションが正常に完結しなかった場合（＝setTransactionSuccessful()が呼ばれていない）は、
+			// endTransaction()を呼んだところでロールバックされる。
+			db.endTransaction();
+		}
+
+		return result;
+	}
+
+	/*
 	 * CAR_MASTERに有効なレコードがあるかを調べる
 	 *   ここで言う「有効な」とは、レコードがあるか否かの話です(^^;
 	 */
-	public boolean hasCarRecords(SQLiteDatabase db) {
+	protected boolean hasCarRecords(SQLiteDatabase db) {
 		// クエリを格納する変数を定義
 		// 検索フィールド名と検索値は配列にしないと怒られるので、配列に書き直している。
 		Cursor q;
 
 		q = db.query(CAR_MASTER, null, null, null, null, null, null);
+		q.moveToFirst();
 
 		if (q.getCount() == 0) {
 			return false;
@@ -330,12 +388,13 @@ public class DbManager extends SQLiteOpenHelper {
 	 * LUB_MASTERに有効なレコードがあるかを調べる
 	 *   ここで言う「有効な」とは、レコードがあるか否かの話です(^^;
 	 */
-	public boolean hasLubRecords(SQLiteDatabase db) {
+	protected boolean hasLubRecords(SQLiteDatabase db) {
 		// クエリを格納する変数を定義
 		// 検索フィールド名と検索値は配列にしないと怒られるので、配列に書き直している。
 		Cursor q;
 
 		q = db.query(LUB_MASTER, null, null, null, null, null, null);
+		q.moveToFirst();
 
 		if (q.getCount() == 0) {
 			return false;
@@ -348,12 +407,13 @@ public class DbManager extends SQLiteOpenHelper {
 	 * COSTS_MASTERに有効なレコードがあるかを調べる
 	 *   ここで言う「有効な」とは、レコードがあるか否かの話です(^^;
 	 */
-	public boolean hasCostsRecords(SQLiteDatabase db) {
+	protected boolean hasCostsRecords(SQLiteDatabase db) {
 		// クエリを格納する変数を定義
 		// 検索フィールド名と検索値は配列にしないと怒られるので、配列に書き直している。
 		Cursor q;
 
 		q = db.query(COSTS_MASTER, null, null, null, null, null, null);
+		q.moveToFirst();
 
 		if (q.getCount() == 0) {
 			return false;
