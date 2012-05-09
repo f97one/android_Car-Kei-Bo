@@ -251,8 +251,8 @@ public class DbManager extends SQLiteOpenHelper {
 		// 検索フィールド名と検索値は配列にしないと怒られるので、配列に書き直している。
 		Cursor q;
 		String[] columns = {"CAR_NAME"};
-		String where = "CAR_ID = ?";
-		// CAR_ID=1を検索するのだが、query()がString[]であることを要求しているので、valueOf()でStringに変換する
+		String where = "DEFAULT_FLAG = ?";
+		// DEFAULT_FLAG=1を検索するのだが、query()がString[]であることを要求しているので、valueOf()でStringに変換する
 		String[] args = {String.valueOf(1)};
 
 		q = db.query(CAR_MASTER, columns, where, args, null, null, null);
@@ -269,8 +269,8 @@ public class DbManager extends SQLiteOpenHelper {
 		// 検索フィールド名と検索値は配列にしないと怒られるので、配列に書き直している。
 		Cursor q;
 		String[] columns = {"CAR_ID"};
-		String where = "CAR_ID = ?";
-		// CAR_ID=1を検索するのだが、query()がString[]であることを要求しているので、valueOf()でStringに変換する
+		String where = "DEFAULT_FLAG = ?";
+		// DEFAULT_FLAG=1を検索するのだが、query()がString[]であることを要求しているので、valueOf()でStringに変換する
 		String[] args = {String.valueOf(1)};
 
 		q = db.query(CAR_MASTER, columns, where, args, null, null, null);
@@ -280,29 +280,22 @@ public class DbManager extends SQLiteOpenHelper {
 	}
 
 	/*
-	 * リストビューに表示する以下の内容を得る
-	 *   ・クルマの名前
-	 *   ・現在の燃費
-	 *   ・現在のランニングコスト
+	 * クルマリストのリストビューに差し込むデータの取得
 	 */
-	protected Cursor getCurrentMileageData(SQLiteDatabase db) {
-		// クエリを格納する変数を定義
-		Cursor rq;
-		String sql;
+	protected Cursor getCarList(SQLiteDatabase db) {
+		// クエリを格納する変数の定義
+		Cursor q;
+		String[] columns = {"CAR_ID AS _id", "CAR_NAME", "CURRENT_FUEL_MILEAGE", "CURRENT_RUNNING_COST"};
+		//String where = "CAR_ID = ?";
+		//String[] args = {String.valueOf(1)};
+		//String groupBy = ""
+		//String having = ""
+		String orderBy = "CAR_ID";
 
-		// query()は複数テーブルをまたぐクエリができない？みたいなので、rawQuery()を使う。
-		// 以下はそのためのSQL文を組み立てている。
-		sql = "SELECT CAR_MASTER.CAR_ID AS _id, CAR_MASTER.CAR_NAME,  sum(LUB_MASTER.ODOMETER) / sum(LUB_MASTER.LUB_AMOUNT) AS CURRENT_FUEL_MILEAGE, " +
-				"avg(COSTS_MASTER.RUNNING_COST) AS CURRENT_RUNNING_COSTS FROM CAR_MASTER, LUB_MASTER, COSTS_MASTER " +
-				"WHERE LUB_MASTER.DATE = COSTS_MASTER.DATE " +
-				"AND CAR_MASTER.CAR_ID = LUB_MASTER.CAR_ID " +
-				"ORDER BY CAR_MASTER.CAR_ID";
+		q = db.query(CAR_MASTER, columns, null, null, null, null, orderBy);
+		q.moveToFirst();
 
-		// rawQuery()にSQL文を投入
-		rq = db.rawQuery(sql, null);
-		rq.moveToFirst();
-
-		return rq;
+		return q;
 	}
 
 	/*
