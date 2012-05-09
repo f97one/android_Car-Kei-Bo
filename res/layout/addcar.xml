@@ -33,13 +33,13 @@
             android:id="@+id/button_addCar"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/label_btn_addCar" />
+            android:text="@string/label_btn_addCar" android:onClick="onClickAddCar"/>
 
         <Button
             android:id="@+id/button_cancel_addCar"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/label_btn_cancel" />
+            android:text="@string/label_btn_cancel" android:onClick="onClickCancel"/>
 
     </LinearLayout>
 
