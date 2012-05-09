@@ -2,15 +2,25 @@ package net.formula97.andorid.car_kei_bo;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
+//import android.view.Menu;
+//import android.view.MenuInflater;
+//import android.view.MenuItem;
+import android.text.SpannableStringBuilder;
+import android.util.Log;
+import android.view.View;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.TextView;
 
 public class AddMyCar extends Activity {
+
+	private DbManager dbman = new DbManager(this);
+	public static SQLiteDatabase db;
+
+	private static final boolean FLAG_DEFAULT_ON = true;
+	private static final boolean FLAG_DEFAULT_OFF = false;
 
 	// ウィジェットを扱うための定義
 	TextView textview_addCarName;
@@ -40,6 +50,7 @@ public class AddMyCar extends Activity {
 	protected void onPause() {
 		// TODO 自動生成されたメソッド・スタブ
 		super.onPause();
+		dbman.close();
 	}
 
 	/* (非 Javadoc)
@@ -63,53 +74,60 @@ public class AddMyCar extends Activity {
 		// ボタンの幅を、取得した画面幅の1/2にセット
 		button_addCar.setWidth(displayWidth / 2);
 		button_cancel_addCar.setWidth(displayWidth / 2);
+
+
+
 	}
 
-	/* (非 Javadoc)
-	 * @see android.app.Activity#onCreateOptionsMenu(android.view.Menu)
+	/*
+	 * 「クルマを追加」ボタンを押したときの処理
+	 *   GUIに紐付けるときは、publicメソッドにしなきゃいけないようだ
 	 */
-	@Override
-	public boolean onCreateOptionsMenu(Menu menu) {
-		// TODO 自動生成されたメソッド・スタブ
-		super.onCreateOptionsMenu(menu);
+	public void onClickAddCar(View v) {
+		String carName;
+		boolean defaultFlags;
 
-        // MenuInflater型のオブジェクトを、getMenuInflater()で初期化
-        MenuInflater inflater = getMenuInflater();
+		db = dbman.getWritableDatabase();
 
-        // res/menu/menu.xmlの記述に従い、メニューを展開する
-        inflater.inflate(R.menu.optionsmenu, menu);
-        return true;
-	}
+		// TextViewに入力された値を取得
+		//   getText()はCaheSequence型になるので、Stringにキャストする
+		SpannableStringBuilder sp = (SpannableStringBuilder) textview_addCarName.getText();
+		carName = sp.toString();
+		Log.w("CarList", "New Car name = " + carName);
 
-	/* (非 Javadoc)
-	 * @see android.app.Activity#onOptionsItemSelected(android.view.MenuItem)
-	 */
-	@Override
-	public boolean onOptionsItemSelected(MenuItem item) {
-		/*
-		 * switch文でそれぞれのメニューに対するアクションへ分岐する。
-		 * メニュー項目を増やしたら、アクションを追加すること。
-		 * ....て、別クラスにすれば修正箇所を集約できると思うが、できんのか？
-		 */
-
-		// 設定画面を呼び出すためのインテント宣言
-		Intent configActivity = new Intent(this, Config.class);
-
-		switch (item.getItemId()) {
-		case R.id.optionsmenu_closeAPP:
-			// アプリを終了させる
-			finish();
-			return true;
-		case R.id.optionsmenu_call_preference:
-			// 設定画面を呼び出す
-			startActivity(configActivity);
-			return true;
-		case R.id.optionsmenu_addcar:
-			return true;
-		case R.id.optionsmenu_carlist:
-			return true;
-		default:
-			return false;
+		// チェックボックスの状態を取得
+		if (checkbox_setDefault.isChecked()) {
+			/*
+			 * チェックボックスにチェックがあれば、
+			 *   1.デフォルトフラグがすでにセットされているかを調べ、
+			 *   2.セットされていればいったんすべてのデフォルトフラグを下げる
+			 */
+			if (dbman.isExistDefaultCarFlag(db)) {
+				int iRet = dbman.clearAllDefaultFlags(db);
+				// デフォルトフラグを下げたことをログに出力する
+				Log.w("CAR_MASTER", "Default Car flags cleared, " + String.valueOf(iRet) + "rows updated.");
+			}
+			defaultFlags = FLAG_DEFAULT_ON;
+		} else {
+			defaultFlags = FLAG_DEFAULT_OFF;
 		}
+
+		// クルマデータをCAR_MASTERに追加
+		long lRet = dbman.addNewCar(db, carName, defaultFlags);
+		Log.i("CAR_MASTER", "Car record inserted, New Car Name = " + carName + " , New row ID = " + String.valueOf(lRet) );
+
+		dbman.close();
 	}
+
+	/*
+	 * 「キャンセル」を押したときの処理
+	 */
+	public void onClickCancel(View v) {
+		// 入力されている値を消す
+		//   「消す」=「空の値をセット」ということらしい
+		textview_addCarName.setText("");
+		// チェックされていない状態にする
+		checkbox_setDefault.setChecked(false);
+	}
+
 }
