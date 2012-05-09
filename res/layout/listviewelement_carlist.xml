@@ -7,9 +7,17 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content" >
-
-        <CheckedTextView
-            android:id="@+id/ctv_element_CarName"
+
+        <TextView
+            android:id="@+id/tv_carID"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingRight="12dp"
+            android:text="tv"
+            android:textSize="11pt" />
+
+        <TextView
+            android:id="@+id/tv_element_CarName"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="car name is here..."
