@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="volumeUnit">
+        <item >@string/label_UNIT_fuel_litter</item>
+        <item >@string/label_UNIT_fuel_gallon</item>
+    </string-array>
+    
+</resources>
