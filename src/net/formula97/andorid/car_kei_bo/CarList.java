@@ -32,6 +32,8 @@ public class CarList extends Activity {
 	private DbManager dbman = new DbManager(this);
 	public static SQLiteDatabase db;
 
+	Cursor cCarList;
+
 	// ウィジェットを扱うための定義
     TextView textView_CarListTitleContainer;
     TextView tv_label_value_defaultcar;
@@ -125,6 +127,7 @@ public class CarList extends Activity {
 	protected void onPause() {
 		// TODO 自動生成されたメソッド・スタブ
 		super.onPause();
+        cCarList.close();
 		dbman.close();
 	}
 
@@ -135,6 +138,7 @@ public class CarList extends Activity {
 	protected void onDestroy() {
 		// TODO 自動生成されたメソッド・スタブ
 		super.onDestroy();
+        cCarList.close();
 		dbman.close();
 	}
 
@@ -146,7 +150,7 @@ public class CarList extends Activity {
 		// TODO 自動生成されたメソッド・スタブ
 		super.onResume();
 
-        // 編集可能な状態でDBを開く
+        // 参照専用でDBを開く
 		db = dbman.getReadableDatabase();
 
 		// クルマリストとデフォルトカーの表示処理
@@ -155,7 +159,7 @@ public class CarList extends Activity {
         //   あった場合のみAdapterをつくる
         if (dbman.hasCarRecords(db)) {
         	// Adapterのもととなるレコードの取得
-            Cursor cCarList = dbman.getCarList(db);
+            cCarList = dbman.getCarList(db);
             Log.i("CAR_MASTER", "Got " + String.valueOf(cCarList.getCount()) + " records, including " + String.valueOf(cCarList.getColumnCount()) + " columns.");
             for (int i =0; i < cCarList.getColumnCount(); i++) {
             	Log.i("CAR_MASTER", "name of Column Index " + String.valueOf(i) + ":" + cCarList.getColumnName(i));
@@ -170,6 +174,7 @@ public class CarList extends Activity {
 
 	        // デフォルトカーの名前を取得してセット
 	        tv_label_value_defaultcar.setText(dbman.getDefaultCarName(db));
+
         }
 
         dbman.close();
