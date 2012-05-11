@@ -25,48 +25,61 @@
             android:textSize="11pt" />
 
     </LinearLayout>
-
-    <TableLayout
+
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content" >
+        android:layout_height="wrap_content"
+        android:paddingLeft="18dp" >
 
-        <TableRow
-            android:id="@+id/tableRow2"
+        <TextView
+            android:id="@+id/tv_element_FuelMileageLabel"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content" android:paddingLeft="18dp">
-
-            <TextView
-                android:id="@+id/tv_element_FuelMileageLabel"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/label_fuelmileage"
-                android:textAppearance="?android:attr/textAppearanceMedium" android:textSize="7pt"/>
-
-            <TextView
-                android:id="@+id/tv_value_FuelMileage"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content" android:textSize="7pt"/>
+            android:layout_height="wrap_content"
+            android:text="@string/label_fuelmileage"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:textSize="7pt" />
 
-        </TableRow>
-
-        <TableRow
-            android:id="@+id/tableRow3"
+        <TextView
+            android:id="@+id/tv_value_FuelMileage"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content" android:paddingLeft="18dp">
+            android:layout_height="wrap_content"
+            android:textSize="7pt" />
 
-            <TextView
-                android:id="@+id/tv_element_RunningCostsLabel"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/label_runningcost"
-                android:textAppearance="?android:attr/textAppearanceMedium" android:textSize="7pt"/>
-
-            <TextView
-                android:id="@+id/tv_value_RunningCosts"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content" android:textSize="7pt"/>
+        <TextView
+            android:id="@+id/tv_unit_fuelMileage"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="km/l"
+            android:textSize="7pt" />
 
-        </TableRow>
-    </TableLayout>
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingLeft="18dp" >
+
+        <TextView
+            android:id="@+id/tv_element_RunningCostsLabel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/label_runningcost"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:textSize="7pt" />
+
+        <TextView
+            android:id="@+id/tv_value_RunningCosts"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="7pt" />
+
+        <TextView
+            android:id="@+id/tv_unit_runningCosts"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Yen/km"
+            android:textSize="7pt" />
+
+    </LinearLayout>
 
 </LinearLayout>
