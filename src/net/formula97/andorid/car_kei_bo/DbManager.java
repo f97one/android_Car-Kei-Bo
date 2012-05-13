@@ -14,6 +14,11 @@ import android.util.Log;
 
 /**
  * @author kazutoshi
+ *  DB操作関連メソッドを定義するクラス
+ *
+ *    クエリ系のメソッドのうち、Cursor型で定義していないメソッドについては、
+ *    必要な値を仮変数に格納した後、Cursor#close()で閉じるようにしている。
+ *    # でないと「Cursor閉じろやｺﾞﾙｧ!!」とか怒られる。が、動作上は問題はなさそうだが....
  *
  */
 public class DbManager extends SQLiteOpenHelper {
@@ -149,6 +154,7 @@ public class DbManager extends SQLiteOpenHelper {
 
 		// 検索結果の総数を調査
 		int count = q.getCount();
+		q.close();
 
 		// 総数が0（＝検索結果がない）の場合はfalseを、そうでない場合はtrueを返す
 		if (count == 0) {
@@ -176,6 +182,7 @@ public class DbManager extends SQLiteOpenHelper {
 		q.moveToFirst();
 
 		int defaultFlag = q.getCount();
+		q.close();
 
 		if (defaultFlag == 0) {
 			return false;
@@ -200,6 +207,7 @@ public class DbManager extends SQLiteOpenHelper {
 		q.moveToFirst();
 
 		int defaultFlag = q.getInt(0);
+		q.close();
 
 		if (defaultFlag == 0) {
 			return false;
@@ -212,6 +220,9 @@ public class DbManager extends SQLiteOpenHelper {
 	 * 入力されたクルマの名前から、CAR_IDを返す
 	 */
 	protected int getCarId(SQLiteDatabase db, String carName) {
+		// 戻り値を格納する変数
+		int iRet;
+
 		// クエリを格納する変数を定義
 		// 検索フィールド名と検索値は配列にしないと怒られるので、配列に書き直している。
 		Cursor q;
@@ -221,14 +232,19 @@ public class DbManager extends SQLiteOpenHelper {
 
 		q = db.query(CAR_MASTER, columns, where, args, null, null, null);
 		q.moveToFirst();
+		iRet = q.getInt(0);
+		q.close();
 
-		return q.getInt(0);
+		return iRet;
 	}
 
 	/*
 	 * 入力されたクルマのCAR_IDから、CAR_NAMEを返す
 	 */
 	protected String getCarName(SQLiteDatabase db, int carId) {
+		// 戻り値を格納する変数
+		String sRet;
+
 		// クエリを格納する変数を定義
 		// 検索フィールド名と検索値は配列にしないと怒られるので、配列に書き直している。
 		Cursor q;
@@ -239,14 +255,19 @@ public class DbManager extends SQLiteOpenHelper {
 
 		q = db.query(CAR_MASTER, columns, where, args, null, null, null);
 		q.moveToFirst();
+		sRet = q.getString(0);
+		q.close();
 
-		return q.getString(0);
+		return sRet;
 	}
 
 	/*
 	 * デフォルトカーフラグのあるCAR_NAMEを返す
 	 */
 	protected String getDefaultCarName(SQLiteDatabase db) {
+		// 戻り値を格納する変数
+		String sRet;
+
 		// クエリを格納する変数を定義
 		// 検索フィールド名と検索値は配列にしないと怒られるので、配列に書き直している。
 		Cursor q;
@@ -257,14 +278,20 @@ public class DbManager extends SQLiteOpenHelper {
 
 		q = db.query(CAR_MASTER, columns, where, args, null, null, null);
 		q.moveToFirst();
+		sRet = q.getString(0);
+		Log.i(CAR_MASTER, "Found default car : " + sRet);
+		q.close();
 
-		return q.getString(0);
+		return sRet;
 	}
 
 	/*
 	 * デフォルトカーフラグのあるCAR_IDを返す
 	 */
 	protected int getDefaultCarId(SQLiteDatabase db) {
+		// 戻り値を格納する変数
+		int iRet;
+
 		// クエリを格納する変数を定義
 		// 検索フィールド名と検索値は配列にしないと怒られるので、配列に書き直している。
 		Cursor q;
@@ -275,12 +302,14 @@ public class DbManager extends SQLiteOpenHelper {
 
 		q = db.query(CAR_MASTER, columns, where, args, null, null, null);
 		q.moveToFirst();
+		iRet = q.getInt(0);
 
-		return q.getInt(0);
+		return iRet;
 	}
 
 	/*
 	 * クルマリストのリストビューに差し込むデータの取得
+	 *   Cursorオブジェクトをそのまま返すので、Cursor#close()は行わない。
 	 */
 	protected Cursor getCarList(SQLiteDatabase db) {
 		// クエリを格納する変数の定義
@@ -363,14 +392,19 @@ public class DbManager extends SQLiteOpenHelper {
 	 *   ここで言う「有効な」とは、レコードがあるか否かの話です(^^;
 	 */
 	protected boolean hasCarRecords(SQLiteDatabase db) {
+		// getCount()を格納する変数
+		int iRet;
+
 		// クエリを格納する変数を定義
 		// 検索フィールド名と検索値は配列にしないと怒られるので、配列に書き直している。
 		Cursor q;
 
 		q = db.query(CAR_MASTER, null, null, null, null, null, null);
 		q.moveToFirst();
+		iRet = q.getCount();
+		q.close();
 
-		if (q.getCount() == 0) {
+		if (iRet == 0) {
 			return false;
 		} else {
 			return true;
@@ -382,14 +416,19 @@ public class DbManager extends SQLiteOpenHelper {
 	 *   ここで言う「有効な」とは、レコードがあるか否かの話です(^^;
 	 */
 	protected boolean hasLubRecords(SQLiteDatabase db) {
+		// getCount()を格納する変数
+		int iRet;
+
 		// クエリを格納する変数を定義
 		// 検索フィールド名と検索値は配列にしないと怒られるので、配列に書き直している。
 		Cursor q;
 
 		q = db.query(LUB_MASTER, null, null, null, null, null, null);
 		q.moveToFirst();
+		iRet = q.getCount();
+		q.close();
 
-		if (q.getCount() == 0) {
+		if (iRet == 0) {
 			return false;
 		} else {
 			return true;
@@ -401,14 +440,19 @@ public class DbManager extends SQLiteOpenHelper {
 	 *   ここで言う「有効な」とは、レコードがあるか否かの話です(^^;
 	 */
 	protected boolean hasCostsRecords(SQLiteDatabase db) {
+		// getCount()を格納する変数
+		int iRet;
+
 		// クエリを格納する変数を定義
 		// 検索フィールド名と検索値は配列にしないと怒られるので、配列に書き直している。
 		Cursor q;
 
 		q = db.query(COSTS_MASTER, null, null, null, null, null, null);
 		q.moveToFirst();
+		iRet = q.getCount();
+		q.close();
 
-		if (q.getCount() == 0) {
+		if (iRet == 0) {
 			return false;
 		} else {
 			return true;
