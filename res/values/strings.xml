@@ -32,6 +32,9 @@
     <string name="config_title_distance">Distance Unit</string>
     <string name="config_title_volume">Volume Unit(liquid)</string>
     <string name="tv_label_defaultcar">Default Car Name : </string>
+    <string name="label_spinner_price">Price Unit</string>
+    <string name="label_spinner_distance">Distance Unit</string>
+    <string name="label_spinner_volume">Volume Unit</string>
     
     
 
