@@ -1,7 +1,13 @@
 package net.formula97.andorid.car_kei_bo;
 
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
+
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
+import android.database.sqlite.SQLiteOpenHelper;
+import android.util.Log;
 
 /**
  * 日付処理に関するメソッドを管理するクラス
@@ -11,8 +17,8 @@ import java.util.Date;
 public class DateManager {
 
 	// 便宜上表記が必要なときに使用する、特殊な境界線上の時刻表記
-	final String START_HOUR = "00:00:00";
-	final String END_HOUR = "23:59:59";
+	static final String START_HOUR = "00:00:00";
+	static final String END_HOUR = "23:59:59";
 
 	public DateManager() {
 		// TODO 自動生成されたコンストラクター・スタブ
@@ -20,12 +26,15 @@ public class DateManager {
 
 	/**
 	 * ISO 8601形式の日付、および時刻フォーマットを持つ「文字列」を返す
-	 * @param d Date型（日付）
+	 * @param gcd Calendar型（日付）
 	 * @param withTime  boolean型、時刻が必要なときはtrue、不要なときはfalse
-	 * @param dateFormat String型、日付フォーマットを一時的に格納する
-	 * @return yyyy-MM-dd HH:mm:ss形式の文字列
+	 * @return ISO 8601形式の文字列
 	 */
-	protected String getISO8601Date(Date d, boolean withTime) {
+	public String getISO8601Date(Calendar gcd, boolean withTime) {
+		// SimpleDateFormatが使いたいので、Calendar型の引数をDate型に変換する
+		Date dd = gcd.getTime();
+
+		// withTime引数の値によって、日付の書式を決める
 		String dateFormat;
 
 		if (withTime) {
@@ -37,6 +46,55 @@ public class DateManager {
 		SimpleDateFormat sdf = new SimpleDateFormat(dateFormat);
 
 		// 整形済み日付をStringにして返す
-		return sdf.format(d).toString();
+		return sdf.format(dd).toString();
+	}
+
+	/**
+	 * 渡された日時をユリウス通日に変換する
+	 * @param gcd Calendar型（日付）
+	 * @return double型、SQLiteが認識可能なユリウス通日
+	 */
+	public double toJulianDay(Calendar gcd) {
+		double jDate;				// ユリウス通日
+		int jYear, jMonth, jDay;	// ユリウス通日計算の元となる年、月、日
+		int jHour, jMinute;		// 同  時間、分
+		int a, b;					// グレゴリオ暦における、うるう年補正値
+
+		// ユリウス通日を求める上で必要な「年」と「月」のセット
+		//   グレゴリオ暦の「月」が2より大きい（＝Calendar.MONTHが1より大きい）場合は、
+		//   そのままjYear, jMonthに年と月をセット
+		if (gcd.get(Calendar.MONTH) > 1) {
+			jYear = gcd.get(Calendar.YEAR);
+			jMonth = gcd.get(Calendar.MONTH) + 1;
+		} else {
+			// グレゴリオ暦の「月」が2以下の場合は、jYearを-1、jMonthを+12する
+			jYear = gcd.get(Calendar.YEAR) - 1;
+			jMonth = gcd.get(Calendar.MONTH) + 13;
+		}
+		// 日、時間、分をセット
+		jDay = gcd.get(Calendar.DAY_OF_MONTH);
+		jHour = gcd.get(Calendar.HOUR_OF_DAY);
+		jMinute = gcd.get(Calendar.MINUTE);
+
+		// うるう年補正値の計算
+		a = (int) Math.floor(jYear / 100);
+		b = (int) (2 - a + Math.floor(a / 4));
+
+		// グレゴリオ暦→ユリウス通日への変換公式は、以下のとおり。
+		// JD = INT(365.25 y) + INT(30.6001 ( m + 1) ) + DD + (hh/24) + 1720994.5 + B
+		//   ※ここでは、分を考慮するため、jHourにjMinute/60を加算している。
+		String tag = "toJulianDay";
+		Log.d(tag, "Year : " + Math.floor(365.25 * jYear));
+		Log.d(tag, "Month : " + Math.floor(30.6001 * (jMonth + 1)));
+		Log.d(tag, "Day : " + jDay);
+		double d = jHour + (jMinute / 60) / 24;
+		Log.d(tag, "Hour : " + String.valueOf(d));
+
+		jDate = Math.floor(365.25 * jYear) +
+				Math.floor(30.6001 * (jMonth + 1)) +
+				jDay + (jHour + (jMinute / 60)) / 24 +
+				1720994.5 + b;
+
+		return jDate;
 	}
 }
