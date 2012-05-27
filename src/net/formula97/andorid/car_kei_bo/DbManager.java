@@ -37,8 +37,10 @@ public class DbManager extends SQLiteOpenHelper {
 		// ここにdbファイルとバージョンを定義する
 	}
 
-	/* (非 Javadoc)
+	/**
+	 * DBがない場合にコンストラクタからコールされ、テーブルをDDLに従い作成する。
 	 * @see android.database.sqlite.SQLiteOpenHelper#onCreate(android.database.sqlite.SQLiteDatabase)
+	 * @param db SQLiteDatabase型、操作するDBインスタンス
 	 */
 	@Override
 	public void onCreate(SQLiteDatabase db) {
@@ -51,17 +53,17 @@ public class DbManager extends SQLiteOpenHelper {
 		//   LUB_MASTERテーブル
 		create_lub_master = "CREATE TABLE IF NOT EXISTS LUB_MASTER " +
 				"(RECORD_ID INTEGER PRIMARY KEY AUTOINCREMENT, " +
-				"DATE TEXT, " +
+				"REFUEL_DATE REAL, " +
 				"CAR_ID INTEGER, " +
 				"LUB_AMOUNT REAL DEFAULT 0, " +
 				"UNIT_PRICE REAL DEFAULT 0, " +
-				"ODOMETER REAL, " +
+				"ODOMETER INTEGER, " +
 				"COMMENTS TEXT);";
 
 		//   COSTS_MASTERテーブル
 		create_costs_master = "CREATE TABLE IF NOT EXISTS COSTS_MASTER " +
 				"(RECORD_ID INTEGER PRIMARY KEY AUTOINCREMENT, " +
-				"DATE TEXT, " +
+				"REFUEL_DATE REAL, " +
 				"RUNNING_COST REAL DEFAULT 0);";
 
 		//   CAR_MASTERテーブル
@@ -70,7 +72,12 @@ public class DbManager extends SQLiteOpenHelper {
 				"CAR_NAME TEXT, " +
 				"DEFAULT_FLAG INTEGER DEFAULT 0, " +
 				"CURRENT_FUEL_MILEAGE INTEGER DEFAULT 0, " +
-				"CURRENT_RUNNING_COST INTEGER DEFAULT 0);";
+				"CURRENT_RUNNING_COST INTEGER DEFAULT 0, " +
+				"PRICEUNIT TEXT, " +
+				"DISTANCEUNIT TEXT, " +
+				"VOLUMEUNIT TEXT, " +
+				"FUELMILEAGE_LABEL TEXT, " +
+				"RUNNINGCOST_LABEL TEXT);";
 
 		// DDLをexecSQLで実行する
 		db.execSQL(create_lub_master);
@@ -78,8 +85,15 @@ public class DbManager extends SQLiteOpenHelper {
 		db.execSQL(create_car_master);
 	}
 
-	/* (非 Javadoc)
+	/**
+	 * DBのバージョンが既存のDBより大きい場合、コンストラクタからコールされるが、
+	 * 初期リリースのためダミー処理を書いている。
+	 * アプリケーションのバージョンアップを行う場合は、ここの処理を抜本的に
+	 * 書き直す必要あり。
 	 * @see android.database.sqlite.SQLiteOpenHelper#onUpgrade(android.database.sqlite.SQLiteDatabase, int, int)
+	 * @param db SQLiteDatabase型、操作するDBインスタンス
+	 * @param oldVersion int型、DBの古いバージョン番号、コンストラクタが決める？
+	 * @param newVersion int型、DBの新しいバージョン番号、コンストラクタが決める？
 	 */
 	@Override
 	public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
@@ -97,9 +111,12 @@ public class DbManager extends SQLiteOpenHelper {
 		onCreate(db);
 	}
 
-	/*
-	 * クルマのレコードを追加する
-	 *
+	/**
+	 * クルマのレコードを追加する。
+	 * @param db SQLiteDatabase型、操作するDBインスタンス
+	 * @param carName String型、追加するクルマの名前
+	 * @param isDefaultCar boolean型、デフォルトのクルマにセットするか否か
+	 * @return long型、insertに成功すればそのときのrowIdを、失敗すれば-1を返す。なお、失敗時はSQLExceptionを投げる
 	 */
 	protected long addNewCar(SQLiteDatabase db, String carName, boolean isDefaultCar) {
 		// insertOrThrow()の戻り値を格納する変数を、0で初期化する
@@ -134,12 +151,12 @@ public class DbManager extends SQLiteOpenHelper {
 		return result;
 	}
 
-	/*
+	/**
 	 * 重複チェックその１
 	 *   同一名称の車がないかをチェックする。
-	 *   trueだと重複があり、falseだと重複はない。
-	 *   SQL文にすると以下のとおり。
-	 *     SELECT CAR_NAME FROM CAR_MASTER WHERE CAR_NAME = '$carName';
+	 *   @param db SQLiteDatabase型、操作するDBインスタンス
+	 *   @param carName String型、重複がないか調べるクルマの名前
+	 *   @return boolean型、trueだと重複があり、falseだと重複はない。
 	 */
 	protected boolean isExistSameNameCar(SQLiteDatabase db, String carName) {
 		// クエリを格納する変数を定義
@@ -164,11 +181,11 @@ public class DbManager extends SQLiteOpenHelper {
 		}
 	}
 
-	/*
+	/**
 	 * 重複チェックその２
 	 *   すでにデフォルトカーフラグがセットされているか否かをチェックする。
-	 *   trueだとチェック済み、falseはチェックなし
-	 *
+	 *   @param db SQLiteDatabase型、操作するDBインスタンス
+	 *   @return boolean型、trueだとチェック済み、falseはチェックなし
 	 */
 	protected boolean isExistDefaultCarFlag(SQLiteDatabase db) {
 		// クエリを格納する変数を定義
@@ -190,9 +207,12 @@ public class DbManager extends SQLiteOpenHelper {
 			return true;
 		}
 	}
-	/*
-	 * やっていることは上と同じだが、渡したCAR_IDにデフォルトフラグがあるかを調べ、
-	 * フラグがたっていればtrue、そうでなければfalseを返す
+	/**
+	 * 重複チェックその２
+	 *   やっていることは上と同じ。
+	 *   @param db SQLiteDatabase型、操作するDBインスタンス
+	 *   @param carId int型、チェックするcarIdを指定する
+	 *   @return boolean型、trueだとチェック済み、falseはチェックなし
 	 */
 	protected boolean isExistDefaultCarFlag(SQLiteDatabase db, int carId) {
 		// クエリを格納する変数を定義
@@ -216,8 +236,11 @@ public class DbManager extends SQLiteOpenHelper {
 		}
 	}
 
-	/*
-	 * 入力されたクルマの名前から、CAR_IDを返す
+	/**
+	 * 入力されたクルマの名前から、CAR_IDを返す。
+	 * @param db SQLiteDatabase型、操作するDBインスタンス
+	 * @param carName String型、チェックするクルマの名前
+	 * @return int型、チェックする車の名前に対応するcarId
 	 */
 	protected int getCarId(SQLiteDatabase db, String carName) {
 		// 戻り値を格納する変数
@@ -238,8 +261,11 @@ public class DbManager extends SQLiteOpenHelper {
 		return iRet;
 	}
 
-	/*
-	 * 入力されたクルマのCAR_IDから、CAR_NAMEを返す
+	/**
+	 * 入力されたクルマのCAR_IDから、CAR_NAMEを返す。
+	 * @param db SQLiteDatabase型、操作するDBインスタンス
+	 * @param carId int型、チェックするクルマのcarId
+	 * @return String型、チェックする車のcarIdに対応する名前
 	 */
 	protected String getCarName(SQLiteDatabase db, int carId) {
 		// 戻り値を格納する変数
@@ -261,8 +287,10 @@ public class DbManager extends SQLiteOpenHelper {
 		return sRet;
 	}
 
-	/*
-	 * デフォルトカーフラグのあるCAR_NAMEを返す
+	/**
+	 * デフォルトカーフラグのあるCAR_NAMEを返す。
+	 * @param db SQLiteDatabase型、操作するDBインスタンス
+	 * @return String型、デフォルトカーフラグのあるクルマの名前
 	 */
 	protected String getDefaultCarName(SQLiteDatabase db) {
 		// 戻り値を格納する変数
@@ -285,8 +313,10 @@ public class DbManager extends SQLiteOpenHelper {
 		return sRet;
 	}
 
-	/*
-	 * デフォルトカーフラグのあるCAR_IDを返す
+	/**
+	 * デフォルトカーフラグのあるCAR_IDを返す。
+	 * @param db SQLiteDatabase型、操作するDBインスタンス
+	 * @return int型、デフォルトカーフラグのあるクルマのcarId
 	 */
 	protected int getDefaultCarId(SQLiteDatabase db) {
 		// 戻り値を格納する変数
@@ -307,9 +337,10 @@ public class DbManager extends SQLiteOpenHelper {
 		return iRet;
 	}
 
-	/*
-	 * クルマリストのリストビューに差し込むデータの取得
-	 *   Cursorオブジェクトをそのまま返すので、Cursor#close()は行わない。
+	/**
+	 * クルマリストのリストビューに差し込むデータを取得する。
+	 * @param db SQLiteDatabase型、操作するDBインスタンス
+	 * @return Cursor型、Cursorオブジェクトをそのまま返すので、Cursor#close()は行わない。
 	 */
 	protected Cursor getCarList(SQLiteDatabase db) {
 		// クエリを格納する変数の定義
@@ -327,8 +358,11 @@ public class DbManager extends SQLiteOpenHelper {
 		return q;
 	}
 
-	/*
-	 * デフォルトカーフラグを変更する
+	/**
+	 * デフォルトカーフラグを変更する。
+	 * @param db SQLiteDatabase型、操作するDBインスタンス
+	 * @param carId int型、フラグを変更するするクルマのcarId
+	 * @return int型、Updateに成功したレコード数
 	 */
 	protected int changeDefaultCar(SQLiteDatabase db, int carId) {
 		// クエリを格納する変数の定義
@@ -361,8 +395,10 @@ public class DbManager extends SQLiteOpenHelper {
 		return result;
 	}
 
-	/*
-	 * デフォルトフラグを一律下げる処理
+	/**
+	 * デフォルトフラグを一律下げる。
+	 * @param db SQLiteDatabase型、操作するDBインスタンス
+	 * @return int型、Updateに成功したレコード数
 	 */
 	protected int clearAllDefaultFlags(SQLiteDatabase db) {
 		// クエリを格納する変数の定義
@@ -387,9 +423,11 @@ public class DbManager extends SQLiteOpenHelper {
 		return result;
 	}
 
-	/*
-	 * CAR_MASTERに有効なレコードがあるかを調べる
+	/**
+	 * CAR_MASTERに有効なレコードがあるかを調べる。
 	 *   ここで言う「有効な」とは、レコードがあるか否かの話です(^^;
+	 * @param db SQLiteDatabase型、操作するDBインスタンス
+	 * @return boolean型、有効なレコードがあればtrue、なければfalse
 	 */
 	protected boolean hasCarRecords(SQLiteDatabase db) {
 		// getCount()を格納する変数
@@ -411,9 +449,11 @@ public class DbManager extends SQLiteOpenHelper {
 		}
 	}
 
-	/*
+	/**
 	 * LUB_MASTERに有効なレコードがあるかを調べる
 	 *   ここで言う「有効な」とは、レコードがあるか否かの話です(^^;
+	 * @param db SQLiteDatabase型、操作するDBインスタンス
+	 * @return boolean型、有効なレコードがあればtrue、なければfalse
 	 */
 	protected boolean hasLubRecords(SQLiteDatabase db) {
 		// getCount()を格納する変数
@@ -435,9 +475,11 @@ public class DbManager extends SQLiteOpenHelper {
 		}
 	}
 
-	/*
+	/**
 	 * COSTS_MASTERに有効なレコードがあるかを調べる
 	 *   ここで言う「有効な」とは、レコードがあるか否かの話です(^^;
+	 * @param db SQLiteDatabase型、操作するDBインスタンス
+	 * @return boolean型、有効なレコードがあればtrue、なければfalse
 	 */
 	protected boolean hasCostsRecords(SQLiteDatabase db) {
 		// getCount()を格納する変数
