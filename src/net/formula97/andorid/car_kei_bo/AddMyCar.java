@@ -14,6 +14,11 @@ import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.TextView;
 
+/**
+ * 「クルマを追加」画面を扱うクラス。
+ * @author kazutoshi
+ *
+ */
 public class AddMyCar extends Activity {
 
 	private DbManager dbman = new DbManager(this);
@@ -43,7 +48,9 @@ public class AddMyCar extends Activity {
 
     }
 
-	/* (非 Javadoc)
+	/**
+	 * ほかのActivityへ遷移するなどで一時的に処理を停止するときに、システムからコールされる。
+	 * DBの閉じ忘れを防止するため、一律ここでDBをクローズしている。
 	 * @see android.app.Activity#onPause()
 	 */
 	@Override
@@ -53,7 +60,9 @@ public class AddMyCar extends Activity {
 		dbman.close();
 	}
 
-	/* (非 Javadoc)
+	/**
+	 * 画面描画を行うときに必ずシステムからコールされる。
+	 * 上記特徴を利用し、ボタン幅を画面サイズから計算して再設定している。
 	 * @see android.app.Activity#onResume()
 	 */
 	@Override
@@ -79,9 +88,11 @@ public class AddMyCar extends Activity {
 
 	}
 
-	/*
-	 * 「クルマを追加」ボタンを押したときの処理
-	 *   GUIに紐付けるときは、publicメソッドにしなきゃいけないようだ
+	/**
+	 * 「クルマを追加」ボタンを押したときの処理。
+	 *   OnClickListenerをインターフェース実装していない関係で、GUIに紐付けしてボタン処理を書いている。
+	 *   ただ、このやり方だとpublicメソッドにしなきゃいけないようだ。
+	 * @param v View型、ボタンを押されたときのId？
 	 */
 	public void onClickAddCar(View v) {
 		String carName;
@@ -119,8 +130,12 @@ public class AddMyCar extends Activity {
 		dbman.close();
 	}
 
-	/*
-	 * 「キャンセル」を押したときの処理
+	/**
+	 * 「キャンセル」を押したときの処理。
+	 *   onClickAddCar()同様、OnClickListenerをインターフェース実装していない関係で、
+	 *   GUIに紐付けしてボタン処理を書いている。
+	 *   ただ、このやり方だとpublicメソッドにしなきゃいけないようだ。
+	 * @param v View型、ボタンを押されたときのId？
 	 */
 	public void onClickCancel(View v) {
 		// 入力されている値を消す
