@@ -4,9 +4,6 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 
-import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
-import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
 
 /**
@@ -55,10 +52,10 @@ public class DateManager {
 	 * @return double型、SQLiteが認識可能なユリウス通日
 	 */
 	public double toJulianDay(Calendar gcd) {
-		double jDate;				// ユリウス通日
-		int jYear, jMonth, jDay;	// ユリウス通日計算の元となる年、月、日
-		int jHour, jMinute;		// 同  時間、分
-		int a, b;					// グレゴリオ暦における、うるう年補正値
+		double jDate;							// ユリウス通日
+		int jYear, jMonth, jDay;				// ユリウス通日計算の元となる年、月、日
+		double jHour, jMinute, jSecond;		// 同  時間、分、秒
+		int a, b;								// グレゴリオ暦における、うるう年補正値
 
 		// ユリウス通日を求める上で必要な「年」と「月」のセット
 		//   グレゴリオ暦の「月」が2より大きい（＝Calendar.MONTHが1より大きい）場合は、
@@ -71,28 +68,30 @@ public class DateManager {
 			jYear = gcd.get(Calendar.YEAR) - 1;
 			jMonth = gcd.get(Calendar.MONTH) + 13;
 		}
-		// 日、時間、分をセット
+		// 日、時間、分、秒をセット
 		jDay = gcd.get(Calendar.DAY_OF_MONTH);
-		jHour = gcd.get(Calendar.HOUR_OF_DAY);
-		jMinute = gcd.get(Calendar.MINUTE);
+		// 時間、分、秒については、doubleで計算する必要があるのでdoubleでキャストする。
+		jHour = (double)gcd.get(Calendar.HOUR_OF_DAY);
+		jMinute = (double)gcd.get(Calendar.MINUTE);
+		jSecond = (double)gcd.get(Calendar.SECOND);
 
 		// うるう年補正値の計算
-		a = (int) Math.floor(jYear / 100);
-		b = (int) (2 - a + Math.floor(a / 4));
+		a = (int) (jYear / 100);
+		b = (int) (2 - a + (int)(a / 4));
 
 		// グレゴリオ暦→ユリウス通日への変換公式は、以下のとおり。
 		// JD = INT(365.25 y) + INT(30.6001 ( m + 1) ) + DD + (hh/24) + 1720994.5 + B
-		//   ※ここでは、分を考慮するため、jHourにjMinute/60を加算している。
+		//   ※ここでは、分、秒を考慮するため、jHourにjMinute/60とjSecond/3600を加算している。
 		String tag = "toJulianDay";
 		Log.d(tag, "Year : " + Math.floor(365.25 * jYear));
 		Log.d(tag, "Month : " + Math.floor(30.6001 * (jMonth + 1)));
 		Log.d(tag, "Day : " + jDay);
-		double d = jHour + (jMinute / 60) / 24;
-		Log.d(tag, "Hour : " + String.valueOf(d));
+		double jh = (jHour + (jMinute / 60) + (jSecond / 3600)) / 24;
+		Log.d(tag, "Hour : " + String.valueOf(jh));
 
-		jDate = Math.floor(365.25 * jYear) +
-				Math.floor(30.6001 * (jMonth + 1)) +
-				jDay + (jHour + (jMinute / 60)) / 24 +
+		jDate = (int)(365.25 * jYear) +
+				(int)(30.6001 * (jMonth + 1)) +
+				jDay + jh +
 				1720994.5 + b;
 
 		return jDate;
