@@ -51,7 +51,7 @@
         android:layout_alignParentRight="true"
         android:layout_below="@+id/checkBox_SetDefault"
         android:layout_gravity="right|center_vertical"
-        android:layout_toRightOf="@+id/textView1">
+        android:layout_toRightOf="@+id/textView1" android:entries="@array/priceUnit">
 
         <!-- Preview: listitem=@android:layout/simple_spinner_item -->
     </Spinner>
@@ -75,7 +75,7 @@
         android:layout_alignParentRight="true"
         android:layout_below="@+id/spinner_priceUnit"
         android:layout_gravity="right|center_vertical"
-        android:layout_toRightOf="@+id/textView2"/>
+        android:layout_toRightOf="@+id/textView2" android:entries="@array/distanceUnit"/>
 
     <TextView
         android:id="@+id/textView3"
@@ -96,7 +96,7 @@
         android:layout_alignParentRight="true"
         android:layout_below="@+id/spinner_distanceUnit"
         android:layout_gravity="right|center_vertical"
-        android:layout_toRightOf="@+id/textView3"/>
+        android:layout_toRightOf="@+id/textView3" android:entries="@array/volumeUnit"/>
 
     <Button
         android:id="@+id/button_addCar"
