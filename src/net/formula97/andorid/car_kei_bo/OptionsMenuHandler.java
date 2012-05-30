@@ -17,8 +17,8 @@ public class OptionsMenuHandler extends Activity {
 		switch (savedInstanceState.describeContents()) {
 		case R.id.optionsmenu_closeAPP:
 			opMenuCloseAPP();
-		case R.id.optionsmenu_call_preference:
-			opMenuCallPreference();
+//		case R.id.optionsmenu_call_preference:
+//			opMenuCallPreference();
 		case R.id.optionsmenu_addcar:
 			opMenuAddCar();
 		case R.id.optionsmenu_carlist:

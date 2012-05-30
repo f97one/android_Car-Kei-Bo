@@ -17,11 +17,11 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.widget.Button;
 import android.widget.ListView;
-import android.widget.SimpleAdapter;
+//import android.widget.SimpleAdapter;
 import android.widget.SimpleCursorAdapter;
 import android.widget.TableLayout;
 import android.widget.TextView;
-import android.preference.PreferenceActivity;
+//import android.preference.PreferenceActivity;
 
 /**
  * @author kazutoshi
@@ -32,7 +32,7 @@ public class CarList extends Activity {
 	private DbManager dbman = new DbManager(this);
 	public static SQLiteDatabase db;
 
-	Cursor cCarList;
+	Cursor cCarList = null;
 
 	// ウィジェットを扱うための定義
     TextView textView_CarListTitleContainer;
@@ -65,7 +65,10 @@ public class CarList extends Activity {
 
 	}
 
-	/* (非 Javadoc)
+	/**
+	 * Menuキーを押した段階で呼び出される処理。
+	 * @param menu 項目を配置したメニューを表示
+	 * @return trueにするとメニューを表示、falseだと表示しない
 	 * @see android.app.Activity#onCreateOptionsMenu(android.view.Menu)
 	 */
 	@Override
@@ -81,7 +84,8 @@ public class CarList extends Activity {
         return true;
 	}
 
-	/* (非 Javadoc)
+	/**
+	 *
 	 * @see android.app.Activity#onOptionsItemSelected(android.view.MenuItem)
 	 */
 	@Override
@@ -93,7 +97,7 @@ public class CarList extends Activity {
 		 */
 
 		// 別画面呼び出しのためのインテント宣言
-		Intent configActivity = new Intent(this, Config.class);		// 設定画面
+		//Intent configActivity = new Intent(this, Config.class);		// 設定画面
 		Intent addCarActivity = new Intent(this, AddMyCar.class);	// 「クルマを追加」画面
 		//Intent carListActivity = new Intent(this, CarList.class);	// 「クルマリスト」画面
 
@@ -102,10 +106,10 @@ public class CarList extends Activity {
 			// アプリを終了させる
 			finish();
 			return true;
-		case R.id.optionsmenu_call_preference:
-			// 設定画面を呼び出す
-			startActivity(configActivity);
-			return true;
+//		case R.id.optionsmenu_call_preference:
+//			// 設定画面を呼び出す
+//			startActivity(configActivity);
+//			return true;
 		case R.id.optionsmenu_addcar:
 			// 「クルマを追加」画面を呼び出す
 			startActivity(addCarActivity);
@@ -127,8 +131,17 @@ public class CarList extends Activity {
 	protected void onPause() {
 		// TODO 自動生成されたメソッド・スタブ
 		super.onPause();
-        cCarList.close();
-		dbman.close();
+
+		// CursorとDBが閉じていなければそれぞれを閉じる
+		if (db.isOpen()) {
+			if (dbman.hasCarRecords(db)) {
+				if (cCarList.isClosed() != true) {
+	        		cCarList.close();
+				}
+			}
+			Log.d("CarList#onPause()","SQLite database is closing.");
+			dbman.close();
+		}
 	}
 
 	/* (非 Javadoc)
@@ -136,10 +149,18 @@ public class CarList extends Activity {
 	 */
 	@Override
 	protected void onDestroy() {
-		// TODO 自動生成されたメソッド・スタブ
 		super.onDestroy();
-        cCarList.close();
-		dbman.close();
+
+		// CursorとDBが閉じていなければそれぞれを閉じる
+		if (db.isOpen()) {
+			if (dbman.hasCarRecords(db)) {
+				if (cCarList.isClosed() != true) {
+	        		cCarList.close();
+				}
+			}
+			Log.d("CarList#onDestroy()","SQLite database is closing.");
+			dbman.close();
+		}
 	}
 
 	/* (非 Javadoc)
@@ -147,7 +168,6 @@ public class CarList extends Activity {
 	 */
 	@Override
 	protected void onResume() {
-		// TODO 自動生成されたメソッド・スタブ
 		super.onResume();
 
         // 参照専用でDBを開く
@@ -176,8 +196,6 @@ public class CarList extends Activity {
 	        tv_label_value_defaultcar.setText(dbman.getDefaultCarName(db));
 
         }
-
-        dbman.close();
 	}
 
 }
