@@ -8,7 +8,6 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
-import android.database.sqlite.SQLiteDatabase.CursorFactory;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
 
@@ -113,12 +112,17 @@ public class DbManager extends SQLiteOpenHelper {
 
 	/**
 	 * クルマのレコードを追加する。
+	 *   ....引数多いな、オイ(^^;)
 	 * @param db SQLiteDatabase型、操作するDBインスタンス
 	 * @param carName String型、追加するクルマの名前
 	 * @param isDefaultCar boolean型、デフォルトのクルマにセットするか否か
+	 * @param priceUnit String型、価格の単位を格納
+	 * @param distanceUnit String型、距離の単位を格納
+	 * @param volumeUnit String型、体積の単位を格納
 	 * @return long型、insertに成功すればそのときのrowIdを、失敗すれば-1を返す。なお、失敗時はSQLExceptionを投げる
 	 */
-	protected long addNewCar(SQLiteDatabase db, String carName, boolean isDefaultCar) {
+	protected long addNewCar(SQLiteDatabase db, String carName, boolean isDefaultCar,
+			String priceUnit, String distanceUnit, String volumeUnit) {
 		// insertOrThrow()の戻り値を格納する変数を、0で初期化する
 		long result = 0;
 
@@ -132,6 +136,13 @@ public class DbManager extends SQLiteOpenHelper {
 			value.put("DEFAULT_FLAG", 0);
 		}
 
+		// 価格、距離、体積の各単位をセット
+		value.put("PRICEUNIT", priceUnit);			// 単価
+		value.put("DISTANCEUNIT", distanceUnit);	// 距離
+		value.put("VOLUMEUNIT", volumeUnit);		// 体積
+		value.put("FUELMILEAGE_LABEL", distanceUnit + "/" + volumeUnit);	// 燃費
+		value.put("RUNNINGCOST_LABEL", priceUnit + "/" + distanceUnit);		// ランニングコスト
+
 		// トランザクション開始
 		db.beginTransaction();
 		try {
@@ -141,7 +152,7 @@ public class DbManager extends SQLiteOpenHelper {
 			// 例外が投げられなければ、トランザクション成功をセット
 			db.setTransactionSuccessful();
 		} catch (SQLException e) {
-			Log.w(DATABASE_NAME, "Car record insert failed, ");
+			Log.e(DATABASE_NAME, "Car record insert failed, ");
 		} finally {
 			// トランザクション終了
 			// INSERTに失敗した場合は、endTransaction()を呼んだところでロールバックされる
@@ -345,7 +356,7 @@ public class DbManager extends SQLiteOpenHelper {
 	protected Cursor getCarList(SQLiteDatabase db) {
 		// クエリを格納する変数の定義
 		Cursor q;
-		String[] columns = {"CAR_ID AS _id", "CAR_NAME", "CURRENT_FUEL_MILEAGE", "CURRENT_RUNNING_COST"};
+		String[] columns = {"CAR_ID AS _id", "CAR_NAME", "CURRENT_FUEL_MILEAGE", "FUELMILEAGE_LABEL", "CURRENT_RUNNING_COST", "RUNNINGCOST_LABEL"};
 		//String where = "CAR_ID = ?";
 		//String[] args = {String.valueOf(1)};
 		//String groupBy = ""
