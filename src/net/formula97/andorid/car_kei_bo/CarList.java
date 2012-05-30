@@ -186,8 +186,8 @@ public class CarList extends Activity {
             }
 
 	        // AdapterからListViewへ差し込むデータの整形
-	        String[] from = {"_id", "CAR_NAME", "CURRENT_FUEL_MILEAGE", "CURRENT_RUNNING_COST"};
-	        int[] to = {R.id.tv_carID, R.id.tv_element_CarName, R.id.tv_value_FuelMileage, R.id.tv_value_RunningCosts};
+	        String[] from = {"_id", "CAR_NAME", "CURRENT_FUEL_MILEAGE", "FUELMILEAGE_LABEL", "CURRENT_RUNNING_COST", "RUNNINGCOST_LABEL"};
+	        int[] to = {R.id.tv_carID, R.id.tv_element_CarName, R.id.tv_value_FuelMileage, R.id.tv_unit_fuelMileage, R.id.tv_value_RunningCosts, R.id.tv_unit_runningCosts};
 
 	        SimpleCursorAdapter sca = new SimpleCursorAdapter(getApplicationContext(), R.layout.listviewelement_carlist, cCarList, from, to);
 	        listView_CarList.setAdapter(sca);
