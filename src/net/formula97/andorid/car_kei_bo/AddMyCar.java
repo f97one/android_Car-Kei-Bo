@@ -1,17 +1,16 @@
 package net.formula97.andorid.car_kei_bo;
 
 import android.app.Activity;
-import android.content.Intent;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
-//import android.view.Menu;
-//import android.view.MenuInflater;
-//import android.view.MenuItem;
 import android.text.SpannableStringBuilder;
 import android.util.Log;
 import android.view.View;
+import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.Button;
 import android.widget.CheckBox;
+import android.widget.Spinner;
 import android.widget.TextView;
 
 /**
@@ -19,7 +18,7 @@ import android.widget.TextView;
  * @author kazutoshi
  *
  */
-public class AddMyCar extends Activity {
+public class AddMyCar extends Activity implements OnItemSelectedListener {
 
 	private DbManager dbman = new DbManager(this);
 	public static SQLiteDatabase db;
@@ -32,6 +31,9 @@ public class AddMyCar extends Activity {
 	CheckBox checkbox_setDefault;
 	Button button_addCar;
 	Button button_cancel_addCar;
+	Spinner spinner_price_Unit;
+	Spinner spinner_distanceUnit;
+	Spinner spinner_volumeUnit;
 
     /** Called when the activity is first created. */
     @Override
@@ -45,7 +47,14 @@ public class AddMyCar extends Activity {
 		checkbox_setDefault = (CheckBox)findViewById(R.id.checkBox_SetDefault);
 		button_addCar = (Button)findViewById(R.id.button_addCar);
 		button_cancel_addCar = (Button)findViewById(R.id.button_cancel_addCar);
+		spinner_price_Unit = (Spinner)findViewById(R.id.spinner_priceUnit);
+		spinner_distanceUnit = (Spinner)findViewById(R.id.spinner_distanceUnit);
+		spinner_volumeUnit = (Spinner)findViewById(R.id.spinner_volumeUnit);
 
+		// 各スピナーへonClickListenerを定義
+		spinner_price_Unit.setOnItemSelectedListener(this);
+		spinner_distanceUnit.setOnItemSelectedListener(this);
+		spinner_volumeUnit.setOnItemSelectedListener(this);
     }
 
 	/**
@@ -83,9 +92,6 @@ public class AddMyCar extends Activity {
 		// ボタンの幅を、取得した画面幅の1/2にセット
 		button_addCar.setWidth(displayWidth / 2);
 		button_cancel_addCar.setWidth(displayWidth / 2);
-
-
-
 	}
 
 	/**
@@ -97,6 +103,9 @@ public class AddMyCar extends Activity {
 	public void onClickAddCar(View v) {
 		String carName;
 		boolean defaultFlags;
+		String volume = "";
+		String distance = "";
+		String price = "";
 
 		db = dbman.getWritableDatabase();
 
@@ -123,8 +132,13 @@ public class AddMyCar extends Activity {
 			defaultFlags = FLAG_DEFAULT_OFF;
 		}
 
+		// 各スピナーから値を取得する。
+		price = (String) spinner_price_Unit.getSelectedItem();
+		distance = (String)spinner_distanceUnit.getSelectedItem();
+		volume = (String)spinner_volumeUnit.getSelectedItem();
+
 		// クルマデータをCAR_MASTERに追加
-		long lRet = dbman.addNewCar(db, carName, defaultFlags);
+		long lRet = dbman.addNewCar(db, carName, defaultFlags, price, distance, volume);
 		Log.i("CAR_MASTER", "Car record inserted, New Car Name = " + carName + " , New row ID = " + String.valueOf(lRet) );
 
 		dbman.close();
@@ -143,6 +157,23 @@ public class AddMyCar extends Activity {
 		textview_addCarName.setText("");
 		// チェックされていない状態にする
 		checkbox_setDefault.setChecked(false);
+	}
+
+	/**
+	 * スピナーのアイテムを選択したときに発生するイベント
+	 * @param parent
+	 * @param view
+	 * @param position
+	 * @param id
+	 */
+	public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+		// TODO 自動生成されたメソッド・スタブ
+
+	}
+
+	public void onNothingSelected(AdapterView<?> arg0) {
+		// TODO 自動生成されたメソッド・スタブ
+
 	}
 
 }
