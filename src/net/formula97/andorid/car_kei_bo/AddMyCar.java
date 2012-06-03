@@ -164,6 +164,10 @@ public class AddMyCar extends Activity implements OnItemSelectedListener {
 		Log.i("CAR_MASTER", "Car record inserted, New Car Name = " + carName + " , New row ID = " + String.valueOf(lRet) );
 
 		dbman.close();
+
+		// テキストボックスを空にし、デフォルトカーチェックをはずす
+		textview_addCarName.setText("");
+		checkbox_setDefault.setChecked(FLAG_DEFAULT_OFF);
 	}
 
 	/**
@@ -178,7 +182,7 @@ public class AddMyCar extends Activity implements OnItemSelectedListener {
 		//   「消す」=「空の値をセット」ということらしい
 		textview_addCarName.setText("");
 		// チェックされていない状態にする
-		checkbox_setDefault.setChecked(false);
+		checkbox_setDefault.setChecked(FLAG_DEFAULT_OFF);
 	}
 
 	/**
