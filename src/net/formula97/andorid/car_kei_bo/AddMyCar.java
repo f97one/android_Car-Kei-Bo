@@ -59,19 +59,22 @@ public class AddMyCar extends Activity implements OnItemSelectedListener {
 
 	/**
 	 * ほかのActivityへ遷移するなどで一時的に処理を停止するときに、システムからコールされる。
-	 * DBの閉じ忘れを防止するため、一律ここでDBをクローズしている。
+	 * DBの閉じ忘れを防止するため、DBが開いていたらここでクローズする。
 	 * @see android.app.Activity#onPause()
 	 */
 	@Override
 	protected void onPause() {
 		// TODO 自動生成されたメソッド・スタブ
 		super.onPause();
-		dbman.close();
+
+		if (db.isOpen()) {
+			dbman.close();
+		}
 	}
 
 	/**
 	 * 画面描画を行うときに必ずシステムからコールされる。
-	 * 上記特徴を利用し、ボタン幅を画面サイズから計算して再設定している。
+	 * 上記特徴を利用し、画面表示されるコントロール類の挙動を設定している。
 	 * @see android.app.Activity#onResume()
 	 */
 	@Override
@@ -85,13 +88,32 @@ public class AddMyCar extends Activity implements OnItemSelectedListener {
 		 * onCreate()ではなくこちらに書くのは、最終的な画面設定が行われるのがこちらという
 		 * Androidのくせによるものである。
 		 */
-
 		// 画面幅を取得
 		int displayWidth = getWindowManager().getDefaultDisplay().getWidth();
 
 		// ボタンの幅を、取得した画面幅の1/2にセット
 		button_addCar.setWidth(displayWidth / 2);
 		button_cancel_addCar.setWidth(displayWidth / 2);
+
+		/*
+		 * 「デフォルトカー」チェックの挙動決定
+		 *   CAR_MASTERにまったくレコードがない場合、デフォルトカーチェックを入れていないと、
+		 * クルマリストに戻ったときにデフォルトカーが特定できず異常終了する。
+		 *   CAR_MASTERにレコードがまったくない場合、最初に追加されるクルマがデフォルトになるのは
+		 * 暗黙の了解ともいえるため、
+		 *   １　CAR_MASTERにレコードがない場合は、デフォルトカーチェックをオン
+		 *   ２　CAR_MASTERにレコードがある場合は、デフォルトカーチェックをオフのままにする
+		 * という処理を行う。
+		 */
+		db = dbman.getReadableDatabase();
+
+		if (dbman.hasCarRecords(db)) {
+			checkbox_setDefault.setChecked(FLAG_DEFAULT_OFF);
+		} else {
+			checkbox_setDefault.setChecked(FLAG_DEFAULT_ON);
+		}
+
+		dbman.close();
 	}
 
 	/**
@@ -171,6 +193,10 @@ public class AddMyCar extends Activity implements OnItemSelectedListener {
 
 	}
 
+	/**
+	 * スピナーのアイテムを何も選択しなかったときに発生するイベント
+	 * @param arg0
+	 */
 	public void onNothingSelected(AdapterView<?> arg0) {
 		// TODO 自動生成されたメソッド・スタブ
 
