@@ -15,9 +15,12 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.Button;
 import android.widget.ListView;
 //import android.widget.SimpleAdapter;
+import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemClickListener;
 import android.widget.SimpleCursorAdapter;
 import android.widget.TableLayout;
 import android.widget.TextView;
@@ -27,7 +30,7 @@ import android.widget.TextView;
  * @author kazutoshi
  *
  */
-public class CarList extends Activity {
+public class CarList extends Activity implements OnItemClickListener {
 
 	private DbManager dbman = new DbManager(this);
 	public static SQLiteDatabase db;
@@ -196,6 +199,31 @@ public class CarList extends Activity {
 	        tv_label_value_defaultcar.setText(dbman.getDefaultCarName(db));
 
         }
+	}
+
+	/**
+	 * ListViewのアイテムをタッチしたときの処理、そのクルマの燃費記録を表示するActivityを呼ぶ。
+	 * @param parent AdapterView<>型、リストアダプタの親要素
+	 * @param v View型、ビューの要素
+	 * @param position int型、タッチされた要素の番号
+	 * @param id long型、アイテムID
+	 */
+	public void onItemClick(AdapterView<?> parent, View v, int position, long id) {
+		// TODO 自動生成されたメソッド・スタブ
+
+	}
+
+	/**
+	 * ListViewのアイテムを長押ししたときの処理
+	 *   そのクルマに関するコンテキストメニューを表示し、それぞれの処理に振り分ける。
+	 * @param parent AdapterView<>型、リストアダプタの親要素
+	 * @param v View型、ビューの要素
+	 * @param position int型、タッチされた要素の番号
+	 * @param id long型、アイテムID
+	 */
+	public void onItemLongClick(AdapterView<?> parent, View v, int position, long id) {
+		// TODO 自動生成されたメソッド・スタブ
+
 	}
 
 }
