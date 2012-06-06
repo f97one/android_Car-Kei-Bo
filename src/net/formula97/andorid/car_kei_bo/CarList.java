@@ -27,6 +27,7 @@ import android.widget.TextView;
 //import android.preference.PreferenceActivity;
 
 /**
+ * クルマリストを表示するActivity
  * @author kazutoshi
  *
  */
@@ -45,12 +46,16 @@ public class CarList extends Activity implements OnItemClickListener {
     Button button_addFuelRecord;
 
     /**
-	 *
+	 * 明示的コンストラクタ
+	 *   Activityの場合、onCreate()がコンストラクタの役割を果たすので、
+	 *   特に処理を書かなくても成立する。
 	 */
 	public CarList() {
 	}
 
-	/* (非 Javadoc)
+	/**
+	 * Activity初期化処理、ここではウィジェット類のIDを取得している。
+	 * @param savedInstanceState Bundle型、インスタンスを取得したときの状態
 	 * @see android.app.Activity#onCreate(android.os.Bundle)
 	 */
 	@Override
@@ -88,7 +93,10 @@ public class CarList extends Activity implements OnItemClickListener {
 	}
 
 	/**
-	 *
+	 * [Menu]キーを押したとき、システムから呼ばれる。
+	 *   XMLで定義しているメニューに応じた処理を行わせる。
+	 * @param item MenuItem型、選択されたメニューアイテムを格納
+	 * @return boolean型、trueにするとアイテム有効、falseは無効
 	 * @see android.app.Activity#onOptionsItemSelected(android.view.MenuItem)
 	 */
 	@Override
@@ -127,7 +135,9 @@ public class CarList extends Activity implements OnItemClickListener {
 		}
 	}
 
-	/* (非 Javadoc)
+	/**
+	 * ActivityがほかのActivityに遷移するとき、システムから呼ばれる。
+	 *   DBとCursorが開いていたら閉じる。
 	 * @see android.app.Activity#onPause()
 	 */
 	@Override
@@ -147,7 +157,9 @@ public class CarList extends Activity implements OnItemClickListener {
 		}
 	}
 
-	/* (非 Javadoc)
+	/**
+	 * Activityが破棄されるとき、システムから呼ばれる。
+	 *   DBとCursorが開いていたら閉じる。
 	 * @see android.app.Activity#onDestroy()
 	 */
 	@Override
@@ -166,7 +178,9 @@ public class CarList extends Activity implements OnItemClickListener {
 		}
 	}
 
-	/* (非 Javadoc)
+	/**
+	 * Activityの初期化後、システムから呼ばれる。
+	 *   最終的な画面描画の調整と、クルマリストの表示を行うのに使用。
 	 * @see android.app.Activity#onResume()
 	 */
 	@Override
