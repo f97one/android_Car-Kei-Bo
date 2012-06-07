@@ -3,9 +3,6 @@
  */
 package net.formula97.andorid.car_kei_bo;
 
-import java.util.List;
-import java.util.Map;
-
 import android.app.Activity;
 import android.content.Intent;
 import android.database.Cursor;
@@ -16,22 +13,23 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.ListView;
-//import android.widget.SimpleAdapter;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
+import android.widget.AdapterView.OnItemLongClickListener;
 import android.widget.SimpleCursorAdapter;
 import android.widget.TableLayout;
 import android.widget.TextView;
-//import android.preference.PreferenceActivity;
 
 /**
  * クルマリストを表示するActivity
  * @author kazutoshi
  *
  */
-public class CarList extends Activity implements OnItemClickListener {
+public class CarList extends Activity implements OnItemClickListener,
+		OnItemLongClickListener, OnClickListener {
 
 	private DbManager dbman = new DbManager(this);
 	public static SQLiteDatabase db;
@@ -71,6 +69,10 @@ public class CarList extends Activity implements OnItemClickListener {
         button_addFuelRecord = (Button)findViewById(R.id.button_addFuelRecord);
         listView_CarList = (ListView)findViewById(R.id.listView_CarList);
 
+        // イベントリスナーのセット
+        listView_CarList.setOnItemLongClickListener(this);
+        listView_CarList.setOnItemClickListener(this);
+        button_addFuelRecord.setOnClickListener(this);
 	}
 
 	/**
@@ -203,14 +205,54 @@ public class CarList extends Activity implements OnItemClickListener {
             }
 
 	        // AdapterからListViewへ差し込むデータの整形
-	        String[] from = {"_id", "CAR_NAME", "CURRENT_FUEL_MILEAGE", "FUELMILEAGE_LABEL", "CURRENT_RUNNING_COST", "RUNNINGCOST_LABEL"};
-	        int[] to = {R.id.tv_carID, R.id.tv_element_CarName, R.id.tv_value_FuelMileage, R.id.tv_unit_fuelMileage, R.id.tv_value_RunningCosts, R.id.tv_unit_runningCosts};
+	        String[] from = {	"_id",
+	        					"CAR_NAME",
+	        					"CURRENT_FUEL_MILEAGE",
+	        					"FUELMILEAGE_LABEL",
+	        					"CURRENT_RUNNING_COST",
+	        					"RUNNINGCOST_LABEL"};
+	        int[] to = {R.id.tv_carID,
+	        			 R.id.tv_element_CarName,
+	        			 R.id.tv_value_FuelMileage,
+	        			 R.id.tv_unit_fuelMileage,
+	        			 R.id.tv_value_RunningCosts,
+	        			 R.id.tv_unit_runningCosts};
 
 	        SimpleCursorAdapter sca = new SimpleCursorAdapter(getApplicationContext(), R.layout.listviewelement_carlist, cCarList, from, to);
 	        listView_CarList.setAdapter(sca);
 
 	        // デフォルトカーの名前を取得してセット
 	        tv_label_value_defaultcar.setText(dbman.getDefaultCarName(db));
+
+//	        listView_CarList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+//
+//	        	public void onItemClick(AdapterView<?> parent, View v, int position,
+//						long id) {
+//					// TODO 自動生成されたメソッド・スタブ
+//	        		// とりあえず、LogCatに流して挙動を観察
+//	        		Log.d("onItemClick", "ListView item pressed.");
+//	        		Log.d("onItemClick", "parent = " + parent.toString());
+//	        		Log.d("onItemClick", "v = " + v.toString());
+//	        		Log.d("onItemClick", "position = " + String.valueOf(position));
+//	        		Log.d("onItemClick", "id = " + String.valueOf(id));
+//				}
+//	        });
+//
+//	        listView_CarList.setOnItemLongClickListener(new OnItemLongClickListener() {
+//
+//				public boolean onItemLongClick(AdapterView<?> parent, View v,
+//						int position, long id) {
+//					// TODO 自動生成されたメソッド・スタブ
+//					// とりあえず、LogCatに流して挙動を観察
+//					Log.d("onItemLongClick", "ListView item long pressed.");
+//					Log.d("onItemLongClick", "parent = " + parent.toString());
+//					Log.d("onItemLongClick", "v = " + v.toString());
+//					Log.d("onItemLongClick", "position = " + String.valueOf(position));
+//					Log.d("onItemLongClick", "id = " + String.valueOf(id));
+//
+//					return false;
+//				}
+//			});
 
         }
 	}
@@ -222,9 +264,15 @@ public class CarList extends Activity implements OnItemClickListener {
 	 * @param position int型、タッチされた要素の番号
 	 * @param id long型、アイテムID
 	 */
+	//@Override
 	public void onItemClick(AdapterView<?> parent, View v, int position, long id) {
 		// TODO 自動生成されたメソッド・スタブ
-
+		// とりあえず、LogCatに流して挙動を観察
+		Log.d("onItemClick", "ListView item pressed.");
+		Log.d("onItemClick", "parent = " + parent.toString());
+		Log.d("onItemClick", "v = " + v.toString());
+		Log.d("onItemClick", "position = " + String.valueOf(position));
+		Log.d("onItemClick", "id = " + String.valueOf(id));
 	}
 
 	/**
@@ -234,10 +282,25 @@ public class CarList extends Activity implements OnItemClickListener {
 	 * @param v View型、ビューの要素
 	 * @param position int型、タッチされた要素の番号
 	 * @param id long型、アイテムID
+	 * @return
 	 */
-	public void onItemLongClick(AdapterView<?> parent, View v, int position, long id) {
-		// TODO 自動生成されたメソッド・スタブ
-
+	//@Override
+	public boolean onItemLongClick(AdapterView<?> parent, View v, int position, long id) {
+		// とりあえず、LogCatに流して挙動を観察
+		Log.d("onItemLongClick", "ListView item long pressed.");
+		Log.d("onItemLongClick", "parent = " + parent.toString());
+		Log.d("onItemLongClick", "v = " + v.toString());
+		Log.d("onItemLongClick", "position = " + String.valueOf(position));
+		Log.d("onItemLongClick", "id = " + String.valueOf(id));
+		//return false;
+		return true;
 	}
 
+	public void onClick(View v) {
+		// TODO 自動生成されたメソッド・スタブ
+		// とりあえず、LogCatに流して挙動を観察
+		Log.d("onClick", "Button pressed.");
+		Log.d("onClick", "v = " + v.toString());
+
+	}
 }
