@@ -9,6 +9,8 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.ContextMenu;
+import android.view.ContextMenu.ContextMenuInfo;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -58,7 +60,6 @@ public class CarList extends Activity implements OnItemClickListener,
 	 */
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
-		// TODO 自動生成されたメソッド・スタブ
 		super.onCreate(savedInstanceState);
         setContentView(R.layout.carlist);
 
@@ -69,10 +70,8 @@ public class CarList extends Activity implements OnItemClickListener,
         button_addFuelRecord = (Button)findViewById(R.id.button_addFuelRecord);
         listView_CarList = (ListView)findViewById(R.id.listView_CarList);
 
-        // イベントリスナーのセット
-        listView_CarList.setOnItemLongClickListener(this);
-        listView_CarList.setOnItemClickListener(this);
-        button_addFuelRecord.setOnClickListener(this);
+        // コンテキストメニュー表示を車クルマリストに対して登録をする
+        registerForContextMenu(listView_CarList);
 	}
 
 	/**
@@ -83,7 +82,6 @@ public class CarList extends Activity implements OnItemClickListener,
 	 */
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
-		// TODO 自動生成されたメソッド・スタブ
 		super.onCreateOptionsMenu(menu);
 
         // MenuInflater型のオブジェクトを、getMenuInflater()で初期化
@@ -144,7 +142,6 @@ public class CarList extends Activity implements OnItemClickListener,
 	 */
 	@Override
 	protected void onPause() {
-		// TODO 自動生成されたメソッド・スタブ
 		super.onPause();
 
 		// CursorとDBが閉じていなければそれぞれを閉じる
@@ -221,6 +218,14 @@ public class CarList extends Activity implements OnItemClickListener,
 	        SimpleCursorAdapter sca = new SimpleCursorAdapter(getApplicationContext(), R.layout.listviewelement_carlist, cCarList, from, to);
 	        listView_CarList.setAdapter(sca);
 
+	        // イベントリスナーのセット
+	        listView_CarList.setOnItemLongClickListener(this);
+	        listView_CarList.setOnItemClickListener(this);
+	        button_addFuelRecord.setOnClickListener(this);
+
+	        listView_CarList.setFocusable(false);
+	        listView_CarList.setFocusableInTouchMode(false);
+
 	        // デフォルトカーの名前を取得してセット
 	        tv_label_value_defaultcar.setText(dbman.getDefaultCarName(db));
 
@@ -228,7 +233,6 @@ public class CarList extends Activity implements OnItemClickListener,
 //
 //	        	public void onItemClick(AdapterView<?> parent, View v, int position,
 //						long id) {
-//					// TODO 自動生成されたメソッド・スタブ
 //	        		// とりあえず、LogCatに流して挙動を観察
 //	        		Log.d("onItemClick", "ListView item pressed.");
 //	        		Log.d("onItemClick", "parent = " + parent.toString());
@@ -242,7 +246,6 @@ public class CarList extends Activity implements OnItemClickListener,
 //
 //				public boolean onItemLongClick(AdapterView<?> parent, View v,
 //						int position, long id) {
-//					// TODO 自動生成されたメソッド・スタブ
 //					// とりあえず、LogCatに流して挙動を観察
 //					Log.d("onItemLongClick", "ListView item long pressed.");
 //					Log.d("onItemLongClick", "parent = " + parent.toString());
@@ -266,13 +269,16 @@ public class CarList extends Activity implements OnItemClickListener,
 	 */
 	//@Override
 	public void onItemClick(AdapterView<?> parent, View v, int position, long id) {
-		// TODO 自動生成されたメソッド・スタブ
+		//super.onItemClick(parent, v, position, id);
+
 		// とりあえず、LogCatに流して挙動を観察
 		Log.d("onItemClick", "ListView item pressed.");
 		Log.d("onItemClick", "parent = " + parent.toString());
 		Log.d("onItemClick", "v = " + v.toString());
 		Log.d("onItemClick", "position = " + String.valueOf(position));
 		Log.d("onItemClick", "id = " + String.valueOf(id));
+
+		//openContextMenu(v);
 	}
 
 	/**
@@ -292,15 +298,49 @@ public class CarList extends Activity implements OnItemClickListener,
 		Log.d("onItemLongClick", "v = " + v.toString());
 		Log.d("onItemLongClick", "position = " + String.valueOf(position));
 		Log.d("onItemLongClick", "id = " + String.valueOf(id));
-		//return false;
-		return true;
+
+		// コンテキストメニューを表示する
+		openContextMenu(v);
+
+		return false;
+		//return true;
 	}
 
 	public void onClick(View v) {
-		// TODO 自動生成されたメソッド・スタブ
+		// TODO デフォルトカーについての燃費記録画面を表示する
 		// とりあえず、LogCatに流して挙動を観察
 		Log.d("onClick", "Button pressed.");
 		Log.d("onClick", "v = " + v.toString());
 
 	}
+
+	@Override
+	public boolean onContextItemSelected(MenuItem item) {
+		// TODO 選択されたメニューのリソースIDに応じた処理を記述する
+		return super.onContextItemSelected(item);
+	}
+
+	@Override
+	public void onContextMenuClosed(Menu menu) {
+		// TODO 自動生成されたメソッド・スタブ
+		super.onContextMenuClosed(menu);
+	}
+
+	/**
+	 * コンテキストメニューの生成を行う。
+	 *   ここでは、XMLの記述に従いコンテキストメニューを展開している。
+	 * @param menu ContextMenu型
+	 * @param v View型
+	 * @param menuInfo ContextMenuInfo型
+	 * @see android.view.View.OnCreateContextMenuListener#onCreateContextMenu(ContextMenu, View, ContextMenuInfo)
+	 */
+	@Override
+	public void onCreateContextMenu(ContextMenu menu, View v, ContextMenuInfo menuInfo) {
+		super.onCreateContextMenu(menu, v, menuInfo);
+
+		// XMLの記述に従い、コンテキストメニューを展開する
+		getMenuInflater().inflate(R.menu.context_carlist, menu);
+		menu.setHeaderTitle(getString(R.string.ctxmenutitle_carlist));
+	}
+
 }
