@@ -1,85 +1,88 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/RelativeLayout1"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical" android:longClickable="true">
+    android:longClickable="true"
+    android:orientation="vertical" android:focusable="false" android:focusableInTouchMode="false">
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content" >
-
-        <TextView
-            android:id="@+id/tv_carID"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:paddingRight="12dp"
-            android:text="tv"
-            android:textSize="11pt" />
-
-        <TextView
-            android:id="@+id/tv_element_CarName"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="car name is here..."
-            android:textAppearance="?android:attr/textAppearanceLarge"
-            android:textSize="11pt" />
-
-    </LinearLayout>
-
-    <LinearLayout
-        android:layout_width="match_parent"
+    <TextView
+        android:id="@+id/tv_carID"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:paddingLeft="18dp" >
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentTop="true"
+        android:paddingRight="12dp"
+        android:text="tv"
+        android:textSize="11pt" android:focusable="false" android:focusableInTouchMode="false"/>
 
-        <TextView
-            android:id="@+id/tv_element_FuelMileageLabel"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/label_fuelmileage"
-            android:textAppearance="?android:attr/textAppearanceMedium"
-            android:textSize="7pt" />
-
-        <TextView
-            android:id="@+id/tv_value_FuelMileage"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textSize="7pt" />
-
-        <TextView
-            android:id="@+id/tv_unit_fuelMileage"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="km/l"
-            android:textSize="7pt" />
-
-    </LinearLayout>
-
-    <LinearLayout
-        android:layout_width="match_parent"
+    <TextView
+        android:id="@+id/tv_element_CarName"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:paddingLeft="18dp" >
+        android:layout_alignBaseline="@+id/tv_carID"
+        android:layout_alignParentTop="true"
+        android:layout_toRightOf="@+id/tv_carID"
+        android:text="car name is here..."
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:textSize="11pt" android:focusable="false" android:focusableInTouchMode="false"/>
 
-        <TextView
-            android:id="@+id/tv_element_RunningCostsLabel"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/label_runningcost"
-            android:textAppearance="?android:attr/textAppearanceMedium"
-            android:textSize="7pt" />
+    <TextView
+        android:id="@+id/tv_element_FuelMileageLabel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_below="@+id/tv_carID"
+        android:text="@string/label_fuelmileage"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:textSize="7pt" android:paddingLeft="10dip" android:focusable="false" android:focusableInTouchMode="false"/>
+
+    <TextView
+        android:id="@+id/tv_value_FuelMileage"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBaseline="@+id/tv_element_FuelMileageLabel"
+        android:layout_toRightOf="@+id/tv_element_FuelMileageLabel"
+        android:text="99.99"
+        android:textSize="7pt" android:paddingLeft="5dip" android:paddingRight="5dip" android:focusable="false" android:focusableInTouchMode="false"/>
 
-        <TextView
-            android:id="@+id/tv_value_RunningCosts"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textSize="7pt" />
-
-        <TextView
-            android:id="@+id/tv_unit_runningCosts"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Yen/km"
-            android:textSize="7pt" />
+    <TextView
+        android:id="@+id/tv_unit_fuelMileage"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBaseline="@+id/tv_element_FuelMileageLabel"
+        android:layout_alignTop="@+id/tv_element_FuelMileageLabel"
+        android:layout_toRightOf="@+id/tv_value_FuelMileage"
+        android:text="km/l"
+        android:textSize="7pt" android:focusableInTouchMode="false" android:focusable="false"/>
 
-    </LinearLayout>
+    <TextView
+        android:id="@+id/tv_element_RunningCostsLabel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_below="@+id/tv_element_FuelMileageLabel"
+        android:text="@string/label_runningcost"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:textSize="7pt" android:paddingLeft="10dip" android:focusable="false" android:focusableInTouchMode="false"/>
+
+    <TextView
+        android:id="@+id/tv_value_RunningCosts"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBaseline="@+id/tv_element_RunningCostsLabel"
+        android:layout_toRightOf="@+id/tv_element_RunningCostsLabel"
+        android:text="99.99"
+        android:textSize="7pt" android:paddingLeft="5dip" android:paddingRight="5dip" android:focusable="false" android:focusableInTouchMode="false"/>
 
-</LinearLayout>
+    <TextView
+        android:id="@+id/tv_unit_runningCosts"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBaseline="@+id/tv_element_RunningCostsLabel"
+        android:layout_alignTop="@+id/tv_element_RunningCostsLabel"
+        android:layout_toRightOf="@+id/tv_value_RunningCosts"
+        android:text="Yen/km"
+        android:textSize="7pt" android:focusable="false" android:focusableInTouchMode="false"/>
+
+</RelativeLayout>
