@@ -12,6 +12,7 @@ import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.Toast;
 
 /**
  * 「クルマを追加」画面を扱うクラス。
@@ -168,6 +169,9 @@ public class AddMyCar extends Activity implements OnItemSelectedListener {
 		// テキストボックスを空にし、デフォルトカーチェックをはずす
 		textview_addCarName.setText("");
 		checkbox_setDefault.setChecked(FLAG_DEFAULT_OFF);
+
+		// トーストを表示する
+		showToastmsg(carName);
 	}
 
 	/**
@@ -204,6 +208,22 @@ public class AddMyCar extends Activity implements OnItemSelectedListener {
 	public void onNothingSelected(AdapterView<?> arg0) {
 		// TODO 自動生成されたメソッド・スタブ
 
+	}
+
+	/**
+	 * クルマの追加をトースト表示で通知する。
+	 * @param carName String型、トースト中に表示するクルマの名前
+	 */
+	protected void showToastmsg(String carName) {
+		// トースト表示の組み立てに使うString変数の宣言
+		String line1, line2, line3;
+
+		line1 = carName + getString(R.string.toastmsg_addcar1);
+		line2 = getString(R.string.toastmsg_addcar2);
+		line3 = getString(R.string.toastmsg_addcar3);
+
+		// トーストを作成する
+		Toast.makeText(this, line1 + "\n" + line2 + "\n" + line3, Toast.LENGTH_LONG).show();
 	}
 
 }
