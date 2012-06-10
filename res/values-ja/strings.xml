@@ -33,7 +33,13 @@
     <string name="label_spinner_price">価格の単位</string>
     <string name="label_spinner_distance">距離の単位</string>
     <string name="label_spinner_volume">体積の単位</string>
-    
-    
-
+    <string name="ctxitem_show_mileage">燃費記録を表示</string>
+    <string name="ctxitem_add_mileage">燃費記録を追加....</string>
+    <string name="ctxitem_set_default_car">デフォルトのクルマに変更</string>
+    <string name="ctxitem_edit_car_preference">クルマの設定を変更</string>
+    <string name="ctxitem_delete_car">クルマを削除</string>
+    <string name="ctxmenutitle_carlist">クルマリスト メニュー</string>
+    <string name="toastmsg_addcar1"> を追加しました。</string>
+    <string name="toastmsg_addcar2">別の車を追加できます。</string>
+    <string name="toastmsg_addcar3">追加を終了するには、「戻る」キーを押します。</string>
 </resources>
