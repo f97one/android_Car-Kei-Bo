@@ -300,7 +300,7 @@ public class CarList extends Activity implements OnItemClickListener,
 		Log.d("onItemLongClick", "id = " + String.valueOf(id));
 
 		// コンテキストメニューを表示する
-		openContextMenu(v);
+		//openContextMenu(v);
 
 		return false;
 		//return true;
@@ -338,9 +338,46 @@ public class CarList extends Activity implements OnItemClickListener,
 	public void onCreateContextMenu(ContextMenu menu, View v, ContextMenuInfo menuInfo) {
 		super.onCreateContextMenu(menu, v, menuInfo);
 
+		// LocCatに流して挙動を観察
+		Log.d("onCreateContextMenu", "ContextMenu created, v = " + v.toString());
+
 		// XMLの記述に従い、コンテキストメニューを展開する
 		getMenuInflater().inflate(R.menu.context_carlist, menu);
 		menu.setHeaderTitle(getString(R.string.ctxmenutitle_carlist));
 	}
 
+	/**
+	 * 燃費記録リストを表示するActivityを呼び出す。
+	 */
+	protected void showMileageList() {
+
+	}
+
+	/**
+	 * 燃費記録を追加するActivityを呼び出す。
+	 */
+	protected void addMileage() {
+
+	}
+
+	/**
+	 * 選択したクルマをデフォルトに切り替える
+	 */
+	protected void changeAsDefault() {
+
+	}
+
+	/**
+	 * クルマの設定を変更する。
+	 */
+	protected void editCarPreference() {
+
+	}
+
+	/**
+	 * クルマを削除する。
+	 */
+	protected void deleteCar() {
+
+	}
 }
