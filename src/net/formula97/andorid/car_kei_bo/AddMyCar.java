@@ -218,7 +218,7 @@ public class AddMyCar extends Activity implements OnItemSelectedListener {
 		// トースト表示の組み立てに使うString変数の宣言
 		String line1, line2, line3;
 
-		line1 = carName + getString(R.string.toastmsg_addcar1);
+		line1 = carName + " " + getString(R.string.toastmsg_addcar1);
 		line2 = getString(R.string.toastmsg_addcar2);
 		line3 = getString(R.string.toastmsg_addcar3);
 
