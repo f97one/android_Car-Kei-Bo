@@ -32,6 +32,7 @@ import android.widget.TextView;
  */
 public class CarList extends Activity implements OnItemClickListener,
 		OnItemLongClickListener, OnClickListener {
+//		OnClickListener {
 
 	private DbManager dbman = new DbManager(this);
 	public static SQLiteDatabase db;
@@ -267,7 +268,7 @@ public class CarList extends Activity implements OnItemClickListener,
 	 * @param position int型、タッチされた要素の番号
 	 * @param id long型、アイテムID
 	 */
-	//@Override
+	@Override
 	public void onItemClick(AdapterView<?> parent, View v, int position, long id) {
 		//super.onItemClick(parent, v, position, id);
 
@@ -290,7 +291,7 @@ public class CarList extends Activity implements OnItemClickListener,
 	 * @param id long型、アイテムID
 	 * @return
 	 */
-	//@Override
+	@Override
 	public boolean onItemLongClick(AdapterView<?> parent, View v, int position, long id) {
 		// とりあえず、LogCatに流して挙動を観察
 		Log.d("onItemLongClick", "ListView item long pressed.");
@@ -306,6 +307,7 @@ public class CarList extends Activity implements OnItemClickListener,
 		//return true;
 	}
 
+	@Override
 	public void onClick(View v) {
 		// TODO デフォルトカーについての燃費記録画面を表示する
 		// とりあえず、LogCatに流して挙動を観察
