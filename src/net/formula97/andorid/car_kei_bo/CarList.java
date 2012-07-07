@@ -21,6 +21,7 @@ import android.widget.ListView;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.AdapterView.OnItemLongClickListener;
+import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.SimpleCursorAdapter;
 import android.widget.TableLayout;
 import android.widget.TextView;
@@ -30,9 +31,7 @@ import android.widget.TextView;
  * @author kazutoshi
  *
  */
-public class CarList extends Activity implements OnItemClickListener,
-		OnItemLongClickListener, OnClickListener {
-//		OnClickListener {
+public class CarList extends Activity implements OnClickListener {
 
 	private DbManager dbman = new DbManager(this);
 	public static SQLiteDatabase db;
@@ -70,9 +69,6 @@ public class CarList extends Activity implements OnItemClickListener,
         tv_label_value_defaultcar = (TextView)findViewById(R.id.tv_label_value_defaultcar);
         button_addFuelRecord = (Button)findViewById(R.id.button_addFuelRecord);
         listView_CarList = (ListView)findViewById(R.id.listView_CarList);
-
-        // コンテキストメニュー表示を車クルマリストに対して登録をする
-        registerForContextMenu(listView_CarList);
 	}
 
 	/**
@@ -219,92 +215,53 @@ public class CarList extends Activity implements OnItemClickListener,
 	        SimpleCursorAdapter sca = new SimpleCursorAdapter(getApplicationContext(), R.layout.listviewelement_carlist, cCarList, from, to);
 	        listView_CarList.setAdapter(sca);
 
+	        // コンテキストメニュー表示を車クルマリストに対して登録をする
+	        registerForContextMenu(listView_CarList);
+
 	        // イベントリスナーのセット
-	        listView_CarList.setOnItemLongClickListener(this);
-	        listView_CarList.setOnItemClickListener(this);
+	        //listView_CarList.setOnItemLongClickListener(this);
+	        //listView_CarList.setOnItemClickListener(this);
+	        //listView_CarList.setOnItemSelectedListener(this);
+
 	        button_addFuelRecord.setOnClickListener(this);
 
-	        listView_CarList.setFocusable(false);
-	        listView_CarList.setFocusableInTouchMode(false);
+//	        listView_CarList.setFocusable(false);
+//	        listView_CarList.setFocusableInTouchMode(false);
 
 	        // デフォルトカーの名前を取得してセット
 	        tv_label_value_defaultcar.setText(dbman.getDefaultCarName(db));
 
-//	        listView_CarList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-//
-//	        	public void onItemClick(AdapterView<?> parent, View v, int position,
-//						long id) {
-//	        		// とりあえず、LogCatに流して挙動を観察
-//	        		Log.d("onItemClick", "ListView item pressed.");
-//	        		Log.d("onItemClick", "parent = " + parent.toString());
-//	        		Log.d("onItemClick", "v = " + v.toString());
-//	        		Log.d("onItemClick", "position = " + String.valueOf(position));
-//	        		Log.d("onItemClick", "id = " + String.valueOf(id));
-//				}
-//	        });
-//
-//	        listView_CarList.setOnItemLongClickListener(new OnItemLongClickListener() {
-//
-//				public boolean onItemLongClick(AdapterView<?> parent, View v,
-//						int position, long id) {
-//					// とりあえず、LogCatに流して挙動を観察
-//					Log.d("onItemLongClick", "ListView item long pressed.");
-//					Log.d("onItemLongClick", "parent = " + parent.toString());
-//					Log.d("onItemLongClick", "v = " + v.toString());
-//					Log.d("onItemLongClick", "position = " + String.valueOf(position));
-//					Log.d("onItemLongClick", "id = " + String.valueOf(id));
-//
-//					return false;
-//				}
-//			});
+	        // イベントリスナ（onItemClick）
+	        listView_CarList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+
+	        	public void onItemClick(AdapterView<?> parent, View v, int position,
+						long id) {
+	        		// とりあえず、LogCatに流して挙動を観察
+	        		Log.d("onItemClick", "ListView item pressed.");
+	        		Log.d("onItemClick", "parent = " + parent.toString());
+	        		Log.d("onItemClick", "v = " + v.toString());
+	        		Log.d("onItemClick", "position = " + String.valueOf(position));
+	        		Log.d("onItemClick", "id = " + String.valueOf(id));
+				}
+	        });
+
+	        // イベントリスナ（onItemLongClick）
+	        listView_CarList.setOnItemLongClickListener(new OnItemLongClickListener() {
+
+				public boolean onItemLongClick(AdapterView<?> parent, View v,
+						int position, long id) {
+					// とりあえず、LogCatに流して挙動を観察
+					Log.d("onItemLongClick", "ListView item long pressed.");
+					Log.d("onItemLongClick", "parent = " + parent.toString());
+					Log.d("onItemLongClick", "v = " + v.toString());
+					Log.d("onItemLongClick", "position = " + String.valueOf(position));
+					Log.d("onItemLongClick", "id = " + String.valueOf(id));
+
+					return false;
+				}
+			});
 
         }
-	}
-
-	/**
-	 * ListViewのアイテムをタッチしたときの処理、そのクルマの燃費記録を表示するActivityを呼ぶ。
-	 * @param parent AdapterView<>型、リストアダプタの親要素
-	 * @param v View型、ビューの要素
-	 * @param position int型、タッチされた要素の番号
-	 * @param id long型、アイテムID
-	 */
-	//@Override
-	public void onItemClick(AdapterView<?> parent, View v, int position, long id) {
-		//super.onItemClick(parent, v, position, id);
-
-		// とりあえず、LogCatに流して挙動を観察
-		Log.d("onItemClick", "ListView item pressed.");
-		Log.d("onItemClick", "parent = " + parent.toString());
-		Log.d("onItemClick", "v = " + v.toString());
-		Log.d("onItemClick", "position = " + String.valueOf(position));
-		Log.d("onItemClick", "id = " + String.valueOf(id));
-
-		//openContextMenu(v);
-	}
-
-	/**
-	 * ListViewのアイテムを長押ししたときの処理
-	 *   そのクルマに関するコンテキストメニューを表示し、それぞれの処理に振り分ける。
-	 * @param parent AdapterView<>型、リストアダプタの親要素
-	 * @param v View型、ビューの要素
-	 * @param position int型、タッチされた要素の番号
-	 * @param id long型、アイテムID
-	 * @return
-	 */
-	//@Override
-	public boolean onItemLongClick(AdapterView<?> parent, View v, int position, long id) {
-		// とりあえず、LogCatに流して挙動を観察
-		Log.d("onItemLongClick", "ListView item long pressed.");
-		Log.d("onItemLongClick", "parent = " + parent.toString());
-		Log.d("onItemLongClick", "v = " + v.toString());
-		Log.d("onItemLongClick", "position = " + String.valueOf(position));
-		Log.d("onItemLongClick", "id = " + String.valueOf(id));
-
-		// コンテキストメニューを表示する
-		//openContextMenu(v);
-
-		return false;
-		//return true;
 	}
 
 	//@Override
@@ -319,7 +276,28 @@ public class CarList extends Activity implements OnItemClickListener,
 	@Override
 	public boolean onContextItemSelected(MenuItem item) {
 		// TODO 選択されたメニューのリソースIDに応じた処理を記述する
-		return super.onContextItemSelected(item);
+
+		switch(item.getItemId()) {
+		case R.id.ctxitem_add_mileage:
+			addMileage();
+			break;
+		case R.id.ctxitem_delete_car:
+			deleteCar();
+			break;
+		case R.id.ctxitem_edit_car_preference:
+			editCarPreference();
+			break;
+		case R.id.ctxitem_set_default_car:
+			changeAsDefault();
+			break;
+		case R.id.ctxitem_show_mileage:
+			showMileageList();
+			break;
+		default:
+			return super.onContextItemSelected(item);
+		}
+
+		return true;
 	}
 
 	@Override
