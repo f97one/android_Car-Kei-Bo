@@ -16,12 +16,10 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.widget.AdapterView.AdapterContextMenuInfo;
 import android.widget.Button;
 import android.widget.ListView;
 import android.widget.AdapterView;
-import android.widget.AdapterView.OnItemClickListener;
-import android.widget.AdapterView.OnItemLongClickListener;
-import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.SimpleCursorAdapter;
 import android.widget.TableLayout;
 import android.widget.TextView;
@@ -29,7 +27,6 @@ import android.widget.TextView;
 /**
  * クルマリストを表示するActivity
  * @author kazutoshi
- *
  */
 public class CarList extends Activity implements OnClickListener {
 
@@ -37,6 +34,7 @@ public class CarList extends Activity implements OnClickListener {
 	public static SQLiteDatabase db;
 
 	Cursor cCarList = null;
+	Cursor selectedRow = null;
 
 	// ウィジェットを扱うための定義
     TextView textView_CarListTitleContainer;
@@ -44,6 +42,14 @@ public class CarList extends Activity implements OnClickListener {
     TableLayout TableLayout1;
     ListView listView_CarList;
     Button button_addFuelRecord;
+
+    // DBから取得したデフォルト値を格納する変数
+    private int defaultCarID;
+    private String defaultCarName;
+
+    // ListViewのカレント値を格納する変数
+    private int currentCarID;
+    private String currentCarName;
 
     /**
 	 * 明示的コンストラクタ
@@ -142,15 +148,7 @@ public class CarList extends Activity implements OnClickListener {
 		super.onPause();
 
 		// CursorとDBが閉じていなければそれぞれを閉じる
-		if (db.isOpen()) {
-			if (dbman.hasCarRecords(db)) {
-				if (cCarList.isClosed() != true) {
-	        		cCarList.close();
-				}
-			}
-			Log.d("CarList#onPause()","SQLite database is closing.");
-			dbman.close();
-		}
+		closeDbAndCursorIfOpen();
 	}
 
 	/**
@@ -163,15 +161,7 @@ public class CarList extends Activity implements OnClickListener {
 		super.onDestroy();
 
 		// CursorとDBが閉じていなければそれぞれを閉じる
-		if (db.isOpen()) {
-			if (dbman.hasCarRecords(db)) {
-				if (cCarList.isClosed() != true) {
-	        		cCarList.close();
-				}
-			}
-			Log.d("CarList#onDestroy()","SQLite database is closing.");
-			dbman.close();
-		}
+		closeDbAndCursorIfOpen();
 	}
 
 	/**
@@ -219,17 +209,14 @@ public class CarList extends Activity implements OnClickListener {
 	        registerForContextMenu(listView_CarList);
 
 	        // イベントリスナーのセット
-	        //listView_CarList.setOnItemLongClickListener(this);
-	        //listView_CarList.setOnItemClickListener(this);
-	        //listView_CarList.setOnItemSelectedListener(this);
-
-	        button_addFuelRecord.setOnClickListener(this);
-
-//	        listView_CarList.setFocusable(false);
-//	        listView_CarList.setFocusableInTouchMode(false);
+	        button_addFuelRecord.setOnClickListener(this);	// ボタン
 
 	        // デフォルトカーの名前を取得してセット
 	        tv_label_value_defaultcar.setText(dbman.getDefaultCarName(db));
+
+	        // 別画面呼び出し用に、デフォルト値を格納する
+	        defaultCarID = dbman.getDefaultCarId(db);
+	        defaultCarName = dbman.getDefaultCarName(db);
 
 	        // イベントリスナ（onItemClick）
 	        listView_CarList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -242,24 +229,27 @@ public class CarList extends Activity implements OnClickListener {
 	        		Log.d("onItemClick", "v = " + v.toString());
 	        		Log.d("onItemClick", "position = " + String.valueOf(position));
 	        		Log.d("onItemClick", "id = " + String.valueOf(id));
+
+	        		// クルマの燃費記録追加画面を呼び出す処理を書く
+	        		showMileageList(defaultCarID, defaultCarName);
 				}
 	        });
 
-	        // イベントリスナ（onItemLongClick）
-	        listView_CarList.setOnItemLongClickListener(new OnItemLongClickListener() {
-
-				public boolean onItemLongClick(AdapterView<?> parent, View v,
-						int position, long id) {
-					// とりあえず、LogCatに流して挙動を観察
-					Log.d("onItemLongClick", "ListView item long pressed.");
-					Log.d("onItemLongClick", "parent = " + parent.toString());
-					Log.d("onItemLongClick", "v = " + v.toString());
-					Log.d("onItemLongClick", "position = " + String.valueOf(position));
-					Log.d("onItemLongClick", "id = " + String.valueOf(id));
-
-					return false;
-				}
-			});
+//	        // イベントリスナ（onItemLongClick）
+//	        listView_CarList.setOnItemLongClickListener(new OnItemLongClickListener() {
+//
+//				public boolean onItemLongClick(AdapterView<?> parent, View v,
+//						int position, long id) {
+//					// とりあえず、LogCatに流して挙動を観察
+//					Log.d("onItemLongClick", "ListView item long pressed.");
+//					Log.d("onItemLongClick", "parent = " + parent.toString());
+//					Log.d("onItemLongClick", "v = " + v.toString());
+//					Log.d("onItemLongClick", "position = " + String.valueOf(position));
+//					Log.d("onItemLongClick", "id = " + String.valueOf(id));
+//
+//					return false;
+//				}
+//			});
 
         }
 	}
@@ -279,19 +269,19 @@ public class CarList extends Activity implements OnClickListener {
 
 		switch(item.getItemId()) {
 		case R.id.ctxitem_add_mileage:
-			addMileage();
+			addMileage(currentCarID, currentCarName);
 			break;
 		case R.id.ctxitem_delete_car:
-			deleteCar();
+			deleteCar(currentCarID, currentCarName);
 			break;
 		case R.id.ctxitem_edit_car_preference:
-			editCarPreference();
+			editCarPreference(currentCarID, currentCarName);
 			break;
 		case R.id.ctxitem_set_default_car:
-			changeAsDefault();
+			changeAsDefault(currentCarID, currentCarName);
 			break;
 		case R.id.ctxitem_show_mileage:
-			showMileageList();
+			showMileageList(currentCarID, currentCarName);
 			break;
 		default:
 			return super.onContextItemSelected(item);
@@ -318,46 +308,90 @@ public class CarList extends Activity implements OnClickListener {
 	public void onCreateContextMenu(ContextMenu menu, View v, ContextMenuInfo menuInfo) {
 		super.onCreateContextMenu(menu, v, menuInfo);
 
+		// 呼び出されたListViewの要素位置を取得する
+		AdapterContextMenuInfo acmi = (AdapterContextMenuInfo)menuInfo;
+		selectedRow = (Cursor)listView_CarList.getItemAtPosition(acmi.position);
+
+		// カレント値を変数に格納
+		currentCarID = selectedRow.getInt(selectedRow.getColumnIndex("_id"));
+		currentCarName = selectedRow.getString(selectedRow.getColumnIndex("CAR_NAME"));
+
 		// LocCatに流して挙動を観察
-		Log.d("onCreateContextMenu", "ContextMenu created, v = " + v.toString());
+		Log.d("onCreateContextMenu", "ContextMenu created, v = " + String.valueOf(v.getId()));
+		Log.d("onCreateContextMenu", "row number = " + currentCarID);
+		Log.d("onCreateContextMenu", "Car Name = " + currentCarName);
 
 		// XMLの記述に従い、コンテキストメニューを展開する
 		getMenuInflater().inflate(R.menu.context_carlist, menu);
 		menu.setHeaderTitle(getString(R.string.ctxmenutitle_carlist));
+
 	}
 
 	/**
 	 * 燃費記録リストを表示するActivityを呼び出す。
+	 * Activity呼び出しがメインなので、戻り値はvoidとした。
+	 * @param carId int型、燃費リスト画面に引き渡すクルマのCAR_ID値。
+	 * @param carName String型、燃費リスト画面に引き渡すクルマのCAR_NAME値。
 	 */
-	protected void showMileageList() {
+	protected void showMileageList(int carId, String carName) {
+		// 画面遷移の前に、DBとCursorを閉じる。
+		closeDbAndCursorIfOpen();
+
+		// 取得したCAR_IDとCAR_NAMEを引数にセットしてstartActivity
+		Intent i = new Intent(getApplicationContext(), MileageList.class);
+		i.putExtra("CAR_ID", carId);
+		i.putExtra("CAR_NAME", carName);
+		startActivity(i);
 
 	}
 
 	/**
 	 * 燃費記録を追加するActivityを呼び出す。
 	 */
-	protected void addMileage() {
+	protected void addMileage(int carId, String carName) {
+		// 画面遷移の前に、DBとCursorを閉じる。
+		closeDbAndCursorIfOpen();
 
 	}
 
 	/**
 	 * 選択したクルマをデフォルトに切り替える
 	 */
-	protected void changeAsDefault() {
+	protected void changeAsDefault(int carId, String carName) {
 
 	}
 
 	/**
 	 * クルマの設定を変更する。
 	 */
-	protected void editCarPreference() {
+	protected void editCarPreference(int carId, String carName) {
 
 	}
 
 	/**
 	 * クルマを削除する。
 	 */
-	protected void deleteCar() {
+	protected void deleteCar(int carId, String carName) {
 
+	}
+
+	/**
+	 * CursorとDBが開いていたら閉じる。
+	 * 引数なし、グローバル変数を使用。エレガントではないのはわかってはいるが。
+	 */
+	protected void closeDbAndCursorIfOpen() {
+		if (db.isOpen()) {
+			if (dbman.hasCarRecords(db)) {
+				if (cCarList.isClosed() != true) {
+	        		cCarList.close();
+				}
+			}
+			Log.d(getApplication().toString(),"SQLite database is closing.");
+			dbman.close();
+		}
+
+		if (selectedRow.isClosed() != true) {
+			selectedRow.close();
+		}
 	}
 }
