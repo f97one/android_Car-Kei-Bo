@@ -260,6 +260,7 @@ public class CarList extends Activity implements OnClickListener {
 		Log.d("onClick", "v = " + v.toString());
 
 		// 燃費記録追加画面を呼び出す
+		addMileage(defaultCarID, defaultCarName);
 	}
 
 	/**
