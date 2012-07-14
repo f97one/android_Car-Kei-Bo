@@ -8,6 +8,7 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
+import android.util.Log;
 import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -60,10 +61,14 @@ public class MileageList extends Activity {
 		lv_mileagelist = (ListView)findViewById(R.id.lv_mileagelist);
 
 		// 渡された引数を解析してグローバル変数に格納
-		Intent i = new Intent();
+		Intent i = getIntent();
 		setCAR_ID(i.getIntExtra("CAR_ID", 0));
 		setCAR_NAME(i.getStringExtra("CAR_NAME"));
 
+		Log.d(getResources().toString(), "CAR_ID : " + String.valueOf(getCAR_ID()));
+		Log.d(getResources().toString(), "CAR_NAME : " + getCAR_NAME());
+
+		tv_element_CarName2.setText(getCAR_NAME());
 	}
 
 	/* (非 Javadoc)
