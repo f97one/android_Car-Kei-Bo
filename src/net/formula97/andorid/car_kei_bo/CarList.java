@@ -211,12 +211,12 @@ public class CarList extends Activity implements OnClickListener {
 	        // イベントリスナーのセット
 	        button_addFuelRecord.setOnClickListener(this);	// ボタン
 
-	        // デフォルトカーの名前を取得してセット
-	        tv_label_value_defaultcar.setText(dbman.getDefaultCarName(db));
-
 	        // 別画面呼び出し用に、デフォルト値を格納する
 	        defaultCarID = dbman.getDefaultCarId(db);
 	        defaultCarName = dbman.getDefaultCarName(db);
+
+	        // デフォルトカーの名前を取得してセット
+	        tv_label_value_defaultcar.setText(defaultCarName);
 
 	        // イベントリスナ（onItemClick）
 	        listView_CarList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -230,26 +230,19 @@ public class CarList extends Activity implements OnClickListener {
 	        		Log.d("onItemClick", "position = " + String.valueOf(position));
 	        		Log.d("onItemClick", "id = " + String.valueOf(id));
 
-	        		// クルマの燃費記録追加画面を呼び出す処理を書く
-	        		showMileageList(defaultCarID, defaultCarName);
+	        		// 呼び出されたListViewの要素位置を取得する
+	        		selectedRow = (Cursor)listView_CarList.getItemAtPosition(position);
+
+	        		// カレント値を変数に格納
+	        		currentCarID = selectedRow.getInt(selectedRow.getColumnIndex("_id"));
+	        		currentCarName = selectedRow.getString(selectedRow.getColumnIndex("CAR_NAME"));
+
+	        		selectedRow.close();
+
+	        		// クルマの燃費記録一覧画面を呼び出す
+	        		showMileageList(currentCarID, currentCarName);
 				}
 	        });
-
-//	        // イベントリスナ（onItemLongClick）
-//	        listView_CarList.setOnItemLongClickListener(new OnItemLongClickListener() {
-//
-//				public boolean onItemLongClick(AdapterView<?> parent, View v,
-//						int position, long id) {
-//					// とりあえず、LogCatに流して挙動を観察
-//					Log.d("onItemLongClick", "ListView item long pressed.");
-//					Log.d("onItemLongClick", "parent = " + parent.toString());
-//					Log.d("onItemLongClick", "v = " + v.toString());
-//					Log.d("onItemLongClick", "position = " + String.valueOf(position));
-//					Log.d("onItemLongClick", "id = " + String.valueOf(id));
-//
-//					return false;
-//				}
-//			});
 
         }
 	}
@@ -269,18 +262,23 @@ public class CarList extends Activity implements OnClickListener {
 
 		switch(item.getItemId()) {
 		case R.id.ctxitem_add_mileage:
+			// 燃費記録追加画面を呼び出す
 			addMileage(currentCarID, currentCarName);
 			break;
 		case R.id.ctxitem_delete_car:
+			// クルマを削除する
 			deleteCar(currentCarID, currentCarName);
 			break;
 		case R.id.ctxitem_edit_car_preference:
+			// クルマの設定を変更する
 			editCarPreference(currentCarID, currentCarName);
 			break;
 		case R.id.ctxitem_set_default_car:
+			// デフォルトカーにする
 			changeAsDefault(currentCarID, currentCarName);
 			break;
 		case R.id.ctxitem_show_mileage:
+			// 燃費記録一覧を表示
 			showMileageList(currentCarID, currentCarName);
 			break;
 		default:
@@ -290,10 +288,21 @@ public class CarList extends Activity implements OnClickListener {
 		return true;
 	}
 
+	/**
+	 * コンテキストメニューを閉じたときの処理。
+	 *   onCreateContextMenu()の最後でCursor selectedRowを閉じているが、
+	 *   その副作用で画面表示されているクルマリストが消失してしまうため、
+	 *   描画処理のあるonResume()をコールしている。
+	 * @param menu Menu型、閉じられようとしているMenu
+	 * @see android.app.Activity#onContextMenuClosed(Menu)
+	 */
 	@Override
 	public void onContextMenuClosed(Menu menu) {
 		// TODO 自動生成されたメソッド・スタブ
 		super.onContextMenuClosed(menu);
+
+		// クルマリストを描画しなおす。
+		onResume();
 	}
 
 	/**
@@ -325,6 +334,9 @@ public class CarList extends Activity implements OnClickListener {
 		getMenuInflater().inflate(R.menu.context_carlist, menu);
 		menu.setHeaderTitle(getString(R.string.ctxmenutitle_carlist));
 
+		// Cursorを閉じる。
+		// ※副作用で、現在表示されているクルマリストが消える。
+		selectedRow.close();
 	}
 
 	/**
@@ -336,6 +348,9 @@ public class CarList extends Activity implements OnClickListener {
 	protected void showMileageList(int carId, String carName) {
 		// 画面遷移の前に、DBとCursorを閉じる。
 		closeDbAndCursorIfOpen();
+
+		Log.d(getResources().toString(), "CAR_ID : " + String.valueOf(carId));
+		Log.d(getResources().toString(), "CAR_NAME : " + carName);
 
 		// 取得したCAR_IDとCAR_NAMEを引数にセットしてstartActivity
 		Intent i = new Intent(getApplicationContext(), MileageList.class);
@@ -390,8 +405,8 @@ public class CarList extends Activity implements OnClickListener {
 			dbman.close();
 		}
 
-		if (selectedRow.isClosed() != true) {
-			selectedRow.close();
-		}
+//		if (selectedRow.isClosed() != true) {
+//			selectedRow.close();
+//		}
 	}
 }
