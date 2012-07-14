@@ -1,154 +1,151 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="vertical" android:scrollbars="vertical" android:isScrollContainer="true">
+	android:layout_width="match_parent"
+	android:layout_height="match_parent"
+	android:isScrollContainer="true"
+	android:orientation="vertical"
+	android:scrollbars="vertical" >
 
-    <TableLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content">
-
-        <TableRow
-            android:id="@+id/tableRow_1"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content" >
+	<TableLayout
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content" >
 
-            <TextView
-                android:id="@+id/textView1"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/label_carName" />
+		<TableRow
+			android:id="@+id/tableRow_1"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content" >
 
-            <Spinner
-                android:id="@+id/spinner_carName"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_weight="1" />
-        </TableRow>
-
-        <TableRow
-            android:id="@+id/tableRow_2"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content" >
+			<TextView
+				android:id="@+id/textView1"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:text="@string/label_carName" />
 
-            <TextView
-                android:id="@+id/textView2"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/label_amountOfOil" />
+			<Spinner
+				android:id="@+id/spinner_carName"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:layout_weight="1" />
+		</TableRow>
 
-            <EditText
-                android:id="@+id/editText_amountOfOil"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:ems="10"
-                android:inputType="numberDecimal"
-                android:singleLine="true"/>
-
-            <TextView
-                android:id="@+id/textView_oilUnit"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/label_UNIT_fuel_litter" />
+		<TableRow
+			android:id="@+id/tableRow_2"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content" >
 
-        </TableRow>
-
-        <TableRow
-            android:id="@+id/tableRow_3"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content" >
+			<TextView
+				android:id="@+id/textView2"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:text="@string/label_amountOfOil" />
 
-            <TextView
-                android:id="@+id/textView4"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/label_odometer" />
+			<EditText
+				android:id="@+id/editText_amountOfOil"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:layout_weight="1"
+				android:ems="10"
+				android:inputType="numberDecimal"
+				android:singleLine="true" />
 
-            <EditText
-                android:id="@+id/EditText_odometer"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:ems="10"
-                android:inputType="numberDecimal" >
-            </EditText>
-
-            <TextView
-                android:id="@+id/textView_distanceUnit"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/label_UNIT_distance_kirometer" />
+			<TextView
+				android:id="@+id/textView_oilUnit"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:text="@string/label_UNIT_fuel_litter" />
+		</TableRow>
 
-        </TableRow>
-
-        <TableRow
-            android:id="@+id/tableRow_4"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content" >
+		<TableRow
+			android:id="@+id/tableRow_3"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content" >
 
-            <TextView
-                android:id="@+id/textView6"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/label_unitPrice" />
+			<TextView
+				android:id="@+id/textView4"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:text="@string/label_odometer" />
 
-            <EditText
-                android:id="@+id/editText_unitPrice"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:ems="10"
-                android:inputType="numberDecimal" />
-
-            <TextView
-                android:id="@+id/textView_moneyUnit"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/label_UNIT_money_jpy" />
+			<EditText
+				android:id="@+id/EditText_odometer"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:layout_weight="1"
+				android:ems="10"
+				android:inputType="numberDecimal" >
+			</EditText>
 
-        </TableRow>
-
-        <TableRow
-            android:id="@+id/tableRow_5"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content" >
+			<TextView
+				android:id="@+id/textView_distanceUnit"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:text="@string/label_UNIT_distance_kirometer" />
+		</TableRow>
 
-            <TextView
-                android:id="@+id/textView8"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/label_dateOfRefuel" />
+		<TableRow
+			android:id="@+id/tableRow_4"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content" >
 
-            <EditText
-                android:id="@+id/editText_dateOfRefuel"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:ems="10"
-                android:inputType="date" />
+			<TextView
+				android:id="@+id/textView6"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:text="@string/label_unitPrice" />
 
-        </TableRow>
+			<EditText
+				android:id="@+id/editText_unitPrice"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:layout_weight="1"
+				android:ems="10"
+				android:inputType="numberDecimal" />
 
-    </TableLayout>
+			<TextView
+				android:id="@+id/textView_moneyUnit"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:text="@string/label_UNIT_money_jpy" />
+		</TableRow>
 
-    <LinearLayout
-        android:id="@+id/linearLayout6"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content" android:padding="5dp">
-
-        <Button
-            android:id="@+id/button_addRefuelRecord"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/label_btn_addRefuelRecord" />
-
-        <Button
-            android:id="@+id/button_cancelAddRefuelRecord"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/label_btn_cancel" />
+		<TableRow
+			android:id="@+id/tableRow_5"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content" >
 
-    </LinearLayout>
+			<TextView
+				android:id="@+id/textView8"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:text="@string/label_dateOfRefuel" />
+
+			<EditText
+				android:id="@+id/editText_dateOfRefuel"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:layout_weight="1"
+				android:ems="10"
+				android:inputType="date" />
+		</TableRow>
+	</TableLayout>
+
+	<LinearLayout
+		android:id="@+id/linearLayout6"
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:padding="5dp" >
+
+		<Button
+			android:id="@+id/button_addRefuelRecord"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:text="@string/label_btn_addRefuelRecord" />
+
+		<Button
+			android:id="@+id/button_cancelAddRefuelRecord"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:text="@string/label_btn_cancel" />
+	</LinearLayout>
 
 </LinearLayout>
