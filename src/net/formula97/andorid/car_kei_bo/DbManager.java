@@ -20,6 +20,14 @@ import android.util.Log;
  *    # でないと「Cursor閉じろやｺﾞﾙｧ!!」とか怒られる。が、動作上は問題はなさそうだが....
  *
  */
+/**
+ * @author kazutoshi
+ *
+ */
+/**
+ * @author kazutoshi
+ *
+ */
 public class DbManager extends SQLiteOpenHelper {
 
 	private static final String DATABASE_NAME = "fuel_mileage.db";
@@ -198,13 +206,14 @@ public class DbManager extends SQLiteOpenHelper {
 
 		return q;
 	}
+
 	/**
 	 * 入力されたクルマのCAR_IDから、CAR_NAMEを返す。
 	 * @param db SQLiteDatabase型、操作するDBインスタンス
 	 * @param carId int型、チェックするクルマのcarId
 	 * @return String型、チェックする車のcarIdに対応する名前
 	 */
-	protected String getCarName(SQLiteDatabase db, int carId) {
+	protected String findCarNameById(SQLiteDatabase db, int carId) {
 		// 戻り値を格納する変数
 		String sRet;
 
@@ -512,4 +521,151 @@ public class DbManager extends SQLiteOpenHelper {
 		// onCreate()で作成しなおす
 		onCreate(db);
 	}
+
+	/**
+	 * 燃費追加等でスピナーにセットするデータを取得する。
+	 * @param db SQLiteDatabase型、操作するDBインスタンス
+	 * @return Cursor型、Cursorオブジェクトをそのまま返すので、Cursor#close()は行わない。
+	 */
+	protected Cursor getCarNameList(SQLiteDatabase db) {
+		// クエリを格納する変数の定義
+		Cursor q;
+		String[] columns = {"CAR_ID AS _id", "CAR_NAME"};
+		//String where = "CAR_ID = ?";
+		//String[] args = {String.valueOf(1)};
+		//String groupBy = ""
+		//String having = ""
+		String orderBy = "CAR_ID";
+
+		q = db.query(CAR_MASTER, columns, null, null, null, null, orderBy);
+		q.moveToFirst();
+
+		return q;
+	}
+
+	/**
+	 * CAR_IDのクルマに対応する体積の単位を返す。
+	 * @param db SQLiteDatabase型、検索するDBインスタンス
+	 * @param carId int型、検索するクルマのCAR_ID
+	 * @return String型、その車の体積の単位
+	 */
+	protected String getVolumeUnitById(SQLiteDatabase db, int carId) {
+		Cursor q;
+
+		String[] columns = {"VOLUMEUNIT"};
+		String where = "CAR_ID = ?";
+		String[] args = {String.valueOf(carId)};
+		//String groupBy = ""
+		//String having = ""
+		//String orderBy = "CAR_ID";
+
+		q = db.query(CAR_MASTER, columns, where, args, null, null, null);
+		q.moveToFirst();
+
+		String unit = q.getString(0);
+		q.close();
+
+		return unit;
+	}
+
+	/**
+	 * CAR_IDのクルマに対応する距離の単位を返す。
+	 * @param db SQLiteDatabase型、検索するDBインスタンス
+	 * @param carId int型、検索するクルマのCAR_ID
+	 * @return String型、その車の距離の単位
+	 */
+	protected String getDistanceUnitById(SQLiteDatabase db, int carId) {
+		Cursor q;
+
+		String[] columns = {"DISTANCEUNIT"};
+		String where = "CAR_ID = ?";
+		String[] args = {String.valueOf(carId)};
+		//String groupBy = ""
+		//String having = ""
+		//String orderBy = "CAR_ID";
+
+		q = db.query(CAR_MASTER, columns, where, args, null, null, null);
+		q.moveToFirst();
+
+		String unit = q.getString(0);
+		q.close();
+
+		return unit;
+	}
+
+	/**
+	 * CAR_IDのクルマに対応する価格の単位を返す。
+	 * @param db SQLiteDatabase型、検索するDBインスタンス
+	 * @param carId int型、検索するクルマのCAR_ID
+	 * @return String型、その車の価格の単位
+	 */
+	protected String getPriceUnitById(SQLiteDatabase db, int carId) {
+		Cursor q;
+
+		String[] columns = {"PRICEUNIT"};
+		String where = "CAR_ID = ?";
+		String[] args = {String.valueOf(carId)};
+		//String groupBy = ""
+		//String having = ""
+		//String orderBy = "CAR_ID";
+
+		q = db.query(CAR_MASTER, columns, where, args, null, null, null);
+		q.moveToFirst();
+
+		String unit = q.getString(0);
+		q.close();
+
+		return unit;
+	}
+
+	/**
+	 * CAR_IDのクルマに対応する燃費の表示ラベルを返す。
+	 * @param db SQLiteDatabase型、検索するDBインスタンス
+	 * @param carId int型、検索するクルマのCAR_ID
+	 * @return String型、その車の燃費の表示ラベル
+	 */
+	protected String getFuelmileageLabelById(SQLiteDatabase db, int carId) {
+		Cursor q;
+
+		String[] columns = {"FUELMILEAGE_LABEL"};
+		String where = "CAR_ID = ?";
+		String[] args = {String.valueOf(carId)};
+		//String groupBy = ""
+		//String having = ""
+		//String orderBy = "CAR_ID";
+
+		q = db.query(CAR_MASTER, columns, where, args, null, null, null);
+		q.moveToFirst();
+
+		String unit = q.getString(0);
+		q.close();
+
+		return unit;
+	}
+
+	/**
+	 * CAR_IDのクルマに対応するランニングコストの表示ラベルを返す。
+	 * @param db SQLiteDatabase型、検索するDBインスタンス
+	 * @param carId int型、検索するクルマのCAR_ID
+	 * @return String型、その車のランニングコストの表示ラベル
+	 */
+	protected String getRunningcostLabelById(SQLiteDatabase db, int carId) {
+		Cursor q;
+
+		String[] columns = {"RUNNINGCOST_LABEL"};
+		String where = "CAR_ID = ?";
+		String[] args = {String.valueOf(carId)};
+		//String groupBy = ""
+		//String having = ""
+		//String orderBy = "CAR_ID";
+
+		q = db.query(CAR_MASTER, columns, where, args, null, null, null);
+		q.moveToFirst();
+
+		String unit = q.getString(0);
+		q.close();
+
+		return unit;
+	}
+
 }
