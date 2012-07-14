@@ -247,18 +247,27 @@ public class CarList extends Activity implements OnClickListener {
         }
 	}
 
+	/**
+	 * 「燃費記録を追加」ボタンを押すことで、デフォルトカーに燃費記録を追加する。
+	 * @param v View型、クリックされたView
+	 * @see android.view.View.OnClickListener#onClick(View)
+	 */
 	//@Override
 	public void onClick(View v) {
-		// TODO デフォルトカーについての燃費記録画面を表示する
+		// デフォルトカーについての燃費記録画面を表示する
 		// とりあえず、LogCatに流して挙動を観察
 		Log.d("onClick", "Button pressed.");
 		Log.d("onClick", "v = " + v.toString());
 
+		// 燃費記録追加画面を呼び出す
 	}
 
+	/**
+	 * コンテキストメニューの項目を選択した時の処理。
+	 * @param item MenuItem型、選択されたメニュー項目
+	 */
 	@Override
 	public boolean onContextItemSelected(MenuItem item) {
-		// TODO 選択されたメニューのリソースIDに応じた処理を記述する
 
 		switch(item.getItemId()) {
 		case R.id.ctxitem_add_mileage:
@@ -362,11 +371,18 @@ public class CarList extends Activity implements OnClickListener {
 
 	/**
 	 * 燃費記録を追加するActivityを呼び出す。
+	 * @param carId int型、呼び出すクルマのCAR_ID
+	 * @param carName String型、呼び出すクルマのCAR_NAME
 	 */
 	protected void addMileage(int carId, String carName) {
 		// 画面遷移の前に、DBとCursorを閉じる。
 		closeDbAndCursorIfOpen();
 
+		// 取得したCAR_IDとCAR_NAMEを引数にセットしてstartActivity
+		Intent i = new Intent(getApplicationContext(), FuelMileageAdd.class);
+		i.putExtra("CAR_ID", carId);
+		i.putExtra("CAR_NAME", carName);
+		startActivity(i);
 	}
 
 	/**
