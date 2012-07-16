@@ -404,6 +404,32 @@ public class CarList extends Activity implements OnClickListener {
 	 * クルマを削除する。
 	 */
 	protected void deleteCar(int carId, String carName) {
+		int result;
+
+		// TODO 削除確認を行うポップアップダイアログを表示させる
+
+		// クルマのレコードを削除する
+		result = dbman.deleteCarById(db, carId);
+		Log.d("deleteCar", "car record deleted, CAR_ID = " + String.valueOf(carId));
+		Log.d("deleteCar", "car record deleted, CAR_NAME = " + carName);
+		Log.d("deleteCar", "deleted records = " + String.valueOf(result));
+
+		// TODO 給油記録とランニングコスト記録を削除するか否かの
+		//      確認ダイアログを表示させる
+		// 給油記録を削除
+		result = dbman.deleteLubsByCarId(db, carId);
+		Log.d("deleteCar", "lub record deleted, CAR_ID = " + String.valueOf(carId));
+		Log.d("deleteCar", "lub record deleted, CAR_NAME = " + carName);
+		Log.d("deleteCar", "deleted records = " + String.valueOf(result));
+
+		// ランニングコスト記録を削除
+		result = dbman.deleteCostsByCarId(db, carId);
+		Log.d("deleteCar", "costs record deleted, CAR_ID = " + String.valueOf(carId));
+		Log.d("deleteCar", "costs record deleted, CAR_NAME = " + carName);
+		Log.d("deleteCar", "deleted records = " + String.valueOf(result));
+
+		// DBを再編成する
+		dbman.reorgDb(db);
 
 	}
 

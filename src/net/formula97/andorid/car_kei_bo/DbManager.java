@@ -20,14 +20,6 @@ import android.util.Log;
  *    # でないと「Cursor閉じろやｺﾞﾙｧ!!」とか怒られる。が、動作上は問題はなさそうだが....
  *
  */
-/**
- * @author kazutoshi
- *
- */
-/**
- * @author kazutoshi
- *
- */
 public class DbManager extends SQLiteOpenHelper {
 
 	private static final String DATABASE_NAME = "fuel_mileage.db";
@@ -474,6 +466,7 @@ public class DbManager extends SQLiteOpenHelper {
 		//   COSTS_MASTERテーブル
 		create_costs_master = "CREATE TABLE IF NOT EXISTS COSTS_MASTER " +
 				"(RECORD_ID INTEGER PRIMARY KEY AUTOINCREMENT, " +
+				"CAR_ID INTEGER, " +
 				"REFUEL_DATE REAL, " +
 				"RUNNING_COST REAL DEFAULT 0);";
 
@@ -668,4 +661,72 @@ public class DbManager extends SQLiteOpenHelper {
 		return unit;
 	}
 
+	/**
+	 * クルマのCAR_IDからクルマのレコードを削除する。
+	 * @param db SQLiteDatabase型、レコード削除対象のDBインスタンス
+	 * @param carId int型、削除するクルマのCAR_ID
+	 * @return int型、削除したレコード数
+	 */
+	protected int deleteCarById(SQLiteDatabase db, int carId) {
+		int result;
+
+		// deleteメソッドに渡す値
+		String table = CAR_MASTER;
+		String where = "CAR_ID = ?";
+		String[] args = {String.valueOf(carId)};
+
+		// 削除したレコード数を格納する。
+		// 通常「1」しか入っていないはず....。
+		result = db.delete(table, where, args);
+
+		return result;
+	}
+
+	/**
+	 * クルマのCAR_IDに対応する給油記録を削除する。
+	 * @param db SQLiteDatabase型、レコード削除対象のDBインスタンス
+	 * @param carId int型、削除するクルマのCAR_ID
+	 * @return int型、削除したレコード数
+	 */
+	protected int deleteLubsByCarId(SQLiteDatabase db, int carId) {
+		int result;
+
+		// deleteメソッドに渡す値
+		String table = LUB_MASTER;
+		String where = "CAR_ID = ?";
+		String[] args = {String.valueOf(carId)};
+
+		// 削除したレコード数を格納する。
+		result = db.delete(table, where, args);
+
+		return result;
+	}
+
+	/**
+	 * クルマのCAR_IDに対応するランニングコスト記録を削除する。
+	 * @param db SQLiteDatabase型、レコード削除対象のDBインスタンス
+	 * @param carId int型、削除するクルマのCAR_ID
+	 * @return int型、削除したレコード数
+	 */
+	protected int deleteCostsByCarId(SQLiteDatabase db, int carId) {
+		int result;
+
+		// deleteメソッドに渡す値
+		String table = COSTS_MASTER;
+		String where = "CAR_ID = ?";
+		String[] args = {String.valueOf(carId)};
+
+		// 削除したレコード数を格納する。
+		result = db.delete(table, where, args);
+
+		return result;
+	}
+
+	/**
+	 * データベースを再編成する。
+	 * @param db SQLiteDatabase型、再編成対象のDBインスタンス
+	 */
+	protected void reorgDb(SQLiteDatabase db) {
+		db.execSQL("vacuum");
+	}
 }
