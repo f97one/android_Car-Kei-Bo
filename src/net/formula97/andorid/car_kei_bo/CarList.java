@@ -402,6 +402,11 @@ public class CarList extends Activity implements OnClickListener {
 
 	/**
 	 * クルマを削除する。
+	 * このクラス内では、getReadableDatabase()でDBを開いているが、Androidにおいては
+	 * ディスクフルでもない限り書き込みができる仕様なので、これで問題ない。
+	 * @param carId int型、削除するクルマのCAR_ID
+	 * @param carName String型、削除するクルマのCAR_NAME
+	 * @see android.database.sqlite.SQLiteDatabase#delete(String, String, String[])
 	 */
 	protected void deleteCar(int carId, String carName) {
 		int result;
