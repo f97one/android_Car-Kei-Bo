@@ -5,10 +5,14 @@ package net.formula97.andorid.car_kei_bo;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.SimpleCursorAdapter;
 import android.widget.Spinner;
+import android.widget.TextView;
 
 /**
  * @author kazutoshi
@@ -24,9 +28,17 @@ public class FuelMileageAdd extends Activity {
 	EditText editText_dateOfRefuel;
 	Button button_addRefuelRecord;
 	Button button_cancelAddRefuelRecord;
+	TextView textView_oilUnit;
+	TextView textView_distanceUnit;
+	TextView textView_moneyUnit;
 
 	private int CAR_ID;
 	private String CAR_NAME;
+
+	private DbManager dbman = new DbManager(this);
+	public static SQLiteDatabase db;
+
+	Cursor spinnerCarList;
 
 	/* (非 Javadoc)
 	 * @see android.app.Activity#onCreate(android.os.Bundle)
@@ -45,6 +57,9 @@ public class FuelMileageAdd extends Activity {
 		editText_dateOfRefuel = (EditText)findViewById(R.id.editText_dateOfRefuel);
 		button_addRefuelRecord = (Button)findViewById(R.id.button_addRefuelRecord);
 		button_cancelAddRefuelRecord = (Button)findViewById(R.id.button_cancelAddRefuelRecord);
+		textView_oilUnit = (TextView)findViewById(R.id.textView_oilUnit);
+		textView_distanceUnit = (TextView)findViewById(R.id.textView_distanceUnit);
+		textView_moneyUnit = (TextView)findViewById(R.id.textView_moneyUnit);
 
 		// 渡された引数を解析してグローバル変数に格納
 		Intent i = getIntent();
@@ -90,6 +105,30 @@ public class FuelMileageAdd extends Activity {
 		// ボタンの幅を、取得した画面幅の1/2にセット
 		button_addRefuelRecord.setWidth(displayWidth / 2);
 		button_cancelAddRefuelRecord.setWidth(displayWidth / 2);
+
+		// DBをReadableで開く
+		//  ※注：Androidの仕様によれば、ReadableでもDBへの書き込みができるため、
+		//        これで問題はない。
+		db = dbman.getReadableDatabase();
+
+		// スピナーにクルマの一覧をセットし、引数で渡されたCAR_IDのクルマを初期値にする
+		setSpinner(db, getCAR_ID());
+
+		// 体積、価格、距離の単位をDBから取得してセット
+		textView_distanceUnit.setText(dbman.getDistanceUnitById(db, getCAR_ID()));
+		textView_moneyUnit.setText(dbman.getPriceUnitById(db, getCAR_ID()));
+		textView_oilUnit.setText(dbman.getVolumeUnitById(db, getCAR_ID()));
+
+	}
+
+	private void setSpinner(SQLiteDatabase sqlitedb, int focusCarId) {
+		// TODO 自動生成されたメソッド・スタブ
+		spinnerCarList = dbman.getCarNameList(sqlitedb);
+		SimpleCursorAdapter sca = new SimpleCursorAdapter(this,
+				R.layout.spinnerelement_fuelmileageadd,
+				spinnerCarList,
+				"CAR_NAME",
+				"tv_spinner_carname");
 	}
 
 	/**
