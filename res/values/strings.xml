@@ -48,5 +48,8 @@
 	<string name="toastmsg_addcar2">You can add another car.</string>
 	<string name="toastmsg_addcar3">Press \"back\" key to stop adding car.</string>
 	<string name="label_mileagelist_suffix">\'s Fuel Mileage list</string>
+	<string name="adbuilder_confirm_deletecar">Do you wish to delete this car from database?</string>
+	<string name="adbuilder_confirm_deletemileage">Do you wish to delete related mileage records from database?</string>
+	<string name="adbuilder_confirm_reorg_db">Do you want the reorganization of the database?</string>
 
 </resources>
