@@ -4,6 +4,8 @@
 package net.formula97.andorid.car_kei_bo;
 
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
@@ -387,10 +389,17 @@ public class CarList extends Activity implements OnClickListener {
 	}
 
 	/**
-	 * 選択したクルマをデフォルトに切り替える
+	 * 選択したクルマをデフォルトに切り替える。
+	 * 再描画はonContextMenuClosed(int)の中に定義しているため、特にここでは何もしていない。
+	 * @param carId int型、デフォルトに切り替えるクルマのCAR_ID
+	 * @param carName String型、デフォルトに切り替えるクルマのCAR_NAME
 	 */
 	protected void changeAsDefault(int carId, String carName) {
+		int iRet = dbman.changeDefaultCar(db, carId);
 
+		Log.d("changeAsDefault", String.valueOf(iRet) + " row(s) updated.");
+		Log.d("changeAsDefault" , "Set as default car, CAR_ID = "+ String.valueOf(carId));
+		Log.d("changeAsDefault" , "CAR_NAME = " + carName);
 	}
 
 	/**
@@ -408,34 +417,46 @@ public class CarList extends Activity implements OnClickListener {
 	 * @param carName String型、削除するクルマのCAR_NAME
 	 * @see android.database.sqlite.SQLiteDatabase#delete(String, String, String[])
 	 */
-	protected void deleteCar(int carId, String carName) {
-		int result;
-
+	protected void deleteCar(final int carId, final String carName) {
 		// TODO 削除確認を行うポップアップダイアログを表示させる
+//		AlertDialog.Builder adbuilder = new AlertDialog.Builder(this);
+//		adbuilder.setTitle(carName);
+//		adbuilder.setMessage(getString(R.string.adbuilder_confirm_deletecar));
+//
+//		// 「はい」ボタンの処理
+//		adbuilder.setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+//
+//			public void onClick(DialogInterface dialog, int which) {
+//				// TODO 自動生成されたメソッド・スタブ
+				int result;
 
-		// クルマのレコードを削除する
-		result = dbman.deleteCarById(db, carId);
-		Log.d("deleteCar", "car record deleted, CAR_ID = " + String.valueOf(carId));
-		Log.d("deleteCar", "car record deleted, CAR_NAME = " + carName);
-		Log.d("deleteCar", "deleted records = " + String.valueOf(result));
+				// クルマのレコードを削除する
+				result = dbman.deleteCarById(db, carId);
+				Log.d("deleteCar", "car record deleted, CAR_ID = " + String.valueOf(carId));
+				Log.d("deleteCar", "car record deleted, CAR_NAME = " + carName);
+				Log.d("deleteCar", "deleted records = " + String.valueOf(result));
 
-		// TODO 給油記録とランニングコスト記録を削除するか否かの
-		//      確認ダイアログを表示させる
-		// 給油記録を削除
-		result = dbman.deleteLubsByCarId(db, carId);
-		Log.d("deleteCar", "lub record deleted, CAR_ID = " + String.valueOf(carId));
-		Log.d("deleteCar", "lub record deleted, CAR_NAME = " + carName);
-		Log.d("deleteCar", "deleted records = " + String.valueOf(result));
+				// TODO 給油記録とランニングコスト記録を削除するか否かの
+				//      確認ダイアログを表示させる
+				// 給油記録を削除
+				result = dbman.deleteLubsByCarId(db, carId);
+				Log.d("deleteCar", "lub record deleted, CAR_ID = " + String.valueOf(carId));
+				Log.d("deleteCar", "lub record deleted, CAR_NAME = " + carName);
+				Log.d("deleteCar", "deleted records = " + String.valueOf(result));
 
-		// ランニングコスト記録を削除
-		result = dbman.deleteCostsByCarId(db, carId);
-		Log.d("deleteCar", "costs record deleted, CAR_ID = " + String.valueOf(carId));
-		Log.d("deleteCar", "costs record deleted, CAR_NAME = " + carName);
-		Log.d("deleteCar", "deleted records = " + String.valueOf(result));
+				// ランニングコスト記録を削除
+				result = dbman.deleteCostsByCarId(db, carId);
+				Log.d("deleteCar", "costs record deleted, CAR_ID = " + String.valueOf(carId));
+				Log.d("deleteCar", "costs record deleted, CAR_NAME = " + carName);
+				Log.d("deleteCar", "deleted records = " + String.valueOf(result));
 
-		// DBを再編成する
-		dbman.reorgDb(db);
-
+				// DBを再編成する
+				dbman.reorgDb(db);
+//
+//			}
+//		});
+//
+//
 	}
 
 	/**
