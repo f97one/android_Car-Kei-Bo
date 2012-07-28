@@ -74,6 +74,8 @@ public class FuelMileageAdd extends Activity {
 	protected void onDestroy() {
 		// TODO 自動生成されたメソッド・スタブ
 		super.onDestroy();
+
+		closeCursor();
 	}
 
 	/* (非 Javadoc)
@@ -83,6 +85,8 @@ public class FuelMileageAdd extends Activity {
 	protected void onPause() {
 		// TODO 自動生成されたメソッド・スタブ
 		super.onPause();
+
+		closeCursor();
 	}
 
 	/* (非 Javadoc)
@@ -121,14 +125,27 @@ public class FuelMileageAdd extends Activity {
 
 	}
 
+	/**
+	 * スピナーにDBから取得したクルマの一覧をセットする。
+	 * @param sqlitedb
+	 * @param focusCarId
+	 */
 	private void setSpinner(SQLiteDatabase sqlitedb, int focusCarId) {
 		// TODO 自動生成されたメソッド・スタブ
 		spinnerCarList = dbman.getCarNameList(sqlitedb);
+		String[] from = {"CAR_NAME"};
+		int[] to = {R.id.tv_spinner_carname};
+
+		// SimpleCursorAdapterで値をセットする
 		SimpleCursorAdapter sca = new SimpleCursorAdapter(this,
 				R.layout.spinnerelement_fuelmileageadd,
 				spinnerCarList,
-				"CAR_NAME",
-				"tv_spinner_carname");
+				from,
+				to);
+		spinner_carName.setAdapter(sca);
+
+		// 選択位置を引数にあった値にセットする
+		spinner_carName.setSelection(focusCarId -1);
 	}
 
 	/**
@@ -159,4 +176,7 @@ public class FuelMileageAdd extends Activity {
 		CAR_NAME = cAR_NAME;
 	}
 
+	private void closeCursor() {
+		spinnerCarList.close();
+	}
 }
