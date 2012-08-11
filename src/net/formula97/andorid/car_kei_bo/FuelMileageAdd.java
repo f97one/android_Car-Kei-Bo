@@ -8,6 +8,9 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
+import android.util.Log;
+import android.view.View;
+import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.SimpleCursorAdapter;
@@ -38,7 +41,7 @@ public class FuelMileageAdd extends Activity {
 	private DbManager dbman = new DbManager(this);
 	public static SQLiteDatabase db;
 
-	Cursor spinnerCarList;
+	Cursor cSpinnerCarList;
 
 	/* (非 Javadoc)
 	 * @see android.app.Activity#onCreate(android.os.Bundle)
@@ -116,13 +119,29 @@ public class FuelMileageAdd extends Activity {
 		db = dbman.getReadableDatabase();
 
 		// スピナーにクルマの一覧をセットし、引数で渡されたCAR_IDのクルマを初期値にする
-		setSpinner(db, getCAR_ID());
+		setSpinner(db, getCAR_NAME());
 
 		// 体積、価格、距離の単位をDBから取得してセット
 		textView_distanceUnit.setText(dbman.getDistanceUnitById(db, getCAR_ID()));
 		textView_moneyUnit.setText(dbman.getPriceUnitById(db, getCAR_ID()));
 		textView_oilUnit.setText(dbman.getVolumeUnitById(db, getCAR_ID()));
 
+		// スピナーにコールバックリスナーを定義
+		spinner_carName.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+
+			@Override
+			public void onItemSelected(AdapterView<?> arg0, View arg1,
+					int arg2, long arg3) {
+				// TODO 自動生成されたメソッド・スタブ
+
+			}
+
+			@Override
+			public void onNothingSelected(AdapterView<?> arg0) {
+				// TODO 自動生成されたメソッド・スタブ
+
+			}
+		});
 	}
 
 	/**
@@ -130,22 +149,22 @@ public class FuelMileageAdd extends Activity {
 	 * @param sqlitedb
 	 * @param focusCarId
 	 */
-	private void setSpinner(SQLiteDatabase sqlitedb, int focusCarId) {
+	private void setSpinner(SQLiteDatabase sqlitedb, String focusCarName) {
 		// TODO 自動生成されたメソッド・スタブ
-		spinnerCarList = dbman.getCarNameList(sqlitedb);
+		cSpinnerCarList = dbman.getCarNameList(sqlitedb);
 		String[] from = {"CAR_NAME"};
 		int[] to = {R.id.tv_spinner_carname};
 
 		// SimpleCursorAdapterで値をセットする
 		SimpleCursorAdapter sca = new SimpleCursorAdapter(this,
 				R.layout.spinnerelement_fuelmileageadd,
-				spinnerCarList,
+				cSpinnerCarList,
 				from,
 				to);
 		spinner_carName.setAdapter(sca);
 
 		// 選択位置を引数にあった値にセットする
-		spinner_carName.setSelection(focusCarId -1);
+		spinner_carName.setSelection( getOffsetByName(focusCarName, cSpinnerCarList) );
 	}
 
 	/**
@@ -177,6 +196,42 @@ public class FuelMileageAdd extends Activity {
 	}
 
 	private void closeCursor() {
-		spinnerCarList.close();
+		cSpinnerCarList.close();
 	}
+
+	/**
+	 * 指定したクルマの名前から、Cursor表示位置（＝オフセット値）を取得する。
+	 * @param carName String型、オフセット値を特定するクルマの名前
+	 * @param cCarList Cursor型、クルマリストを格納したCursorオブジェクト
+	 * @return int型、クルマに対応したCursorのオフセット値
+	 */
+	private int getOffsetByName(String carName, Cursor cCarList) {
+		// 戻り値にするオフセットを、暫定で0としておく
+		int offset = 0;
+		int cnt = 0;
+		String car;
+
+
+		// Cursorを巻き戻す
+		cCarList.moveToFirst();
+
+		// cCarListがCursorの最後に到達するまで、Cursorを繰り上げながら検査する
+		// getCount()を上限回数としたforステートメントでもよさそうだったが....
+		do {
+			car = cCarList.getString(1);
+			Log.d("getOffsetByName", "got car name : " + car);
+
+			if (car == carName) {
+				// 指定した名前に合致したら、ループカウンタをオフセットとしてセットする
+				offset = cnt;
+			}
+
+			// ループカウンタをインクリメントして次の行へ移動
+			cnt++;
+			cCarList.moveToNext();
+		}  while ( cCarList.isAfterLast() != true );
+
+		return offset;
+	}
+
 }
