@@ -79,6 +79,7 @@ public class FuelMileageAdd extends Activity {
 		super.onDestroy();
 
 		closeCursor();
+		closeDB(db);
 	}
 
 	/* (非 Javadoc)
@@ -90,6 +91,7 @@ public class FuelMileageAdd extends Activity {
 		super.onPause();
 
 		closeCursor();
+		closeDB(db);
 	}
 
 	/* (非 Javadoc)
@@ -195,8 +197,21 @@ public class FuelMileageAdd extends Activity {
 		CAR_NAME = cAR_NAME;
 	}
 
+	/**
+	 * CursorオブジェクトのcSpinnerCarListを閉じる。
+	 */
 	private void closeCursor() {
 		cSpinnerCarList.close();
+	}
+
+	/**
+	 * データベースを閉じる。
+	 * @param db SQLiteDatabase型、開かれているDBインスタンス
+	 */
+	private void closeDB(SQLiteDatabase db) {
+		if (db.isOpen()) {
+			db.close();
+		}
 	}
 
 	/**
@@ -211,6 +226,7 @@ public class FuelMileageAdd extends Activity {
 		int cnt = 0;
 		String car;
 
+		Log.d("getOffsetByName", "Inspecting as follow : " + carName);
 
 		// Cursorを巻き戻す
 		cCarList.moveToFirst();
@@ -221,7 +237,7 @@ public class FuelMileageAdd extends Activity {
 			car = cCarList.getString(1);
 			Log.d("getOffsetByName", "got car name : " + car);
 
-			if (car == carName) {
+			if (car.equals(carName)) {
 				// 指定した名前に合致したら、ループカウンタをオフセットとしてセットする
 				offset = cnt;
 			}
@@ -231,6 +247,10 @@ public class FuelMileageAdd extends Activity {
 			cCarList.moveToNext();
 		}  while ( cCarList.isAfterLast() != true );
 
+		Log.d("getOffsetByName", "offset result : " + String.valueOf(offset));
+		Log.d("getOffsetByName", "counter result : " + String.valueOf(cnt));
+
+		// 調べたオフセット値を返す
 		return offset;
 	}
 
