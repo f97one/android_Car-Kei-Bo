@@ -46,5 +46,10 @@
 	<string name="toastmsg_addcar2">別の車を追加できます。</string>
 	<string name="toastmsg_addcar3">追加を終了するには、「戻る」キーを押します。</string>
 	<string name="label_mileagelist_suffix">の燃費記録</string>
+	<string name="adbuilder_confirm_deletecar">このクルマをデータベースから削除しますか？</string>
+	<string name="adbuilder_confirm_deletemileage">関連する燃費記録も、データベースから削除しますか？</string>
+	<string name="adbuilder_confirm_reorg_db">データベースの再編成を行いますか？</string>
+	<string name="label_timeOfRefuel">給油時刻</string>
+	<string name="label_comments">コメント</string>
 
 </resources>
