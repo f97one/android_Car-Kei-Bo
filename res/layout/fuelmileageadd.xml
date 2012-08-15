@@ -54,7 +54,12 @@
                     android:layout_weight="1"
                     android:ems="10"
                     android:inputType="numberDecimal"
-                    android:singleLine="true" />
+                    android:singleLine="true" >
+
+                    <requestFocus />
+                    <requestFocus />
+
+                </EditText>
 
                 <TextView
                     android:id="@+id/textView_oilUnit"
@@ -168,8 +173,6 @@
             android:layout_height="wrap_content"
             android:ems="10"
             android:inputType="textMultiLine" >
-
-            <requestFocus />
         </EditText>
 
         <LinearLayout
