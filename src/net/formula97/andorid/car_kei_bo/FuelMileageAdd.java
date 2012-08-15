@@ -29,6 +29,8 @@ public class FuelMileageAdd extends Activity {
 	EditText EditText_odometer;
 	EditText editText_unitPrice;
 	EditText editText_dateOfRefuel;
+	EditText editText_timeOfRefuel;
+	EditText editText_comments;
 	Button button_addRefuelRecord;
 	Button button_cancelAddRefuelRecord;
 	TextView textView_oilUnit;
@@ -58,6 +60,8 @@ public class FuelMileageAdd extends Activity {
 		EditText_odometer = (EditText)findViewById(R.id.EditText_odometer);
 		editText_unitPrice = (EditText)findViewById(R.id.editText_unitPrice);
 		editText_dateOfRefuel = (EditText)findViewById(R.id.editText_dateOfRefuel);
+		editText_timeOfRefuel = (EditText)findViewById(R.id.editText_timeOfRefuel);
+		editText_comments = (EditText)findViewById(R.id.editText_comments);
 		button_addRefuelRecord = (Button)findViewById(R.id.button_addRefuelRecord);
 		button_cancelAddRefuelRecord = (Button)findViewById(R.id.button_cancelAddRefuelRecord);
 		textView_oilUnit = (TextView)findViewById(R.id.textView_oilUnit);
@@ -68,6 +72,9 @@ public class FuelMileageAdd extends Activity {
 		Intent i = getIntent();
 		setCAR_ID(i.getIntExtra("CAR_ID", 0));
 		setCAR_NAME(i.getStringExtra("CAR_NAME"));
+
+		Log.d("onCreate", "got CAR_ID : " + String.valueOf(CAR_ID));
+		Log.d("onCreate", "gor CAR_NAME : " + CAR_NAME);
 	}
 
 	/* (非 Javadoc)
@@ -144,15 +151,50 @@ public class FuelMileageAdd extends Activity {
 
 			}
 		});
+
+		// ボタンにコールバックリスナーを定義
+		//   燃費記録追加
+		button_addRefuelRecord.setOnClickListener(new View.OnClickListener() {
+
+			@Override
+			public void onClick(View v) {
+				// TODO 自動生成されたメソッド・スタブ
+
+			}
+		});
+
+		//   キャンセル
+		button_cancelAddRefuelRecord.setOnClickListener(new View.OnClickListener() {
+
+			/**
+			 * EditTextの中身をクリアし、スピナーの初期値を引き渡されたCAR_NAMEに変更する。
+			 * @param v View型、ボタンのView
+			 */
+			@Override
+			public void onClick(View v) {
+				String blank = "";
+
+				// EditTextに空の値をセットする
+				editText_amountOfOil.setText(blank);
+				editText_dateOfRefuel.setText(blank);
+				editText_unitPrice.setText(blank);
+				EditText_odometer.setText(blank);
+				editText_comments.setText(blank);
+				editText_timeOfRefuel.setText(blank);
+
+				// スピナーに値をセットしなおす前に、開かれているCursorをいったん閉じる
+				closeCursor();
+				setSpinner(db, CAR_NAME);
+			}
+		});
 	}
 
 	/**
 	 * スピナーにDBから取得したクルマの一覧をセットする。
-	 * @param sqlitedb
-	 * @param focusCarId
+	 * @param sqlitedb SQLiteDatabase型、クルマリストを取得するDBインスタンス
+	 * @param focusCarName String型、初期値にするクルマの名前
 	 */
 	private void setSpinner(SQLiteDatabase sqlitedb, String focusCarName) {
-		// TODO 自動生成されたメソッド・スタブ
 		cSpinnerCarList = dbman.getCarNameList(sqlitedb);
 		String[] from = {"CAR_NAME"};
 		int[] to = {R.id.tv_spinner_carname};
@@ -164,9 +206,13 @@ public class FuelMileageAdd extends Activity {
 				from,
 				to);
 		spinner_carName.setAdapter(sca);
+		// ２回目以降の値セットがうまくいかないことの回避策、らしい
+		sca.notifyDataSetChanged();
 
 		// 選択位置を引数にあった値にセットする
-		spinner_carName.setSelection( getOffsetByName(focusCarName, cSpinnerCarList) );
+		int pos =  getOffsetByName(focusCarName, cSpinnerCarList);
+		Log.d("setSpinner", "got spinner position : " + String.valueOf(pos));
+		spinner_carName.setSelection(pos);
 	}
 
 	/**
@@ -201,7 +247,12 @@ public class FuelMileageAdd extends Activity {
 	 * CursorオブジェクトのcSpinnerCarListを閉じる。
 	 */
 	private void closeCursor() {
-		cSpinnerCarList.close();
+		if (cSpinnerCarList.isClosed() != true ) {
+			cSpinnerCarList.close();
+			Log.d("CloseCursor", "cSpinnerCarList is closed.");
+		} else {
+			Log.d("closeCursor", "cSpinnerCarList is already closed.");
+		}
 	}
 
 	/**
@@ -211,6 +262,9 @@ public class FuelMileageAdd extends Activity {
 	private void closeDB(SQLiteDatabase db) {
 		if (db.isOpen()) {
 			db.close();
+			Log.d("closeDB", "SQLiteDatabase is closed.");
+		} else {
+			Log.d("closeDB", "SQLiteDatabase is already closed.");
 		}
 	}
 
@@ -240,6 +294,7 @@ public class FuelMileageAdd extends Activity {
 			if (car.equals(carName)) {
 				// 指定した名前に合致したら、ループカウンタをオフセットとしてセットする
 				offset = cnt;
+				Log.d("getOffsetByName", "matched with " + carName + ", offset : " + String.valueOf(offset));
 			}
 
 			// ループカウンタをインクリメントして次の行へ移動
