@@ -3,6 +3,8 @@
  */
 package net.formula97.andorid.car_kei_bo;
 
+import java.util.Calendar;
+
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
@@ -728,5 +730,52 @@ public class DbManager extends SQLiteOpenHelper {
 	 */
 	protected void reorgDb(SQLiteDatabase db) {
 		db.execSQL("vacuum");
+	}
+
+	/**
+	 * CAR_IDに対応する燃費記録を、LUB_MASTERに記録する。
+	 * @param db SQLiteDatabase型、燃費を記録するDBインスタンス
+	 * @param carId int型、燃費を記録するクルマのCAR_ID
+	 * @param amountOfOil long型、給油量
+	 * @param odometer int型、給油を行った時の走行メーター値
+	 * @param unitPrice int型、給油を行った時の給油単価
+	 * @param comments String型、給油時のコメントを入力
+	 * @param gregolianDay Calendar型、給油を行った日時
+	 * @return long型、insertに成功すればそのときのrowIdを、失敗すれば-1を返す。なお、失敗時はSQLExceptionを投げる
+	 */
+	protected long addMileageById (SQLiteDatabase db, int carId, long amountOfOil, int odometer, int unitPrice, String comments, Calendar gregolianDay) {
+		long result = 0;
+
+		// レコードを追加する
+		ContentValues value = new ContentValues();
+		value.put("CAR_ID", carId);
+		// 入力されたCalendarをユリウス通日に変換する
+		DateManager dm = new DateManager();
+		double julianDay = dm.toJulianDay(gregolianDay);
+
+		// 価格、距離、体積の各単位をセット
+		value.put("REFUEL_DATE", julianDay);
+		value.put("LUB_AMOUNT", amountOfOil);
+		value.put("UNIT_PRICE", unitPrice);
+		value.put("ODOMETER", odometer);
+		value.put("COMMENTS", comments);
+
+		// トランザクション開始
+		db.beginTransaction();
+		try {
+			// 失敗したら例外を投げるinsertOrThrowでレコードをINSERT
+			result = db.insertOrThrow(LUB_MASTER, null, value);
+
+			// 例外が投げられなければ、トランザクション成功をセット
+			db.setTransactionSuccessful();
+		} catch (SQLException e) {
+			Log.e(DATABASE_NAME, "Car record insert failed, ");
+		} finally {
+			// トランザクション終了
+			// INSERTに失敗した場合は、endTransaction()を呼んだところでロールバックされる
+			db.endTransaction();
+		}
+
+		return result;
 	}
 }
