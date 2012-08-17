@@ -4,20 +4,24 @@
 package net.formula97.andorid.car_kei_bo;
 
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
+import android.text.Spannable;
+import android.text.SpannableStringBuilder;
 import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.SimpleCursorAdapter;
 import android.widget.Spinner;
 import android.widget.TextView;
 
@@ -48,6 +52,10 @@ public class FuelMileageAdd extends Activity {
 	public static SQLiteDatabase db;
 
 	Cursor cSpinnerCarList;
+
+	private Calendar currentDateTime;
+
+	private DateManager dmngr = new DateManager();
 
 	/* (非 Javadoc)
 	 * @see android.app.Activity#onCreate(android.os.Bundle)
@@ -166,6 +174,20 @@ public class FuelMileageAdd extends Activity {
 				// 燃費記録を追加するにあたり、DBにセットするための値を取得する
 				int targetCarId = dbman.getCarId(db, getCarNameFromSpinner());
 
+				// EditTextに入力されている値を取り出す（加工があまり必要でないもの）
+				SpannableStringBuilder ssbAmountOfOil = (SpannableStringBuilder)editText_amountOfOil.getText();
+				SpannableStringBuilder ssbUnitPrice = (SpannableStringBuilder)editText_unitPrice.getText();
+				SpannableStringBuilder ssbComments = (SpannableStringBuilder)editText_comments.getText();
+				SpannableStringBuilder ssbOdometer = (SpannableStringBuilder)EditText_odometer.getText();
+
+				long amountOfOil = Long.parseLong(ssbAmountOfOil.toString());
+				int unitPrice = Integer.parseInt(ssbUnitPrice.toString());
+				int odometer = Integer.parseInt(ssbOdometer.toString());
+				String comments = ssbComments.toString();
+
+				//editText_dateOfRefuel.setText(blank);
+				//editText_timeOfRefuel.setText(blank);
+
 			}
 		});
 
@@ -191,8 +213,20 @@ public class FuelMileageAdd extends Activity {
 				// スピナーに値をセットしなおす前に、開かれているCursorをいったん閉じる
 				closeCursor();
 				setSpinner(db, CAR_NAME);
+
+				// 現在日付と現在時刻をeditTextにセットする
+				currentDateTime = dmngr.getNow();
+				setDateToEdit(currentDateTime);
+				setTimeToEdit(currentDateTime);
+
 			}
 		});
+
+		// 現在日付と現在時刻をeditTextにセットする
+		currentDateTime = dmngr.getNow();
+		setDateToEdit(currentDateTime);
+		setTimeToEdit(currentDateTime);
+
 	}
 
 	/**
@@ -334,4 +368,37 @@ public class FuelMileageAdd extends Activity {
 
 		return carName;
 	}
+
+	/**
+	 * editTextに日付をセットする。フォーマットはロケール設定に従う。
+	 * @param gcd Calendar型、指定日付にセットされたCalendarオブジェクト
+	 */
+	private void setDateToEdit(Calendar gcd) {
+		Date dd = gcd.getTime();
+
+		// AndroidのAPIに定義されているDateFormatでロケールを読み出し、
+		// java.text.DateFormatに書き出す。
+		Context ctx = getApplicationContext();
+		java.text.DateFormat df = android.text.format.DateFormat.getDateFormat(ctx);
+
+		// EditTextにロケールに従ったフォーマットの日付をセット
+		editText_dateOfRefuel.setText(df.format(dd));
+	}
+
+	/**
+	 * editTextに時刻をセットする。
+	 * @param gcd Calendar型、指定時刻にセットされたCalendarオブジェクト
+	 */
+	private void setTimeToEdit(Calendar gcd) {
+		Date dd = gcd.getTime();
+
+		// AndroidのAPIに定義されているDateFormatでロケールを読み出し、
+		// java.text.DateFormatに書き出す。
+		Context ctx = getApplicationContext();
+		java.text.DateFormat df = android.text.format.DateFormat.getTimeFormat(ctx);
+
+		// EditTextにロケールに従ったフォーマットの日付をセット
+		editText_timeOfRefuel.setText(df.format(dd));
+	}
+
 }
