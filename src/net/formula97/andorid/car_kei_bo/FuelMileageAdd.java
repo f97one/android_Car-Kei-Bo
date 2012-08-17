@@ -57,6 +57,8 @@ public class FuelMileageAdd extends Activity {
 
 	private DateManager dmngr = new DateManager();
 
+	private static String TEXT_BLANK = "";
+
 	/* (非 Javadoc)
 	 * @see android.app.Activity#onCreate(android.os.Bundle)
 	 */
@@ -200,15 +202,14 @@ public class FuelMileageAdd extends Activity {
 			 */
 			@Override
 			public void onClick(View v) {
-				String blank = "";
 
 				// EditTextに空の値をセットする
-				editText_amountOfOil.setText(blank);
-				editText_dateOfRefuel.setText(blank);
-				editText_unitPrice.setText(blank);
-				EditText_odometer.setText(blank);
-				editText_comments.setText(blank);
-				editText_timeOfRefuel.setText(blank);
+				editText_amountOfOil.setText(TEXT_BLANK);
+				editText_dateOfRefuel.setText(TEXT_BLANK);
+				editText_unitPrice.setText(TEXT_BLANK);
+				EditText_odometer.setText(TEXT_BLANK);
+				editText_comments.setText(TEXT_BLANK);
+				editText_timeOfRefuel.setText(TEXT_BLANK);
 
 				// スピナーに値をセットしなおす前に、開かれているCursorをいったん閉じる
 				closeCursor();
