@@ -51,5 +51,6 @@
 	<string name="adbuilder_confirm_reorg_db">データベースの再編成を行いますか？</string>
 	<string name="label_timeOfRefuel">給油時刻</string>
 	<string name="label_comments">コメント</string>
+	<string name="label_btn_edit">修正...</string>
 
 </resources>

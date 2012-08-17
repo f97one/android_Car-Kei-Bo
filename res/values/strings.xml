@@ -53,5 +53,6 @@
 	<string name="adbuilder_confirm_reorg_db">Do you want the reorganization of the database?</string>
 	<string name="label_timeOfRefuel">Time of Refuel</string>
 	<string name="label_comments">Comments</string>
+	<string name="label_btn_edit">Edit...</string>
 
 </resources>
