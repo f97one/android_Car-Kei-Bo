@@ -96,4 +96,13 @@ public class DateManager {
 
 		return jDate;
 	}
+
+	/**
+	 * 現在日時を返す。
+	 * @return Calendar型、現在のロケールにおける現在日時
+	 */
+	public Calendar getNow() {
+		Calendar nowDateTime = Calendar.getInstance();
+		return nowDateTime;
+	}
 }
