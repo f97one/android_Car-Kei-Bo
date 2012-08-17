@@ -197,6 +197,7 @@ public class AddMyCar extends Activity implements OnItemSelectedListener {
 	 * @param id
 	 */
 	//@Override
+	@Override
 	public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
 		// TODO 自動生成されたメソッド・スタブ
 
@@ -207,6 +208,7 @@ public class AddMyCar extends Activity implements OnItemSelectedListener {
 	 * @param arg0
 	 */
 	//@Override
+	@Override
 	public void onNothingSelected(AdapterView<?> arg0) {
 		// TODO 自動生成されたメソッド・スタブ
 

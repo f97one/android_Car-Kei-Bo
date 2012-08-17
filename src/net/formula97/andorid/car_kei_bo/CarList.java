@@ -4,8 +4,6 @@
 package net.formula97.andorid.car_kei_bo;
 
 import android.app.Activity;
-import android.app.AlertDialog;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
@@ -223,7 +221,8 @@ public class CarList extends Activity implements OnClickListener {
 	        // イベントリスナ（onItemClick）
 	        listView_CarList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 
-	        	public void onItemClick(AdapterView<?> parent, View v, int position,
+	        	@Override
+				public void onItemClick(AdapterView<?> parent, View v, int position,
 						long id) {
 	        		// とりあえず、LogCatに流して挙動を観察
 	        		Log.d("onItemClick", "ListView item pressed.");
@@ -255,6 +254,7 @@ public class CarList extends Activity implements OnClickListener {
 	 * @see android.view.View.OnClickListener#onClick(View)
 	 */
 	//@Override
+	@Override
 	public void onClick(View v) {
 		// デフォルトカーについての燃費記録画面を表示する
 		// とりあえず、LogCatに流して挙動を観察
