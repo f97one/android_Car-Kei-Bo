@@ -3,6 +3,9 @@
  */
 package net.formula97.andorid.car_kei_bo;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import android.app.Activity;
 import android.content.Intent;
 import android.database.Cursor;
@@ -11,6 +14,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.SimpleCursorAdapter;
@@ -159,6 +163,8 @@ public class FuelMileageAdd extends Activity {
 			@Override
 			public void onClick(View v) {
 				// TODO 自動生成されたメソッド・スタブ
+				// 燃費記録を追加するにあたり、DBにセットするための値を取得する
+				int targetCarId = dbman.getCarId(db, getCarNameFromSpinner());
 
 			}
 		});
@@ -196,23 +202,32 @@ public class FuelMileageAdd extends Activity {
 	 */
 	private void setSpinner(SQLiteDatabase sqlitedb, String focusCarName) {
 		cSpinnerCarList = dbman.getCarNameList(sqlitedb);
-		String[] from = {"CAR_NAME"};
-		int[] to = {R.id.tv_spinner_carname};
+		List<String> lstSpinner = new ArrayList<String>();
 
-		// SimpleCursorAdapterで値をセットする
-		SimpleCursorAdapter sca = new SimpleCursorAdapter(this,
-				R.layout.spinnerelement_fuelmileageadd,
-				cSpinnerCarList,
-				from,
-				to);
-		spinner_carName.setAdapter(sca);
+		// ArrayListに、Cursorオブジェクトになっている「取得したクルマ一覧」を入れなおす
+		// 後で出てくるgetOffsetByNameと処理はほとんど同じなので、統合しようと思えばできるのだが....
+		do {
+			lstSpinner.add(cSpinnerCarList.getString(1));
+			cSpinnerCarList.moveToNext();
+		} while (cSpinnerCarList.isAfterLast() != true);
+
+		// ArrayAdapterを定義してスピナーに値をセットする
+		ArrayAdapter<String> aa = new ArrayAdapter<String> (
+				this,
+				android.R.layout.simple_spinner_item,
+				lstSpinner);
+		aa.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+		spinner_carName.setAdapter(aa);
 		// ２回目以降の値セットがうまくいかないことの回避策、らしい
-		sca.notifyDataSetChanged();
+		aa.notifyDataSetChanged();
 
 		// 選択位置を引数にあった値にセットする
 		int pos =  getOffsetByName(focusCarName, cSpinnerCarList);
 		Log.d("setSpinner", "got spinner position : " + String.valueOf(pos));
 		spinner_carName.setSelection(pos);
+
+		// Cursorを再利用することを考慮し、先頭まで巻き戻す
+		cSpinnerCarList.moveToFirst();
 	}
 
 	/**
@@ -309,4 +324,14 @@ public class FuelMileageAdd extends Activity {
 		return offset;
 	}
 
+	/**
+	 * スピナーの現在選択位置から、DBへ追加するときのクルマの名前を取得する。
+	 * @return String型、スピナーの現在選択位置にあるクルマの名前
+	 */
+	private String getCarNameFromSpinner() {
+		String carName = (String)spinner_carName.getSelectedItem();
+		Log.d("getCarNameFromSpinner", "now selected car is " + carName);
+
+		return carName;
+	}
 }
