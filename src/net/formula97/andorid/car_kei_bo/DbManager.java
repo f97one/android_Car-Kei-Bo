@@ -743,7 +743,7 @@ public class DbManager extends SQLiteOpenHelper {
 	 * @param gregolianDay Calendar型、給油を行った日時
 	 * @return long型、insertに成功すればそのときのrowIdを、失敗すれば-1を返す。なお、失敗時はSQLExceptionを投げる
 	 */
-	protected long addMileageById (SQLiteDatabase db, int carId, long amountOfOil, int odometer, int unitPrice, String comments, Calendar gregolianDay) {
+	protected long addMileageById (SQLiteDatabase db, int carId, double amountOfOil, int odometer, int unitPrice, String comments, Calendar gregolianDay) {
 		long result = 0;
 
 		// レコードを追加する
@@ -777,5 +777,32 @@ public class DbManager extends SQLiteOpenHelper {
 		}
 
 		return result;
+	}
+
+	/**
+	 * CAR_IDに対応するクルマの名称を返す。
+	 * @param db SQLiteDatabase型、
+	 * @param carId
+	 * @return
+	 */
+	protected String getCarNameById (SQLiteDatabase db, int carId) {
+		// 戻り値を格納する変数
+		String sRet;
+
+		// クエリを格納する変数を定義
+		// 検索フィールド名と検索値は配列にしないと怒られるので、配列に書き直している。
+		Cursor q;
+		String[] columns = {"CAR_NAME"};
+		String where = "CAR_ID = ?";
+		// DEFAULT_FLAG=1を検索するのだが、query()がString[]であることを要求しているので、valueOf()でStringに変換する
+		String[] args = {String.valueOf(carId)};
+
+		q = db.query(CAR_MASTER, columns, where, args, null, null, null);
+		q.moveToFirst();
+		sRet = q.getString(0);
+		Log.i(CAR_MASTER, "Found specified car : " + sRet + " , related to CAR_ID : " + String.valueOf(carId));
+		q.close();
+
+		return sRet;
 	}
 }
