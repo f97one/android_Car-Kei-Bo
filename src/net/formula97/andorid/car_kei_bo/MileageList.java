@@ -9,6 +9,8 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
+import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -17,7 +19,7 @@ import android.widget.TextView;
  * @author kazutoshi
  *
  */
-public class MileageList extends Activity {
+public class MileageList extends Activity implements OnClickListener {
 
 	private int CAR_ID;
 	private String CAR_NAME;
@@ -96,6 +98,9 @@ public class MileageList extends Activity {
 	protected void onResume() {
 		// TODO 自動生成されたメソッド・スタブ
 		super.onResume();
+
+
+		btn_add_mileage.setOnClickListener(this);
 	}
 
 	public int getCAR_ID() {
@@ -118,6 +123,28 @@ public class MileageList extends Activity {
 	 */
 	public void setCAR_NAME(String cAR_NAME) {
 		CAR_NAME = cAR_NAME;
+	}
+
+	@Override
+	public void onClick(View v) {
+		// コールバックリスナーのあるビューのIDを取得する
+		int viewId = v.getId();
+
+		switch (viewId) {
+		case R.id.btn_add_mileage:
+			// 燃費追加ボタンを押した時の処理
+			Log.d("onClick", "btn_add_mileage pressed.");
+
+			// 取得したCAR_IDとCAR_NAMEを引数にセットしてstartActivity
+			Intent i = new Intent(getApplicationContext(), FuelMileageAdd.class);
+			i.putExtra("CAR_ID", getCAR_ID());
+			i.putExtra("CAR_NAME", getCAR_NAME());
+			startActivity(i);
+
+			break;
+		default:
+			break;
+		}
 	}
 
 }
