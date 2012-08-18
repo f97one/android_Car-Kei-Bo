@@ -145,22 +145,27 @@ public class FuelMileageAdd extends Activity {
 		setSpinner(db, getCAR_NAME());
 
 		// 体積、価格、距離の単位をDBから取得してセット
-		textView_distanceUnit.setText(dbman.getDistanceUnitById(db, getCAR_ID()));
-		textView_moneyUnit.setText(dbman.getPriceUnitById(db, getCAR_ID()));
-		textView_oilUnit.setText(dbman.getVolumeUnitById(db, getCAR_ID()));
+		setUnitLabel(db, getCAR_ID());
 
 		// スピナーにコールバックリスナーを定義
 		spinner_carName.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
 
+			/**
+			 * スピナーの変化を検知したら、各種単位のラベルをクルマの設定に応じた値に書き換える
+			 */
 			@Override
-			public void onItemSelected(AdapterView<?> arg0, View arg1,
-					int arg2, long arg3) {
-				// TODO 自動生成されたメソッド・スタブ
+			public void onItemSelected(AdapterView<?> parent, View view,
+					int position, long rowId) {
+				// クルマの名前に応じたCAR_IDを特定する
+				String carName = getCarNameFromSpinner();
+				int carId = dbman.getCarId(db, carName);
 
+				// ラベルを書き換える
+				setUnitLabel(db, carId);
 			}
 
 			@Override
-			public void onNothingSelected(AdapterView<?> arg0) {
+			public void onNothingSelected(AdapterView<?> parent) {
 				// TODO 自動生成されたメソッド・スタブ
 
 			}
@@ -387,7 +392,7 @@ public class FuelMileageAdd extends Activity {
 	}
 
 	/**
-	 * editTextに時刻をセットする。
+	 * editTextに時刻をセットする。フォーマットはロケール設定に従う。
 	 * @param gcd Calendar型、指定時刻にセットされたCalendarオブジェクト
 	 */
 	private void setTimeToEdit(Calendar gcd) {
@@ -402,4 +407,28 @@ public class FuelMileageAdd extends Activity {
 		editText_timeOfRefuel.setText(df.format(dd));
 	}
 
+	/**
+	 * 給油量、走行距離、単価の各種単位のラベルを、クルマのCAR_IDに応じたものにセットする。
+	 * @param sqlitedb SQLiteDatabase型、各種ラベルを取得してくるDBインスタンス
+	 * @param carId int型、クルマのCAR_ID
+	 */
+	private void setUnitLabel(SQLiteDatabase sqlitedb, int carId) {
+		textView_distanceUnit.setText(dbman.getDistanceUnitById(sqlitedb, carId));
+		textView_moneyUnit.setText(dbman.getPriceUnitById(sqlitedb, carId));
+		textView_oilUnit.setText(dbman.getVolumeUnitById(sqlitedb, carId));
+	}
+
+	/**
+	 * 入力された文字列が、数値として正しく処理できるかを判断する。
+	 * @param inputStr String型、判断を行う文字列
+	 * @param totalLength int型、想定しているトータル桁数、小数点を含む
+	 * @param indexOfDecimal int型、小数点の存在位置
+	 * @return 処理できると判断されたものはtrue、そうでないものはfalse
+	 */
+	private boolean isValidParams(String inputStr, int totalLength, int indexOfDecimal) {
+		// TODO 処理を実装する
+		boolean result = false;
+
+		return result;
+	}
 }
