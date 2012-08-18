@@ -16,6 +16,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.text.Spannable;
 import android.text.SpannableStringBuilder;
+import android.text.InputFilter.LengthFilter;
 import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
@@ -24,6 +25,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.Toast;
 
 /**
  * @author kazutoshi
@@ -180,21 +182,42 @@ public class FuelMileageAdd extends Activity {
 				// TODO 自動生成されたメソッド・スタブ
 				// 燃費記録を追加するにあたり、DBにセットするための値を取得する
 				int targetCarId = dbman.getCarId(db, getCarNameFromSpinner());
+				double amountOfOil;
+				int unitPrice, odometer;
 
-				// EditTextに入力されている値を取り出す（加工があまり必要でないもの）
+				// EditTextに入力されている値を取り出す
 				SpannableStringBuilder ssbAmountOfOil = (SpannableStringBuilder)editText_amountOfOil.getText();
 				SpannableStringBuilder ssbUnitPrice = (SpannableStringBuilder)editText_unitPrice.getText();
 				SpannableStringBuilder ssbComments = (SpannableStringBuilder)editText_comments.getText();
 				SpannableStringBuilder ssbOdometer = (SpannableStringBuilder)EditText_odometer.getText();
 
-				long amountOfOil = Long.parseLong(ssbAmountOfOil.toString());
-				int unitPrice = Integer.parseInt(ssbUnitPrice.toString());
-				int odometer = Integer.parseInt(ssbOdometer.toString());
+				if (isValidDouble(ssbAmountOfOil.toString())) {
+					amountOfOil = Double.parseDouble(ssbAmountOfOil.toString());
+				} else {
+					amountOfOil = 0.0;
+				}
+				if (isValidInt(ssbUnitPrice.toString())) {
+					unitPrice = Integer.parseInt(ssbUnitPrice.toString());
+				} else {
+					unitPrice = 0;
+				}
+				if (isValidInt(ssbOdometer.toString())) {
+					odometer = Integer.parseInt(ssbOdometer.toString());
+				} else {
+					odometer = 0;
+				}
+
 				String comments = ssbComments.toString();
 
-				//editText_dateOfRefuel.setText(blank);
-				//editText_timeOfRefuel.setText(blank);
+				// 日時は、currentDateTimeをgetInstance()した時の値をそのまま使う(^^;)
+				long ret = dbman.addMileageById(db, targetCarId, amountOfOil, odometer, unitPrice, comments, currentDateTime);
 
+				if (ret == -1 ) {
+					Log.d("button_addRefuelRecord_Click", "Failed to add Mileage record.");
+				} else {
+					Log.d("button_addRefuelRecord_Click", "Adding Mileage record successful. rowId = " + String.valueOf(ret));
+					showToastMsg(db, targetCarId, currentDateTime, amountOfOil, odometer);
+				}
 			}
 		});
 
@@ -419,16 +442,114 @@ public class FuelMileageAdd extends Activity {
 	}
 
 	/**
-	 * 入力された文字列が、数値として正しく処理できるかを判断する。
-	 * @param inputStr String型、判断を行う文字列
-	 * @param totalLength int型、想定しているトータル桁数、小数点を含む
-	 * @param indexOfDecimal int型、小数点の存在位置
-	 * @return 処理できると判断されたものはtrue、そうでないものはfalse
+	 * 入力された文字列がint型の数値として処理可能かを判断する。
+	 * @param inputStr 判断に使用する文字列
+	 * @return boolean型、int型として扱える場合はtrue、そうでない場合はfalse
 	 */
-	private boolean isValidParams(String inputStr, int totalLength, int indexOfDecimal) {
-		// TODO 処理を実装する
+	private boolean isValidInt(String inputStr) {
 		boolean result = false;
 
+		Log.d("isValidInt", "Input text is " + inputStr);
+
+		if (inputStr.equals(TEXT_BLANK)) {
+			result = false;
+			Log.e("isValidInt", "Input String is nothing to display. Parsing to Integer failed.");
+		}
+
+		try {
+			int testValue = Integer.parseInt(inputStr);
+			result = true;
+			Log.d("isValidInt", "Parsing to Integer successful. Output number is " + String.valueOf(testValue));
+		} catch (NumberFormatException nfe) {
+			result = false;
+			Log.e("isValidInt", "NumberFormatException occured. Parsing to Integer failed.");
+		} catch (Exception e) {
+			result = false;
+			Log.e("isValidInt", "Other Exception occured. Parsing to Integer failed.");
+		}
+
 		return result;
+	}
+
+	/**
+	 * 入力された文字列がlong型の数値として処理可能かを判断する。
+	 * @param inputStr 判断に使用する文字列
+	 * @return boolean型、long型として扱える場合はtrue、そうでない場合はfalse
+	 */
+	private boolean isValidLong(String inputStr) {
+		boolean result = false;
+
+		Log.d("isValidLong", "Input text is " + inputStr);
+
+		if (inputStr.equals(TEXT_BLANK)) {
+			result = false;
+			Log.e("isValidLong", "Input String is nothing to display. Parsing to Long failed.");
+		}
+
+		try {
+			long testValue = Long.parseLong(inputStr);
+			result = true;
+			Log.d("isValidLong", "Parsing to Long successful. Output number is " + String.valueOf(testValue));
+		} catch (NumberFormatException nfe) {
+			result = false;
+			Log.e("isValidLong", "NumberFormatException occured. Parsing to Long failed.");
+		} catch (Exception e) {
+			result = false;
+			Log.e("isValidInt", "Other Exception occured. Parsing to Integer failed.");
+		}
+		return result;
+	}
+
+	/**
+	 * 入力された文字列がdouble型の数値として処理可能かを判断する。
+	 * @param inputStr 判断に使用する文字列
+	 * @return boolean型、double型として扱える場合はtrue、そうでない場合はfalse
+	 */
+	private boolean isValidDouble(String inputStr) {
+		boolean result = false;
+
+		Log.d("isValidDouble", "Input text is " + inputStr);
+
+		if (inputStr.equals(TEXT_BLANK)) {
+			result = false;
+			Log.e("isValidDouble", "Input String is nothing to display. Parsing to Double failed.");
+		}
+
+		try {
+			double testValue = Double.parseDouble(inputStr);
+			result = true;
+			Log.d("isValidDouble", "Parsing to Double successful. Output number is " + String.valueOf(testValue));
+		} catch (NumberFormatException nfe) {
+			result = false;
+			Log.e("isValidLong", "NumberFormatException occured. Parsing to Double failed.");
+		} catch (Exception e) {
+			result = false;
+			Log.e("isValidInt", "Other Exception occured. Parsing to Integer failed.");
+		}
+
+		return result;
+	}
+
+	/**
+	 * DBに追加した内容をトースト表示する。
+	 * @param db
+	 * @param carId
+	 * @param gcd
+	 * @param amountOfOil
+	 * @param odometer
+	 */
+	private void showToastMsg(SQLiteDatabase db, int carId, Calendar gcd, double amountOfOil, int odometer) {
+		String line1, line2, line3, line4;
+
+		// CAR_IDからクルマの名前を特定する
+		String carName = dbman.getCarNameById(db, carId);
+
+		// 表示する文章を組み立てる
+		line1 = carName + getString(R.string.toastmsg_addmileage1);
+		line2 = getString(R.string.toastmsg_addmileage2) + dmngr.getISO8601Date(gcd, true);
+		line3 = getString(R.string.toastmsg_addmileage3) + String.valueOf(amountOfOil);
+		line4 = getString(R.string.toastmsg_addmileage4) + String.valueOf(odometer);
+
+		Toast.makeText(this, line1 + "\n" + line2 + "\n" + line3 + "\n" + line4, Toast.LENGTH_LONG).show();
 	}
 }
