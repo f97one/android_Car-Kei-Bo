@@ -9,11 +9,14 @@ import java.util.Date;
 import java.util.List;
 
 import android.app.Activity;
+import android.app.DatePickerDialog;
+import android.app.TimePickerDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
+import android.provider.Settings;
 import android.text.Spannable;
 import android.text.SpannableStringBuilder;
 import android.text.InputFilter.LengthFilter;
@@ -23,9 +26,11 @@ import android.view.View.OnClickListener;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.TimePicker;
 import android.widget.Toast;
 
 /**
@@ -49,6 +54,11 @@ public class FuelMileageAdd extends Activity implements OnClickListener {
 	TextView textView_oilUnit;
 	TextView textView_distanceUnit;
 	TextView textView_moneyUnit;
+	DatePickerDialog dpDialog;
+	TimePickerDialog tpDialog;
+
+	DatePickerDialog.OnDateSetListener dpListener;
+	TimePickerDialog.OnTimeSetListener tpListener;
 
 	private int CAR_ID;
 	private String CAR_NAME;
@@ -189,6 +199,43 @@ public class FuelMileageAdd extends Activity implements OnClickListener {
 		setDateToEdit(currentDateTime);
 		setTimeToEdit(currentDateTime);
 
+		// DateSetLintenerをセットする
+		dpListener = new DatePickerDialog.OnDateSetListener() {
+
+			@Override
+			public void onDateSet(DatePicker view, int year, int monthOfYear,
+					int dayOfMonth) {
+				// 日付をcurrentDateTimeにセットする
+				currentDateTime.set(year, monthOfYear, dayOfMonth);
+
+				// EditTextにセットされている日時を更新する
+				setDateToEdit(currentDateTime);
+				setTimeToEdit(currentDateTime);
+
+				Log.d("onDateSet", "Current date has set to " + dmngr.getISO8601Date(currentDateTime, false));
+			}
+
+		};
+
+		// TimePickerlistenerをセットする
+		tpListener = new TimePickerDialog.OnTimeSetListener() {
+
+			@Override
+			public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
+				// 時刻をcurrentDateTimeにセットする
+				currentDateTime.set(Calendar.HOUR, hourOfDay);
+				currentDateTime.set(Calendar.MINUTE, minute);
+				// TimePickerDialogは秒を指定できないので、ユリウス通日を使用する関係上
+				// 秒を0としてセットする。
+				currentDateTime.set(Calendar.SECOND, 0);
+
+				// EditTextにセットされている日時を更新する
+				setDateToEdit(currentDateTime);
+				setTimeToEdit(currentDateTime);
+
+				Log.d("onTimeSet", "Current datetime has set to " + dmngr.getISO8601Date(currentDateTime, true));
+			}
+		};
 	}
 
 	/**
@@ -486,6 +533,11 @@ public class FuelMileageAdd extends Activity implements OnClickListener {
 		Toast.makeText(this, line1 + "\n" + line2 + "\n" + line3 + "\n" + line4, Toast.LENGTH_LONG).show();
 	}
 
+	/**
+	 * OnClickListenerをセットされているウィジェットが、クリックイベントを検知した時に
+	 * 呼び出される。
+	 * @param v View型、リスナーを読んだView
+	 */
 	@Override
 	public void onClick(View v) {
 		// TODO 自動生成されたメソッド・スタブ
@@ -556,13 +608,24 @@ public class FuelMileageAdd extends Activity implements OnClickListener {
 			break;
 
 		case R.id.button_editDate:					// 給油日の編集ボタン
-			// TODO DatePickerDialogを使い、給油日を編集する処理を実装する。
+			// 年、月、日をそれぞれ取得する
+			int year = currentDateTime.get(Calendar.YEAR);
+			int month = currentDateTime.get(Calendar.MONTH);
+			int dayOfMonth = currentDateTime.get(Calendar.DAY_OF_MONTH);
 
+			dpDialog = new DatePickerDialog(this, dpListener, year, month, dayOfMonth);
+			dpDialog.show();
 			break;
 
 		case R.id.button_editTime:					// 給油時刻の編集ボタン
-			// TODO DatePickerDialogを使い、給油日を編集する処理を実装する。
+			// 時、分をそれぞれ取得する。
+			int hour = currentDateTime.get(Calendar.HOUR);
+			int minute = currentDateTime.get(Calendar.MINUTE);
 
+			// TimePickerDialogには、「24時間制表記にするか」の設定があるため、
+			// 第5引数に端末の設定を判断した結果をセットしている。
+			tpDialog = new TimePickerDialog(this, tpListener, hour, minute, isSetting24hourFormat());
+			tpDialog.show();
 			break;
 
 		default:
@@ -570,4 +633,24 @@ public class FuelMileageAdd extends Activity implements OnClickListener {
 			break;
 		}
 	}
+
+	/**
+	 * 端末の「日付と時刻の設定」で、時刻表記が24時間制か否かを判断する。
+	 * @return boolean型、24時間制の場合はtrue、12時間制の場合はfalse
+	 */
+	private boolean isSetting24hourFormat() {
+		boolean result = false;
+
+		// 12、または24をString型で返してくるため、Stringの比較で判断する。
+		String str = Settings.System.getString(getApplicationContext().getContentResolver(), Settings.System.TIME_12_24);
+		String hours24 = "24";
+
+		// 端末の設定が24時間制だった場合は、trueをセット
+		if (hours24.equals(str)) {
+			result = true;
+		}
+
+		return result;
+	}
+
 }
