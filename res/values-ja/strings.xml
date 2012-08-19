@@ -52,5 +52,9 @@
 	<string name="label_timeOfRefuel">給油時刻</string>
 	<string name="label_comments">コメント</string>
 	<string name="label_btn_edit">修正...</string>
+	<string name="toastmsg_addmileage1"> の燃費記録をデータベースに追加しました。</string>
+	<string name="toastmsg_addmileage2">給油日時 : </string>
+	<string name="toastmsg_addmileage3">給油量 : </string>
+	<string name="toastmsg_addmileage4">走行距離 : </string>
 
 </resources>
