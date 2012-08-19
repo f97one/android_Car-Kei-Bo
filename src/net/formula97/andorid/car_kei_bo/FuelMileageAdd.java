@@ -19,6 +19,7 @@ import android.text.SpannableStringBuilder;
 import android.text.InputFilter.LengthFilter;
 import android.util.Log;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
@@ -31,7 +32,7 @@ import android.widget.Toast;
  * @author kazutoshi
  *
  */
-public class FuelMileageAdd extends Activity {
+public class FuelMileageAdd extends Activity implements OnClickListener {
 
 	// ウィジェット類の宣言
 	Spinner spinner_carName;
@@ -43,6 +44,8 @@ public class FuelMileageAdd extends Activity {
 	EditText editText_comments;
 	Button button_addRefuelRecord;
 	Button button_cancelAddRefuelRecord;
+	Button button_editDate;
+	Button button_editTime;
 	TextView textView_oilUnit;
 	TextView textView_distanceUnit;
 	TextView textView_moneyUnit;
@@ -80,6 +83,8 @@ public class FuelMileageAdd extends Activity {
 		editText_comments = (EditText)findViewById(R.id.editText_comments);
 		button_addRefuelRecord = (Button)findViewById(R.id.button_addRefuelRecord);
 		button_cancelAddRefuelRecord = (Button)findViewById(R.id.button_cancelAddRefuelRecord);
+		button_editDate = (Button)findViewById(R.id.button_editDate);
+		button_editTime = (Button)findViewById(R.id.button_editTime);
 		textView_oilUnit = (TextView)findViewById(R.id.textView_oilUnit);
 		textView_distanceUnit = (TextView)findViewById(R.id.textView_distanceUnit);
 		textView_moneyUnit = (TextView)findViewById(R.id.textView_moneyUnit);
@@ -174,82 +179,10 @@ public class FuelMileageAdd extends Activity {
 		});
 
 		// ボタンにコールバックリスナーを定義
-		//   燃費記録追加
-		button_addRefuelRecord.setOnClickListener(new View.OnClickListener() {
-
-			@Override
-			public void onClick(View v) {
-				// TODO 自動生成されたメソッド・スタブ
-				// 燃費記録を追加するにあたり、DBにセットするための値を取得する
-				int targetCarId = dbman.getCarId(db, getCarNameFromSpinner());
-				double amountOfOil;
-				int unitPrice, odometer;
-
-				// EditTextに入力されている値を取り出す
-				SpannableStringBuilder ssbAmountOfOil = (SpannableStringBuilder)editText_amountOfOil.getText();
-				SpannableStringBuilder ssbUnitPrice = (SpannableStringBuilder)editText_unitPrice.getText();
-				SpannableStringBuilder ssbComments = (SpannableStringBuilder)editText_comments.getText();
-				SpannableStringBuilder ssbOdometer = (SpannableStringBuilder)EditText_odometer.getText();
-
-				if (isValidDouble(ssbAmountOfOil.toString())) {
-					amountOfOil = Double.parseDouble(ssbAmountOfOil.toString());
-				} else {
-					amountOfOil = 0.0;
-				}
-				if (isValidInt(ssbUnitPrice.toString())) {
-					unitPrice = Integer.parseInt(ssbUnitPrice.toString());
-				} else {
-					unitPrice = 0;
-				}
-				if (isValidInt(ssbOdometer.toString())) {
-					odometer = Integer.parseInt(ssbOdometer.toString());
-				} else {
-					odometer = 0;
-				}
-
-				String comments = ssbComments.toString();
-
-				// 日時は、currentDateTimeをgetInstance()した時の値をそのまま使う(^^;)
-				long ret = dbman.addMileageById(db, targetCarId, amountOfOil, odometer, unitPrice, comments, currentDateTime);
-
-				if (ret == -1 ) {
-					Log.d("button_addRefuelRecord_Click", "Failed to add Mileage record.");
-				} else {
-					Log.d("button_addRefuelRecord_Click", "Adding Mileage record successful. rowId = " + String.valueOf(ret));
-					showToastMsg(db, targetCarId, currentDateTime, amountOfOil, odometer);
-				}
-			}
-		});
-
-		//   キャンセル
-		button_cancelAddRefuelRecord.setOnClickListener(new View.OnClickListener() {
-
-			/**
-			 * EditTextの中身をクリアし、スピナーの初期値を引き渡されたCAR_NAMEに変更する。
-			 * @param v View型、ボタンのView
-			 */
-			@Override
-			public void onClick(View v) {
-
-				// EditTextに空の値をセットする
-				editText_amountOfOil.setText(TEXT_BLANK);
-				editText_dateOfRefuel.setText(TEXT_BLANK);
-				editText_unitPrice.setText(TEXT_BLANK);
-				EditText_odometer.setText(TEXT_BLANK);
-				editText_comments.setText(TEXT_BLANK);
-				editText_timeOfRefuel.setText(TEXT_BLANK);
-
-				// スピナーに値をセットしなおす前に、開かれているCursorをいったん閉じる
-				closeCursor();
-				setSpinner(db, CAR_NAME);
-
-				// 現在日付と現在時刻をeditTextにセットする
-				currentDateTime = dmngr.getNow();
-				setDateToEdit(currentDateTime);
-				setTimeToEdit(currentDateTime);
-
-			}
-		});
+		button_addRefuelRecord.setOnClickListener(this);		// 燃費記録追加
+		button_cancelAddRefuelRecord.setOnClickListener(this);	// キャンセル
+		button_editDate.setOnClickListener(this);				// 給油日の編集ボタン
+		button_editTime.setOnClickListener(this);				// 給油時刻の編集ボタン
 
 		// 現在日付と現在時刻をeditTextにセットする
 		currentDateTime = dmngr.getNow();
@@ -551,5 +484,90 @@ public class FuelMileageAdd extends Activity {
 		line4 = getString(R.string.toastmsg_addmileage4) + String.valueOf(odometer);
 
 		Toast.makeText(this, line1 + "\n" + line2 + "\n" + line3 + "\n" + line4, Toast.LENGTH_LONG).show();
+	}
+
+	@Override
+	public void onClick(View v) {
+		// TODO 自動生成されたメソッド・スタブ
+
+		int viewId = v.getId();
+
+		switch (viewId) {
+		case R.id.button_addRefuelRecord:			// 燃費記録追加ボタン
+			// 燃費記録を追加するにあたり、DBにセットするための値を取得する
+			int targetCarId = dbman.getCarId(db, getCarNameFromSpinner());
+			double amountOfOil;
+			int unitPrice, odometer;
+
+			// EditTextに入力されている値を取り出す
+			SpannableStringBuilder ssbAmountOfOil = (SpannableStringBuilder)editText_amountOfOil.getText();
+			SpannableStringBuilder ssbUnitPrice = (SpannableStringBuilder)editText_unitPrice.getText();
+			SpannableStringBuilder ssbComments = (SpannableStringBuilder)editText_comments.getText();
+			SpannableStringBuilder ssbOdometer = (SpannableStringBuilder)EditText_odometer.getText();
+
+			if (isValidDouble(ssbAmountOfOil.toString())) {
+				amountOfOil = Double.parseDouble(ssbAmountOfOil.toString());
+			} else {
+				amountOfOil = 0.0;
+			}
+			if (isValidInt(ssbUnitPrice.toString())) {
+				unitPrice = Integer.parseInt(ssbUnitPrice.toString());
+			} else {
+				unitPrice = 0;
+			}
+			if (isValidInt(ssbOdometer.toString())) {
+				odometer = Integer.parseInt(ssbOdometer.toString());
+			} else {
+				odometer = 0;
+			}
+
+			String comments = ssbComments.toString();
+
+			// 日時は、currentDateTimeをgetInstance()した時の値をそのまま使う(^^;)
+			long ret = dbman.addMileageById(db, targetCarId, amountOfOil, odometer, unitPrice, comments, currentDateTime);
+
+			if (ret == -1 ) {
+				Log.d("button_addRefuelRecord_Click", "Failed to add Mileage record.");
+			} else {
+				Log.d("button_addRefuelRecord_Click", "Adding Mileage record successful. rowId = " + String.valueOf(ret));
+				showToastMsg(db, targetCarId, currentDateTime, amountOfOil, odometer);
+			}
+
+			break;
+
+		case R.id.button_cancelAddRefuelRecord:		// キャンセルボタン
+			// EditTextに空の値をセットする
+			editText_amountOfOil.setText(TEXT_BLANK);
+			editText_dateOfRefuel.setText(TEXT_BLANK);
+			editText_unitPrice.setText(TEXT_BLANK);
+			EditText_odometer.setText(TEXT_BLANK);
+			editText_comments.setText(TEXT_BLANK);
+			editText_timeOfRefuel.setText(TEXT_BLANK);
+
+			// スピナーに値をセットしなおす前に、開かれているCursorをいったん閉じる
+			closeCursor();
+			setSpinner(db, CAR_NAME);
+
+			// 現在日付と現在時刻をeditTextにセットする
+			currentDateTime = dmngr.getNow();
+			setDateToEdit(currentDateTime);
+			setTimeToEdit(currentDateTime);
+
+			break;
+
+		case R.id.button_editDate:					// 給油日の編集ボタン
+			// TODO DatePickerDialogを使い、給油日を編集する処理を実装する。
+
+			break;
+
+		case R.id.button_editTime:					// 給油時刻の編集ボタン
+			// TODO DatePickerDialogを使い、給油日を編集する処理を実装する。
+
+			break;
+
+		default:
+
+			break;
+		}
 	}
 }
