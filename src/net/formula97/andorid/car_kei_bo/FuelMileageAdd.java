@@ -536,7 +536,7 @@ public class FuelMileageAdd extends Activity implements OnClickListener {
 	/**
 	 * OnClickListenerをセットされているウィジェットが、クリックイベントを検知した時に
 	 * 呼び出される。
-	 * @param v View型、リスナーを読んだView
+	 * @param v View型、リスナーを呼んだView
 	 */
 	@Override
 	public void onClick(View v) {
