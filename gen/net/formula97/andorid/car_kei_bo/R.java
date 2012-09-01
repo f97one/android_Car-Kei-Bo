@@ -35,8 +35,6 @@ public final class R {
         public static final int button_editTime=0x7f090029;
         public static final int checkBox_SetDefault=0x7f090003;
         public static final int ctxitem_add_mileage=0x7f090047;
-        public static final int ctxitem_delete_car=0x7f09004a;
-        public static final int ctxitem_edit_car_preference=0x7f090049;
         public static final int ctxitem_set_default_car=0x7f090048;
         public static final int ctxitem_show_mileage=0x7f090046;
         public static final int editText_amountOfOil=0x7f090019;
@@ -49,9 +47,9 @@ public final class R {
         public static final int ll_horizParent=0x7f09000e;
         public static final int ll_vertParent=0x7f09000d;
         public static final int lv_mileagelist=0x7f09003a;
-        public static final int optionsmenu_addcar=0x7f09004c;
-        public static final int optionsmenu_carlist=0x7f09004b;
-        public static final int optionsmenu_closeAPP=0x7f09004d;
+        public static final int optionsmenu_addcar=0x7f09004a;
+        public static final int optionsmenu_carlist=0x7f090049;
+        public static final int optionsmenu_closeAPP=0x7f09004b;
         public static final int spinner_carName=0x7f090017;
         public static final int spinner_distanceUnit=0x7f090007;
         public static final int spinner_priceUnit=0x7f090005;

@@ -277,14 +277,14 @@ public class CarList extends Activity implements OnClickListener {
 			// 燃費記録追加画面を呼び出す
 			addMileage(currentCarID, currentCarName);
 			break;
-		case R.id.ctxitem_delete_car:
-			// クルマを削除する
-			deleteCar(currentCarID, currentCarName);
-			break;
-		case R.id.ctxitem_edit_car_preference:
-			// クルマの設定を変更する
-			editCarPreference(currentCarID, currentCarName);
-			break;
+//		case R.id.ctxitem_delete_car:
+//			// クルマを削除する
+//			deleteCar(currentCarID, currentCarName);
+//			break;
+//		case R.id.ctxitem_edit_car_preference:
+//			// クルマの設定を変更する
+//			editCarPreference(currentCarID, currentCarName);
+//			break;
 		case R.id.ctxitem_set_default_car:
 			// デフォルトカーにする
 			changeAsDefault(currentCarID, currentCarName);
