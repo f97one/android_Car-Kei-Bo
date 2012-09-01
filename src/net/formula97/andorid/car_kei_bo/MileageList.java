@@ -13,6 +13,7 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.ListView;
+import android.widget.SimpleCursorAdapter;
 import android.widget.TextView;
 
 /**
@@ -80,6 +81,9 @@ public class MileageList extends Activity implements OnClickListener {
 	protected void onDestroy() {
 		// TODO 自動生成されたメソッド・スタブ
 		super.onDestroy();
+
+		closeCursor(cMileageList);
+		closeDb(db);
 	}
 
 	/* (非 Javadoc)
@@ -89,6 +93,9 @@ public class MileageList extends Activity implements OnClickListener {
 	protected void onPause() {
 		// TODO 自動生成されたメソッド・スタブ
 		super.onPause();
+
+		closeCursor(cMileageList);
+		closeDb(db);
 	}
 
 	/* (非 Javadoc)
@@ -99,6 +106,25 @@ public class MileageList extends Activity implements OnClickListener {
 		// TODO 自動生成されたメソッド・スタブ
 		super.onResume();
 
+		db = dbman.getReadableDatabase();
+
+		cMileageList = dbman.getRefuelRecordsById(db, getCAR_ID(), true);
+
+		String[] from = {
+				"_id",
+				"DATE_OF_REFUEL",
+				"LUB_AMOUNT",
+				"VOLUMEUNIT"
+				};
+		int[] to = {
+				R.id.tv_value_number_refuel,
+				R.id.tv_value_dateOfRefuel,
+				R.id.tv_value_amountOfOil,
+				R.id.tv_unit_amountOfOil
+				};
+
+		SimpleCursorAdapter sca = new SimpleCursorAdapter(getApplicationContext(), R.layout.listviewelemnt_mileagelist, cMileageList, from, to);
+		lv_mileagelist.setAdapter(sca);
 
 		btn_add_mileage.setOnClickListener(this);
 	}
@@ -146,5 +172,21 @@ public class MileageList extends Activity implements OnClickListener {
 			break;
 		}
 	}
+
+	private void closeCursor(Cursor c) {
+		if (c.isClosed() != true) {
+			c.close();
+		}
+
+		Log.d("closeCursor", "Cursor object closed, : " + c.toString());
+	}
+
+	private void closeDb(SQLiteDatabase db) {
+		if (db.isOpen()) {
+			db.close();
+
+			Log.d("closeDb", "SQLiteDatabase is closed.");
+	}
+ }
 
 }

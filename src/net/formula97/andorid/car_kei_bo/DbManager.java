@@ -39,6 +39,53 @@ public class DbManager extends SQLiteOpenHelper {
 	}
 
 	/**
+	 * CAR_IDに対応する燃費記録を、LUB_MASTERに記録する。
+	 * @param db SQLiteDatabase型、燃費を記録するDBインスタンス
+	 * @param carId int型、燃費を記録するクルマのCAR_ID
+	 * @param amountOfOil long型、給油量
+	 * @param odometer int型、給油を行った時の走行メーター値
+	 * @param unitPrice int型、給油を行った時の給油単価
+	 * @param comments String型、給油時のコメントを入力
+	 * @param gregolianDay Calendar型、給油を行った日時
+	 * @return long型、insertに成功すればそのときのrowIdを、失敗すれば-1を返す。なお、失敗時はSQLExceptionを投げる
+	 */
+	protected long addMileageById (SQLiteDatabase db, int carId, double amountOfOil, int odometer, int unitPrice, String comments, Calendar gregolianDay) {
+		long result = 0;
+
+		// レコードを追加する
+		ContentValues value = new ContentValues();
+		value.put("CAR_ID", carId);
+		// 入力されたCalendarをユリウス通日に変換する
+		DateManager dm = new DateManager();
+		double julianDay = dm.toJulianDay(gregolianDay);
+
+		// 価格、距離、体積の各単位をセット
+		value.put("REFUEL_DATE", julianDay);
+		value.put("LUB_AMOUNT", amountOfOil);
+		value.put("UNIT_PRICE", unitPrice);
+		value.put("ODOMETER", odometer);
+		value.put("COMMENTS", comments);
+
+		// トランザクション開始
+		db.beginTransaction();
+		try {
+			// 失敗したら例外を投げるinsertOrThrowでレコードをINSERT
+			result = db.insertOrThrow(LUB_MASTER, null, value);
+
+			// 例外が投げられなければ、トランザクション成功をセット
+			db.setTransactionSuccessful();
+		} catch (SQLException e) {
+			Log.e(DATABASE_NAME, "Car record insert failed, ");
+		} finally {
+			// トランザクション終了
+			// INSERTに失敗した場合は、endTransaction()を呼んだところでロールバックされる
+			db.endTransaction();
+		}
+
+		return result;
+	}
+
+	/**
 	 * クルマのレコードを追加する。
 	 *   ....引数多いな、オイ(^^;)
 	 * @param db SQLiteDatabase型、操作するDBインスタンス
@@ -156,6 +203,93 @@ public class DbManager extends SQLiteOpenHelper {
 	}
 
 	/**
+	 * クルマのCAR_IDからクルマのレコードを削除する。
+	 * @param db SQLiteDatabase型、レコード削除対象のDBインスタンス
+	 * @param carId int型、削除するクルマのCAR_ID
+	 * @return int型、削除したレコード数
+	 */
+	protected int deleteCarById(SQLiteDatabase db, int carId) {
+		int result;
+
+		// deleteメソッドに渡す値
+		String table = CAR_MASTER;
+		String where = "CAR_ID = ?";
+		String[] args = {String.valueOf(carId)};
+
+		// 削除したレコード数を格納する。
+		// 通常「1」しか入っていないはず....。
+		result = db.delete(table, where, args);
+
+		return result;
+	}
+
+	/**
+	 * クルマのCAR_IDに対応するランニングコスト記録を削除する。
+	 * @param db SQLiteDatabase型、レコード削除対象のDBインスタンス
+	 * @param carId int型、削除するクルマのCAR_ID
+	 * @return int型、削除したレコード数
+	 */
+	protected int deleteCostsByCarId(SQLiteDatabase db, int carId) {
+		int result;
+
+		// deleteメソッドに渡す値
+		String table = COSTS_MASTER;
+		String where = "CAR_ID = ?";
+		String[] args = {String.valueOf(carId)};
+
+		// 削除したレコード数を格納する。
+		result = db.delete(table, where, args);
+
+		return result;
+	}
+
+	/**
+	 * クルマのCAR_IDに対応する給油記録を削除する。
+	 * @param db SQLiteDatabase型、レコード削除対象のDBインスタンス
+	 * @param carId int型、削除するクルマのCAR_ID
+	 * @return int型、削除したレコード数
+	 */
+	protected int deleteLubsByCarId(SQLiteDatabase db, int carId) {
+		int result;
+
+		// deleteメソッドに渡す値
+		String table = LUB_MASTER;
+		String where = "CAR_ID = ?";
+		String[] args = {String.valueOf(carId)};
+
+		// 削除したレコード数を格納する。
+		result = db.delete(table, where, args);
+
+		return result;
+	}
+
+	/**
+	 * 入力されたクルマのCAR_IDから、CAR_NAMEを返す。
+	 * @param db SQLiteDatabase型、操作するDBインスタンス
+	 * @param carId int型、チェックするクルマのcarId
+	 * @return String型、チェックする車のcarIdに対応する名前
+	 */
+	protected String findCarNameById(SQLiteDatabase db, int carId) {
+		// 戻り値を格納する変数
+		String sRet;
+
+		// クエリを格納する変数を定義
+		// 検索フィールド名と検索値は配列にしないと怒られるので、配列に書き直している。
+		Cursor q;
+		String[] columns = {"CAR_NAME"};
+		String where = "CAR_ID = ?";
+		// CAR_IDはintだが、query()がString[]であることを要求しているので、valueOf()でStringに変換する
+		String[] args = {String.valueOf(carId)};
+
+		q = db.query(CAR_MASTER, columns, where, args, null, null, null);
+		q.moveToFirst();
+		sRet = q.getString(0);
+		q.close();
+
+		return sRet;
+	}
+
+	/**
 	 * 入力されたクルマの名前から、CAR_IDを返す。
 	 * @param db SQLiteDatabase型、操作するDBインスタンス
 	 * @param carName String型、チェックするクルマの名前
@@ -202,12 +336,12 @@ public class DbManager extends SQLiteOpenHelper {
 	}
 
 	/**
-	 * 入力されたクルマのCAR_IDから、CAR_NAMEを返す。
-	 * @param db SQLiteDatabase型、操作するDBインスタンス
-	 * @param carId int型、チェックするクルマのcarId
-	 * @return String型、チェックする車のcarIdに対応する名前
+	 * CAR_IDに対応するクルマの名称を返す。
+	 * @param db SQLiteDatabase型、
+	 * @param carId
+	 * @return
 	 */
-	protected String findCarNameById(SQLiteDatabase db, int carId) {
+	protected String getCarNameById (SQLiteDatabase db, int carId) {
 		// 戻り値を格納する変数
 		String sRet;
 
@@ -216,15 +350,37 @@ public class DbManager extends SQLiteOpenHelper {
 		Cursor q;
 		String[] columns = {"CAR_NAME"};
 		String where = "CAR_ID = ?";
-		// CAR_IDはintだが、query()がString[]であることを要求しているので、valueOf()でStringに変換する
+		// DEFAULT_FLAG=1を検索するのだが、query()がString[]であることを要求しているので、valueOf()でStringに変換する
 		String[] args = {String.valueOf(carId)};
 
 		q = db.query(CAR_MASTER, columns, where, args, null, null, null);
 		q.moveToFirst();
 		sRet = q.getString(0);
+		Log.i(CAR_MASTER, "Found specified car : " + sRet + " , related to CAR_ID : " + String.valueOf(carId));
 		q.close();
 
 		return sRet;
+	}
+
+	/**
+	 * 燃費追加等でスピナーにセットするデータを取得する。
+	 * @param db SQLiteDatabase型、操作するDBインスタンス
+	 * @return Cursor型、Cursorオブジェクトをそのまま返すので、Cursor#close()は行わない。
+	 */
+	protected Cursor getCarNameList(SQLiteDatabase db) {
+		// クエリを格納する変数の定義
+		Cursor q;
+		String[] columns = {"CAR_ID AS _id", "CAR_NAME"};
+		//String where = "CAR_ID = ?";
+		//String[] args = {String.valueOf(1)};
+		//String groupBy = ""
+		//String having = ""
+		String orderBy = "CAR_ID";
+
+		q = db.query(CAR_MASTER, columns, null, null, null, null, orderBy);
+		q.moveToFirst();
+
+		return q;
 	}
 
 	/**
@@ -276,6 +432,131 @@ public class DbManager extends SQLiteOpenHelper {
 		q.close();
 
 		return sRet;
+	}
+
+	/**
+	 * CAR_IDのクルマに対応する距離の単位を返す。
+	 * @param db SQLiteDatabase型、検索するDBインスタンス
+	 * @param carId int型、検索するクルマのCAR_ID
+	 * @return String型、その車の距離の単位
+	 */
+	protected String getDistanceUnitById(SQLiteDatabase db, int carId) {
+		Cursor q;
+
+		String[] columns = {"DISTANCEUNIT"};
+		String where = "CAR_ID = ?";
+		String[] args = {String.valueOf(carId)};
+		//String groupBy = ""
+		//String having = ""
+		//String orderBy = "CAR_ID";
+
+		q = db.query(CAR_MASTER, columns, where, args, null, null, null);
+		q.moveToFirst();
+
+		String unit = q.getString(0);
+		q.close();
+
+		return unit;
+	}
+
+	/**
+	 * CAR_IDのクルマに対応する燃費の表示ラベルを返す。
+	 * @param db SQLiteDatabase型、検索するDBインスタンス
+	 * @param carId int型、検索するクルマのCAR_ID
+	 * @return String型、その車の燃費の表示ラベル
+	 */
+	protected String getFuelmileageLabelById(SQLiteDatabase db, int carId) {
+		Cursor q;
+
+		String[] columns = {"FUELMILEAGE_LABEL"};
+		String where = "CAR_ID = ?";
+		String[] args = {String.valueOf(carId)};
+		//String groupBy = ""
+		//String having = ""
+		//String orderBy = "CAR_ID";
+
+		q = db.query(CAR_MASTER, columns, where, args, null, null, null);
+		q.moveToFirst();
+
+		String unit = q.getString(0);
+		q.close();
+
+		return unit;
+	}
+
+	/**
+	 * CAR_IDのクルマに対応する価格の単位を返す。
+	 * @param db SQLiteDatabase型、検索するDBインスタンス
+	 * @param carId int型、検索するクルマのCAR_ID
+	 * @return String型、その車の価格の単位
+	 */
+	protected String getPriceUnitById(SQLiteDatabase db, int carId) {
+		Cursor q;
+
+		String[] columns = {"PRICEUNIT"};
+		String where = "CAR_ID = ?";
+		String[] args = {String.valueOf(carId)};
+		//String groupBy = ""
+		//String having = ""
+		//String orderBy = "CAR_ID";
+
+		q = db.query(CAR_MASTER, columns, where, args, null, null, null);
+		q.moveToFirst();
+
+		String unit = q.getString(0);
+		q.close();
+
+		return unit;
+	}
+
+	/**
+	 * CAR_IDのクルマに対応するランニングコストの表示ラベルを返す。
+	 * @param db SQLiteDatabase型、検索するDBインスタンス
+	 * @param carId int型、検索するクルマのCAR_ID
+	 * @return String型、その車のランニングコストの表示ラベル
+	 */
+	protected String getRunningcostLabelById(SQLiteDatabase db, int carId) {
+		Cursor q;
+
+		String[] columns = {"RUNNINGCOST_LABEL"};
+		String where = "CAR_ID = ?";
+		String[] args = {String.valueOf(carId)};
+		//String groupBy = ""
+		//String having = ""
+		//String orderBy = "CAR_ID";
+
+		q = db.query(CAR_MASTER, columns, where, args, null, null, null);
+		q.moveToFirst();
+
+		String unit = q.getString(0);
+		q.close();
+
+		return unit;
+	}
+
+	/**
+	 * CAR_IDのクルマに対応する体積の単位を返す。
+	 * @param db SQLiteDatabase型、検索するDBインスタンス
+	 * @param carId int型、検索するクルマのCAR_ID
+	 * @return String型、その車の体積の単位
+	 */
+	protected String getVolumeUnitById(SQLiteDatabase db, int carId) {
+		Cursor q;
+
+		String[] columns = {"VOLUMEUNIT"};
+		String where = "CAR_ID = ?";
+		String[] args = {String.valueOf(carId)};
+		//String groupBy = ""
+		//String having = ""
+		//String orderBy = "CAR_ID";
+
+		q = db.query(CAR_MASTER, columns, where, args, null, null, null);
+		q.moveToFirst();
+
+		String unit = q.getString(0);
+		q.close();
+
+		return unit;
 	}
 
 	/**
@@ -518,213 +799,6 @@ public class DbManager extends SQLiteOpenHelper {
 	}
 
 	/**
-	 * 燃費追加等でスピナーにセットするデータを取得する。
-	 * @param db SQLiteDatabase型、操作するDBインスタンス
-	 * @return Cursor型、Cursorオブジェクトをそのまま返すので、Cursor#close()は行わない。
-	 */
-	protected Cursor getCarNameList(SQLiteDatabase db) {
-		// クエリを格納する変数の定義
-		Cursor q;
-		String[] columns = {"CAR_ID AS _id", "CAR_NAME"};
-		//String where = "CAR_ID = ?";
-		//String[] args = {String.valueOf(1)};
-		//String groupBy = ""
-		//String having = ""
-		String orderBy = "CAR_ID";
-
-		q = db.query(CAR_MASTER, columns, null, null, null, null, orderBy);
-		q.moveToFirst();
-
-		return q;
-	}
-
-	/**
-	 * CAR_IDのクルマに対応する体積の単位を返す。
-	 * @param db SQLiteDatabase型、検索するDBインスタンス
-	 * @param carId int型、検索するクルマのCAR_ID
-	 * @return String型、その車の体積の単位
-	 */
-	protected String getVolumeUnitById(SQLiteDatabase db, int carId) {
-		Cursor q;
-
-		String[] columns = {"VOLUMEUNIT"};
-		String where = "CAR_ID = ?";
-		String[] args = {String.valueOf(carId)};
-		//String groupBy = ""
-		//String having = ""
-		//String orderBy = "CAR_ID";
-
-		q = db.query(CAR_MASTER, columns, where, args, null, null, null);
-		q.moveToFirst();
-
-		String unit = q.getString(0);
-		q.close();
-
-		return unit;
-	}
-
-	/**
-	 * CAR_IDのクルマに対応する距離の単位を返す。
-	 * @param db SQLiteDatabase型、検索するDBインスタンス
-	 * @param carId int型、検索するクルマのCAR_ID
-	 * @return String型、その車の距離の単位
-	 */
-	protected String getDistanceUnitById(SQLiteDatabase db, int carId) {
-		Cursor q;
-
-		String[] columns = {"DISTANCEUNIT"};
-		String where = "CAR_ID = ?";
-		String[] args = {String.valueOf(carId)};
-		//String groupBy = ""
-		//String having = ""
-		//String orderBy = "CAR_ID";
-
-		q = db.query(CAR_MASTER, columns, where, args, null, null, null);
-		q.moveToFirst();
-
-		String unit = q.getString(0);
-		q.close();
-
-		return unit;
-	}
-
-	/**
-	 * CAR_IDのクルマに対応する価格の単位を返す。
-	 * @param db SQLiteDatabase型、検索するDBインスタンス
-	 * @param carId int型、検索するクルマのCAR_ID
-	 * @return String型、その車の価格の単位
-	 */
-	protected String getPriceUnitById(SQLiteDatabase db, int carId) {
-		Cursor q;
-
-		String[] columns = {"PRICEUNIT"};
-		String where = "CAR_ID = ?";
-		String[] args = {String.valueOf(carId)};
-		//String groupBy = ""
-		//String having = ""
-		//String orderBy = "CAR_ID";
-
-		q = db.query(CAR_MASTER, columns, where, args, null, null, null);
-		q.moveToFirst();
-
-		String unit = q.getString(0);
-		q.close();
-
-		return unit;
-	}
-
-	/**
-	 * CAR_IDのクルマに対応する燃費の表示ラベルを返す。
-	 * @param db SQLiteDatabase型、検索するDBインスタンス
-	 * @param carId int型、検索するクルマのCAR_ID
-	 * @return String型、その車の燃費の表示ラベル
-	 */
-	protected String getFuelmileageLabelById(SQLiteDatabase db, int carId) {
-		Cursor q;
-
-		String[] columns = {"FUELMILEAGE_LABEL"};
-		String where = "CAR_ID = ?";
-		String[] args = {String.valueOf(carId)};
-		//String groupBy = ""
-		//String having = ""
-		//String orderBy = "CAR_ID";
-
-		q = db.query(CAR_MASTER, columns, where, args, null, null, null);
-		q.moveToFirst();
-
-		String unit = q.getString(0);
-		q.close();
-
-		return unit;
-	}
-
-	/**
-	 * CAR_IDのクルマに対応するランニングコストの表示ラベルを返す。
-	 * @param db SQLiteDatabase型、検索するDBインスタンス
-	 * @param carId int型、検索するクルマのCAR_ID
-	 * @return String型、その車のランニングコストの表示ラベル
-	 */
-	protected String getRunningcostLabelById(SQLiteDatabase db, int carId) {
-		Cursor q;
-
-		String[] columns = {"RUNNINGCOST_LABEL"};
-		String where = "CAR_ID = ?";
-		String[] args = {String.valueOf(carId)};
-		//String groupBy = ""
-		//String having = ""
-		//String orderBy = "CAR_ID";
-
-		q = db.query(CAR_MASTER, columns, where, args, null, null, null);
-		q.moveToFirst();
-
-		String unit = q.getString(0);
-		q.close();
-
-		return unit;
-	}
-
-	/**
-	 * クルマのCAR_IDからクルマのレコードを削除する。
-	 * @param db SQLiteDatabase型、レコード削除対象のDBインスタンス
-	 * @param carId int型、削除するクルマのCAR_ID
-	 * @return int型、削除したレコード数
-	 */
-	protected int deleteCarById(SQLiteDatabase db, int carId) {
-		int result;
-
-		// deleteメソッドに渡す値
-		String table = CAR_MASTER;
-		String where = "CAR_ID = ?";
-		String[] args = {String.valueOf(carId)};
-
-		// 削除したレコード数を格納する。
-		// 通常「1」しか入っていないはず....。
-		result = db.delete(table, where, args);
-
-		return result;
-	}
-
-	/**
-	 * クルマのCAR_IDに対応する給油記録を削除する。
-	 * @param db SQLiteDatabase型、レコード削除対象のDBインスタンス
-	 * @param carId int型、削除するクルマのCAR_ID
-	 * @return int型、削除したレコード数
-	 */
-	protected int deleteLubsByCarId(SQLiteDatabase db, int carId) {
-		int result;
-
-		// deleteメソッドに渡す値
-		String table = LUB_MASTER;
-		String where = "CAR_ID = ?";
-		String[] args = {String.valueOf(carId)};
-
-		// 削除したレコード数を格納する。
-		result = db.delete(table, where, args);
-
-		return result;
-	}
-
-	/**
-	 * クルマのCAR_IDに対応するランニングコスト記録を削除する。
-	 * @param db SQLiteDatabase型、レコード削除対象のDBインスタンス
-	 * @param carId int型、削除するクルマのCAR_ID
-	 * @return int型、削除したレコード数
-	 */
-	protected int deleteCostsByCarId(SQLiteDatabase db, int carId) {
-		int result;
-
-		// deleteメソッドに渡す値
-		String table = COSTS_MASTER;
-		String where = "CAR_ID = ?";
-		String[] args = {String.valueOf(carId)};
-
-		// 削除したレコード数を格納する。
-		result = db.delete(table, where, args);
-
-		return result;
-	}
-
-	/**
 	 * データベースを再編成する。
 	 * @param db SQLiteDatabase型、再編成対象のDBインスタンス
 	 */
@@ -733,76 +807,31 @@ public class DbManager extends SQLiteOpenHelper {
 	}
 
 	/**
-	 * CAR_IDに対応する燃費記録を、LUB_MASTERに記録する。
-	 * @param db SQLiteDatabase型、燃費を記録するDBインスタンス
-	 * @param carId int型、燃費を記録するクルマのCAR_ID
-	 * @param amountOfOil long型、給油量
-	 * @param odometer int型、給油を行った時の走行メーター値
-	 * @param unitPrice int型、給油を行った時の給油単価
-	 * @param comments String型、給油時のコメントを入力
-	 * @param gregolianDay Calendar型、給油を行った日時
-	 * @return long型、insertに成功すればそのときのrowIdを、失敗すれば-1を返す。なお、失敗時はSQLExceptionを投げる
+	 * 指定したクルマのCAR_IDに対する、すべての給油記録を返す。
+	 * @param db SQLiteDatabase型、操作するDBインスタンス
+	 * @param carId int型、検索対象のクルマのCAR_ID
+	 * @param invertOrder trueにすると日付を降順に、falseにすると日付を昇順にオーダーする
+	 * @return Cursor型、検索結果
 	 */
-	protected long addMileageById (SQLiteDatabase db, int carId, double amountOfOil, int odometer, int unitPrice, String comments, Calendar gregolianDay) {
-		long result = 0;
+	protected Cursor getRefuelRecordsById(SQLiteDatabase db, int carId, boolean invertOrder) {
+		Cursor q;
+		String order;
 
-		// レコードを追加する
-		ContentValues value = new ContentValues();
-		value.put("CAR_ID", carId);
-		// 入力されたCalendarをユリウス通日に変換する
-		DateManager dm = new DateManager();
-		double julianDay = dm.toJulianDay(gregolianDay);
-
-		// 価格、距離、体積の各単位をセット
-		value.put("REFUEL_DATE", julianDay);
-		value.put("LUB_AMOUNT", amountOfOil);
-		value.put("UNIT_PRICE", unitPrice);
-		value.put("ODOMETER", odometer);
-		value.put("COMMENTS", comments);
-
-		// トランザクション開始
-		db.beginTransaction();
-		try {
-			// 失敗したら例外を投げるinsertOrThrowでレコードをINSERT
-			result = db.insertOrThrow(LUB_MASTER, null, value);
-
-			// 例外が投げられなければ、トランザクション成功をセット
-			db.setTransactionSuccessful();
-		} catch (SQLException e) {
-			Log.e(DATABASE_NAME, "Car record insert failed, ");
-		} finally {
-			// トランザクション終了
-			// INSERTに失敗した場合は、endTransaction()を呼んだところでロールバックされる
-			db.endTransaction();
+		// 検索結果は登録時刻順で返すが、そのソート結果を決める
+		if (invertOrder) {
+			order = "DESC";
+		} else {
+			order = "";
 		}
 
-		return result;
-	}
-
-	/**
-	 * CAR_IDに対応するクルマの名称を返す。
-	 * @param db SQLiteDatabase型、
-	 * @param carId
-	 * @return
-	 */
-	protected String getCarNameById (SQLiteDatabase db, int carId) {
-		// 戻り値を格納する変数
-		String sRet;
-
-		// クエリを格納する変数を定義
-		// 検索フィールド名と検索値は配列にしないと怒られるので、配列に書き直している。
-		Cursor q;
-		String[] columns = {"CAR_NAME"};
-		String where = "CAR_ID = ?";
-		// DEFAULT_FLAG=1を検索するのだが、query()がString[]であることを要求しているので、valueOf()でStringに変換する
-		String[] args = {String.valueOf(carId)};
-
-		q = db.query(CAR_MASTER, columns, where, args, null, null, null);
+		// テーブルをまたぐのでrawQueryでSQL文を直接たたいている。
+		q = db.rawQuery("SELECT LUB_MASTER.RECORD_ID as _id, datetime(LUB_MASTER.REFUEL_DATE) as DATE_OF_REFUEL," +
+				" LUB_MASTER.LUB_AMOUNT, CAR_MASTER.VOLUMEUNIT FROM LUB_MASTER, CAR_MASTER" +
+				" WHERE LUB_MASTER.CAR_ID = CAR_MASTER.CAR_ID" +
+				" AND LUB_MASTER.CAR_ID = " + String.valueOf(carId) +
+				" ORDER BY LUB_MASTER.REFUEL_DATE " + order + ";", null);
 		q.moveToFirst();
-		sRet = q.getString(0);
-		Log.i(CAR_MASTER, "Found specified car : " + sRet + " , related to CAR_ID : " + String.valueOf(carId));
-		q.close();
 
-		return sRet;
+		return q;
 	}
 }
