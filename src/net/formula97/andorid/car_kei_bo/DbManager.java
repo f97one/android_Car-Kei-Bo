@@ -3,6 +3,7 @@
  */
 package net.formula97.andorid.car_kei_bo;
 
+import java.math.BigDecimal;
 import java.util.Calendar;
 
 import android.content.ContentValues;
@@ -43,13 +44,14 @@ public class DbManager extends SQLiteOpenHelper {
 	 * @param db SQLiteDatabase型、燃費を記録するDBインスタンス
 	 * @param carId int型、燃費を記録するクルマのCAR_ID
 	 * @param amountOfOil long型、給油量
-	 * @param odometer int型、給油を行った時の走行メーター値
-	 * @param unitPrice int型、給油を行った時の給油単価
+	 * @param tripMeter double型、給油を行った時のトリップメーター値
+	 * @param unitPrice double型、給油を行った時の給油単価
 	 * @param comments String型、給油時のコメントを入力
 	 * @param gregolianDay Calendar型、給油を行った日時
 	 * @return long型、insertに成功すればそのときのrowIdを、失敗すれば-1を返す。なお、失敗時はSQLExceptionを投げる
 	 */
-	protected long addMileageById (SQLiteDatabase db, int carId, double amountOfOil, int odometer, int unitPrice, String comments, Calendar gregolianDay) {
+	protected long addMileageById (SQLiteDatabase db, int carId, double amountOfOil, double tripMeter,
+			double unitPrice, String comments, Calendar gregolianDay) {
 		long result = 0;
 
 		// レコードを追加する
@@ -63,7 +65,7 @@ public class DbManager extends SQLiteOpenHelper {
 		value.put("REFUEL_DATE", julianDay);
 		value.put("LUB_AMOUNT", amountOfOil);
 		value.put("UNIT_PRICE", unitPrice);
-		value.put("ODOMETER", odometer);
+		value.put("TRIPMETER", tripMeter);
 		value.put("COMMENTS", comments);
 
 		// トランザクション開始
@@ -743,7 +745,7 @@ public class DbManager extends SQLiteOpenHelper {
 				"CAR_ID INTEGER, " +
 				"LUB_AMOUNT REAL DEFAULT 0, " +
 				"UNIT_PRICE REAL DEFAULT 0, " +
-				"ODOMETER INTEGER, " +
+				"TRIPMETER REAL DEFAULT 0, " +
 				"COMMENTS TEXT);";
 
 		//   COSTS_MASTERテーブル
@@ -758,8 +760,8 @@ public class DbManager extends SQLiteOpenHelper {
 				"(CAR_ID INTEGER PRIMARY KEY AUTOINCREMENT, " +
 				"CAR_NAME TEXT, " +
 				"DEFAULT_FLAG INTEGER DEFAULT 0, " +
-				"CURRENT_FUEL_MILEAGE INTEGER DEFAULT 0, " +
-				"CURRENT_RUNNING_COST INTEGER DEFAULT 0, " +
+				"CURRENT_FUEL_MILEAGE REAL DEFAULT 0, " +
+				"CURRENT_RUNNING_COST REAL DEFAULT 0, " +
 				"PRICEUNIT TEXT, " +
 				"DISTANCEUNIT TEXT, " +
 				"VOLUMEUNIT TEXT, " +
@@ -825,6 +827,8 @@ public class DbManager extends SQLiteOpenHelper {
 		}
 
 		// テーブルをまたぐのでrawQueryでSQL文を直接たたいている。
+		// CursorAdapterに接続するとき、「_id」という名前のカラムがないと怒られるので、
+		// 画面上必要はないがRECORD_IDを_idとして返している。
 		q = db.rawQuery("SELECT LUB_MASTER.RECORD_ID as _id, datetime(LUB_MASTER.REFUEL_DATE) as DATE_OF_REFUEL," +
 				" LUB_MASTER.LUB_AMOUNT, CAR_MASTER.VOLUMEUNIT FROM LUB_MASTER, CAR_MASTER" +
 				" WHERE LUB_MASTER.CAR_ID = CAR_MASTER.CAR_ID" +
@@ -833,5 +837,169 @@ public class DbManager extends SQLiteOpenHelper {
 		q.moveToFirst();
 
 		return q;
+	}
+
+	/**
+	 * COSTS_MASTERに給油時のランニングコスト値を格納する。
+	 * @param carId int型、ランニングコストを格納するクルマのCAR_ID
+	 * @param db SQLiteDatabase型、操作するDBインスタンス
+	 * @param runningCosts
+	 * @param gregorianDay
+	 * @return
+	 */
+	protected long addRunningCostRecord(SQLiteDatabase db, int carId, long runningCosts, Calendar gregorianDay) {
+		long ret = 0;
+
+		// Calendar型の日付はユリウス通日に変換する
+		DateManager dmngr = new DateManager();
+		double julianDay = dmngr.toJulianDay(gregorianDay);
+
+		// フィールドにセットする値を一式作成する
+		ContentValues values = new ContentValues();
+		values.put("CAR_ID", String.valueOf(carId));
+		values.put("REFUEL_DATE", String.valueOf(julianDay));
+		values.put("RUNNING_COST", String.valueOf(runningCosts));
+
+		db.beginTransaction();
+
+		try {
+			ret = db.insertOrThrow(COSTS_MASTER, null, values);
+
+			db.setTransactionSuccessful();
+		} catch (SQLException sqle) {
+			Log.e("addRunningCostRecord", "SQLException occured, update failed");
+		} catch (Exception e) {
+			Log.e("addRunningCostRecord", "Other Exception occured, update failed");
+		} finally {
+			db.endTransaction();
+		}
+
+		return ret;
+	}
+
+	/**
+	 * クルマのCAR_IDに対応した「燃費全レコードの平均」を更新する。
+	 * 「燃費全レコードの平均」は、メソッド内部で計算する。
+	 * @param db SQLiteDatabase型、操作するDBインスタンス
+	 * @param carId int型、更新するクルマのCAR_ID
+	 * @return int型、UPDATEしたレコード数(普通なら1が返る)
+	 */
+	protected int updateCurrentFuelMileageById(SQLiteDatabase db, int carId) {
+		int ret = 0;
+		Cursor qOil, qDst;
+
+		// SQL共通部分
+		String selection = "CAR_ID = ?";
+		String[] selectionArgs = {String.valueOf(carId)};
+		String groupBy = null;
+		String having = null;
+		String orderBy = null;
+
+		// 給油量の合計を取得する
+		String[] clmsOil = {"sum(LUB_AMOUNT)"};
+		qOil = db.query(LUB_MASTER, clmsOil, selection, selectionArgs, groupBy, having, orderBy);
+		double totalOil = qOil.getDouble(0);
+		qOil.close();
+
+		// 走行距離の合計を取得する
+		String[] clmsDst = {"sum(TRIPMETER)"};
+		qDst = db.query(LUB_MASTER, clmsDst, selection, selectionArgs, groupBy, having, orderBy);
+		double totalDst = qDst.getDouble(0);
+		qDst.close();
+
+		// トータル走行距離をトータル給油量でべたに割って平均を求める
+		double cur = totalDst / totalOil;
+
+		// 小数点2ケタに丸める
+		BigDecimal bd = new BigDecimal(cur);
+		double current = bd.setScale(1, BigDecimal.ROUND_HALF_UP).doubleValue();
+
+		// 計算したトータル燃費でCAR_MASTER.CURRENT_FUEL_MILEAGEを書き換える
+		ContentValues values = new ContentValues();
+		values.put("CURRENT_FUEL_MILEAGE", String.valueOf(current));
+		String whereClause = "CAR_ID = ?";
+		String[] whereArgs = {String.valueOf(carId)};
+
+		db.beginTransaction();
+
+		try {
+			ret = db.update(CAR_MASTER, values, whereClause, whereArgs);
+
+			db.setTransactionSuccessful();
+		} catch (SQLException sqle) {
+			Log.e("updateCurrentFuelMileageById", "SQLException occured, update failed");
+		} catch (Exception e) {
+			Log.e("updateCurrentFuelMileageById", "Other Exception occured, update failed");
+		} finally {
+			db.endTransaction();
+		}
+
+		return ret;
+	}
+
+	/**
+	 * そのクルマの給油記録全体に対するランニングコストを更新する。
+	 * 「給油記録全体に対するランニングコスト」は内部で計算する。
+	 * @param db SQLiteDatabase型、操作するDBインスタンス
+	 * @param carId int型、更新するクルマのCAR_ID
+	 * @return int型、UPDATEしたレコード数
+	 */
+	protected int updateCurrentRunningCostById(SQLiteDatabase db, int carId) {
+		int ret = 0;
+		Cursor qOil, qDst, qPrice;
+
+		// SQL共通部分
+		String selection = "CAR_ID = ?";
+		String[] selectionArgs = {String.valueOf(carId)};
+		String groupBy = null;
+		String having = null;
+		String orderBy = null;
+
+		// 給油単価の平均を取得する
+		String[] clmsPrice = {"avg(UNIT_PRICE)"};
+		qPrice = db.query(LUB_MASTER, clmsPrice, selection, selectionArgs, groupBy, having, orderBy);
+		double avgPrice = qPrice.getDouble(0);
+		qPrice.close();
+
+		// 給油量の合計を取得する
+		String[] clmsOil = {"sum(LUB_AMOUNT)"};
+		qOil = db.query(LUB_MASTER, clmsOil, selection, selectionArgs, groupBy, having, orderBy);
+		double totalOil = qOil.getDouble(0);
+		qOil.close();
+
+		// 走行距離の合計を取得する
+		String[] clmsDst = {"sum(TRIPMETER)"};
+		qDst = db.query(LUB_MASTER, clmsDst, selection, selectionArgs, groupBy, having, orderBy);
+		double totalDst = qDst.getDouble(0);
+		qDst.close();
+
+		// トータル値でランニングコストを計算する
+		double cur = totalOil * avgPrice / totalDst;
+
+		// 小数点2ケタに丸める
+		BigDecimal bd = new BigDecimal(cur);
+		double current = bd.setScale(1, BigDecimal.ROUND_HALF_UP).doubleValue();
+
+		// 計算したトータル燃費でCAR_MASTER.CURRENT_RUNNING_COSTを書き換える
+		ContentValues values = new ContentValues();
+		values.put("CURRENT_RUNNING_COST", String.valueOf(current));
+		String whereClause = "CAR_ID = ?";
+		String[] whereArgs = {String.valueOf(carId)};
+
+		db.beginTransaction();
+
+		try {
+			ret = db.update(CAR_MASTER, values, whereClause, whereArgs);
+
+			db.setTransactionSuccessful();
+		} catch (SQLException sqle) {
+			Log.e("updateCurrentRunningCostById", "SQLException occured, update failed");
+		} catch (Exception e) {
+			Log.e("updateCurrentRunningCostById", "Other Exception occured, update failed");
+		} finally {
+			db.endTransaction();
+		}
+
+		return ret;
 	}
 }
