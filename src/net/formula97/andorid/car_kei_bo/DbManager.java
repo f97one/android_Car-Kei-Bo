@@ -847,7 +847,7 @@ public class DbManager extends SQLiteOpenHelper {
 	 * @param gregorianDay
 	 * @return
 	 */
-	protected long addRunningCostRecord(SQLiteDatabase db, int carId, long runningCosts, Calendar gregorianDay) {
+	protected long addRunningCostRecord(SQLiteDatabase db, int carId, double runningCosts, Calendar gregorianDay) {
 		long ret = 0;
 
 		// Calendar型の日付はユリウス通日に変換する
@@ -898,12 +898,14 @@ public class DbManager extends SQLiteOpenHelper {
 		// 給油量の合計を取得する
 		String[] clmsOil = {"sum(LUB_AMOUNT)"};
 		qOil = db.query(LUB_MASTER, clmsOil, selection, selectionArgs, groupBy, having, orderBy);
+		qOil.moveToFirst();
 		double totalOil = qOil.getDouble(0);
 		qOil.close();
 
 		// 走行距離の合計を取得する
 		String[] clmsDst = {"sum(TRIPMETER)"};
 		qDst = db.query(LUB_MASTER, clmsDst, selection, selectionArgs, groupBy, having, orderBy);
+		qDst.moveToFirst();
 		double totalDst = qDst.getDouble(0);
 		qDst.close();
 
@@ -958,18 +960,21 @@ public class DbManager extends SQLiteOpenHelper {
 		// 給油単価の平均を取得する
 		String[] clmsPrice = {"avg(UNIT_PRICE)"};
 		qPrice = db.query(LUB_MASTER, clmsPrice, selection, selectionArgs, groupBy, having, orderBy);
+		qPrice.moveToFirst();
 		double avgPrice = qPrice.getDouble(0);
 		qPrice.close();
 
 		// 給油量の合計を取得する
 		String[] clmsOil = {"sum(LUB_AMOUNT)"};
 		qOil = db.query(LUB_MASTER, clmsOil, selection, selectionArgs, groupBy, having, orderBy);
+		qOil.moveToFirst();
 		double totalOil = qOil.getDouble(0);
 		qOil.close();
 
 		// 走行距離の合計を取得する
 		String[] clmsDst = {"sum(TRIPMETER)"};
 		qDst = db.query(LUB_MASTER, clmsDst, selection, selectionArgs, groupBy, having, orderBy);
+		qDst.moveToFirst();
 		double totalDst = qDst.getDouble(0);
 		qDst.close();
 
@@ -999,6 +1004,60 @@ public class DbManager extends SQLiteOpenHelper {
 		} finally {
 			db.endTransaction();
 		}
+
+		return ret;
+	}
+
+	/**
+	 * そのクルマのトータルの燃費を取得する。
+	 * @param db SQLiteDatabase型、操作するDBインスタンス
+	 * @param carId int型、トータルの燃費を取得するクルマのCAR_ID
+	 * @return double型、そのクルマのトータルの燃費
+	 */
+	protected double getCurrentMileageById (SQLiteDatabase db, int carId) {
+		double ret = 0;
+		Cursor q;
+
+		// SQL共通部分
+		String selection = "CAR_ID = ?";
+		String[] selectionArgs = {String.valueOf(carId)};
+		String groupBy = null;
+		String having = null;
+		String orderBy = null;
+
+		String[] columns = {"CURRENT_FUEL_MILEAGE"};
+
+		q = db.query(CAR_MASTER, columns, selection, selectionArgs, groupBy, having, orderBy);
+		q.moveToFirst();
+
+		ret = q.getDouble(0);
+
+		return ret;
+	}
+
+	/**
+	 * そのクルマのトータルのランニングコストを取得する。
+	 * @param db SQLiteDatabase型、操作するDBインスタンス
+	 * @param carId int型、トータルの燃費を取得するクルマのCAR_ID
+	 * @return double型、そのクルマのトータルの燃費
+	 */
+	protected double getCurrentRunningCostById (SQLiteDatabase db, int carId) {
+		double ret = 0;
+		Cursor q;
+
+		// SQL共通部分
+		String selection = "CAR_ID = ?";
+		String[] selectionArgs = {String.valueOf(carId)};
+		String groupBy = null;
+		String having = null;
+		String orderBy = null;
+
+		String[] columns = {"CURRENT_RUNNING_COST"};
+
+		q = db.query(CAR_MASTER, columns, selection, selectionArgs, groupBy, having, orderBy);
+		q.moveToFirst();
+
+		ret = q.getDouble(0);
 
 		return ret;
 	}
