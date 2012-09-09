@@ -4,6 +4,9 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 
+import org.junit.internal.matchers.SubstringMatcher;
+
+import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
 
 /**
@@ -22,7 +25,7 @@ public class DateManager {
 	}
 
 	/**
-	 * ISO 8601形式の日付、および時刻フォーマットを持つ「文字列」を返す
+	 * ISO 8601形式の日付、および時刻フォーマットを持つ「文字列」を返す。
 	 * @param gcd Calendar型（日付）
 	 * @param withTime  boolean型、時刻が必要なときはtrue、不要なときはfalse
 	 * @return ISO 8601形式の文字列
@@ -44,6 +47,27 @@ public class DateManager {
 
 		// 整形済み日付をStringにして返す
 		return sdf.format(dd).toString();
+	}
+
+	/**
+	 * ISO 8601形式の日付、および時刻フォーマットを持つ「文字列」を返す。
+	 * @param julianDay double型、ユリウス通日表記の日付
+	 * @return ISO 8601形式の文字列
+	 */
+	public String getISO8601Date(double julianDay) {
+		String dateFormat = "yyyy-MM-dd HH:mm:ss";
+
+		// ユリウス通日に対応するDate型オブジェクトを取得する
+		//   milliSecOfDayは1日をミリ秒単位にしたものを、
+		//   originDateは1970年1月1日 00:00:00 UTCを、それぞれあらわす。
+		//   ※ちなみにこの方法を使えば、Calendar→ユリウス通日への変換も2、3行で記述できるんだが....。
+		int milliSecOfDay = 86400000;
+		double originDate = 2440587.5;
+		Date dateFromJ = new Date((long)((julianDay - originDate) * milliSecOfDay));
+
+		// SimpleDateFormatで整形したのち、文字列として返す
+		SimpleDateFormat sdf = new SimpleDateFormat(dateFormat);
+		return sdf.format(dateFromJ).toString();
 	}
 
 	/**
@@ -98,6 +122,34 @@ public class DateManager {
 	}
 
 	/**
+	 * ISO 8601形式の日時文字列をユリウス通日に変換する。
+	 * @param iso8601Date String型、変換元のISO 8601形式の日時文字列
+	 * @return double型、SQLiteが認識可能なユリウス通日
+	 */
+	public double toJulianDay(String iso8601Date) {
+		double ret = 0;
+
+		// ISO 8601形式の日時を分解
+		int year = Integer.parseInt(iso8601Date.substring(0, 3));
+		int month = Integer.parseInt(iso8601Date.substring(5, 6));
+		int day = Integer.parseInt(iso8601Date.substring(8, 9));
+		int hour = Integer.parseInt(iso8601Date.substring(11, 12));
+		int minute = Integer.parseInt(iso8601Date.substring(14, 15));
+		int second = Integer.parseInt(iso8601Date.substring(17, 18));
+
+		Calendar currentDay = Calendar.getInstance();
+		currentDay.set(year, month, day, hour, minute, second);
+
+		// 本当は
+		//ret = (currentDay.getTime()).getTime() / 86400000 + 2440587.5;
+		// とやれば終わるのだが、計算結果の一貫性を保つためtoJulianDay(Calendar)を
+		// 呼び出す。
+		ret = toJulianDay(currentDay);
+
+		return ret;
+	}
+
+	/**
 	 * 現在日時を返す。
 	 * @return Calendar型、現在のロケールにおける現在日時
 	 */
@@ -105,4 +157,5 @@ public class DateManager {
 		Calendar nowDateTime = Calendar.getInstance();
 		return nowDateTime;
 	}
+
 }
