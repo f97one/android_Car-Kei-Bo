@@ -14,7 +14,7 @@
 	<string name="label_btn_cancel">キャンセル</string>
 	<string name="label_btn_addfuelmileagerecord">燃費記録を追加</string>
 	<string name="label_amountOfOil">給油量</string>
-	<string name="label_odometer">走行距離</string>
+	<string name="label_odometer">トリップメーター</string>
 	<string name="label_unitPrice">単価</string>
 	<string name="label_dateOfRefuel">給油日</string>
 	<string name="label_btn_addRefuelRecord">給油記録を追加</string>
