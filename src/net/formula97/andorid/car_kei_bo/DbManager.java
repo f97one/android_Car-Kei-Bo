@@ -856,9 +856,9 @@ public class DbManager extends SQLiteOpenHelper {
 
 		// フィールドにセットする値を一式作成する
 		ContentValues values = new ContentValues();
-		values.put("CAR_ID", String.valueOf(carId));
-		values.put("REFUEL_DATE", String.valueOf(julianDay));
-		values.put("RUNNING_COST", String.valueOf(runningCosts));
+		values.put("CAR_ID", carId);
+		values.put("REFUEL_DATE", julianDay);
+		values.put("RUNNING_COST", runningCosts);
 
 		db.beginTransaction();
 
@@ -918,7 +918,7 @@ public class DbManager extends SQLiteOpenHelper {
 
 		// 計算したトータル燃費でCAR_MASTER.CURRENT_FUEL_MILEAGEを書き換える
 		ContentValues values = new ContentValues();
-		values.put("CURRENT_FUEL_MILEAGE", String.valueOf(current));
+		values.put("CURRENT_FUEL_MILEAGE", current);
 		String whereClause = "CAR_ID = ?";
 		String[] whereArgs = {String.valueOf(carId)};
 
@@ -987,7 +987,7 @@ public class DbManager extends SQLiteOpenHelper {
 
 		// 計算したトータル燃費でCAR_MASTER.CURRENT_RUNNING_COSTを書き換える
 		ContentValues values = new ContentValues();
-		values.put("CURRENT_RUNNING_COST", String.valueOf(current));
+		values.put("CURRENT_RUNNING_COST", current);
 		String whereClause = "CAR_ID = ?";
 		String[] whereArgs = {String.valueOf(carId)};
 
@@ -1058,6 +1058,33 @@ public class DbManager extends SQLiteOpenHelper {
 		q.moveToFirst();
 
 		ret = q.getDouble(0);
+
+		return ret;
+	}
+
+	/**
+	 * そのクルマの給油情報を日時で指定して取得する。
+	 * @param db SQLiteDatabase型、操作するDBインスタンス
+	 * @param carId int型、給油情報を取得するクルマのCAR_ID
+	 * @param julianDay double型、指定する日時のユリウス通日
+	 * @return Cursor型、
+	 */
+	protected Cursor getRefuelRecordByDate (SQLiteDatabase db, int carId, double julianDay) {
+		Cursor ret;
+
+		// 複数の検索条件を書く必要があるので、rawQueryにした
+		String sql = "SELECT LUB_MASTER.REFUEL_DATE, " +
+				"LUB_MASTER.TRIPMETER, " +
+				"LUB_MASTER.LUB_AMOUNT, " +
+				"LUB_MASTER.UNIT_PRICE, " +
+				"COSTS_MASTER.RUNNING_COST FROM LUB_MASTER, COSTS_MASTER " +
+					"WHERE LUB_MASTER.CAR_ID = COSTS_MASTER.CAR_ID " +
+					"AND LUB_MASTER.REFUEL_DATE = COSTS_MASTER.REFUEL_DATE " +
+					"AND LUB_MASTER.CAR_ID = '" + String.valueOf(carId) + "' " +
+					"AND LUB_MASTER.REFUEL_DATE = '" + String.valueOf(julianDay) + "';";
+
+		ret = db.rawQuery(sql, null);
+		ret.moveToFirst();
 
 		return ret;
 	}
