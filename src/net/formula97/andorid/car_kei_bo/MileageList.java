@@ -127,6 +127,13 @@ public class MileageList extends Activity implements OnClickListener {
 		lv_mileagelist.setAdapter(sca);
 
 		btn_add_mileage.setOnClickListener(this);
+
+		// 燃費とランニングコストの値を差し込む
+		double txtMileage = dbman.getCurrentMileageById(db, getCAR_ID());
+		double txtRunning = dbman.getCurrentRunningCostById(db, getCAR_ID());
+		tv_value_FuelMileage2.setText(String.valueOf(txtMileage));
+		tv_value_RunningCosts2.setText(String.valueOf(txtRunning));
+
 	}
 
 	public int getCAR_ID() {
