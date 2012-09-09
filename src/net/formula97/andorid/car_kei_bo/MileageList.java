@@ -111,13 +111,13 @@ public class MileageList extends Activity implements OnClickListener {
 		cMileageList = dbman.getRefuelRecordsById(db, getCAR_ID(), true);
 
 		String[] from = {
-				"_id",
+				//"_id",
 				"DATE_OF_REFUEL",
 				"LUB_AMOUNT",
 				"VOLUMEUNIT"
 				};
 		int[] to = {
-				R.id.tv_value_number_refuel,
+				//R.id.tv_value_number_refuel,
 				R.id.tv_value_dateOfRefuel,
 				R.id.tv_value_amountOfOil,
 				R.id.tv_unit_amountOfOil
