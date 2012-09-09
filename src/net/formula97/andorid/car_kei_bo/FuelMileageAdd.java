@@ -541,8 +541,7 @@ public class FuelMileageAdd extends Activity implements OnClickListener {
 	 */
 	@Override
 	public void onClick(View v) {
-		// TODO 自動生成されたメソッド・スタブ
-
+		// リスナーを読んだViewのIDを取得する
 		int viewId = v.getId();
 
 		switch (viewId) {
@@ -589,8 +588,21 @@ public class FuelMileageAdd extends Activity implements OnClickListener {
 				// 日時は、currentDateTimeをgetInstance()した時の値をそのまま使う(^^;)
 				ret = dbman.addMileageById(db, targetCarId, amountOfOil, tripMeter, unitPrice, comments, currentDateTime);
 
-				// TODO ランニングコストを計算し、その値をDBに書きこむ
+				// ランニングコストを計算し、その値をDBに書きこむ
 				runningCosts = getRunningCostValue(amountOfOil, unitPrice, tripMeter);
+
+				long retRunningCost = dbman.addRunningCostRecord(db, targetCarId, runningCosts, currentDateTime);
+
+				// ランニングコスト追加の成否をLog出力する
+				if (retRunningCost > 0) {
+					Log.i("onClick#R.id.button_addRefuelRecord", "Running cost value added successfuly, row ID = " + String.valueOf(retRunningCost));
+
+					// トータルのランニングコストと燃費を再計算する
+					dbman.updateCurrentFuelMileageById(db, targetCarId);
+					dbman.updateCurrentRunningCostById(db, targetCarId);
+				} else {
+					Log.w("onClick#R.id.button_addRefuelRecord", "Running cost value could not added.");
+				}
 			}
 
 			if (ret == -1 ) {
