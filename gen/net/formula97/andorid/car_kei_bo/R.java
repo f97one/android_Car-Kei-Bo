@@ -34,9 +34,9 @@ public final class R {
         public static final int button_editDate=0x7f090026;
         public static final int button_editTime=0x7f090029;
         public static final int checkBox_SetDefault=0x7f090003;
-        public static final int ctxitem_add_mileage=0x7f090047;
-        public static final int ctxitem_set_default_car=0x7f090048;
-        public static final int ctxitem_show_mileage=0x7f090046;
+        public static final int ctxitem_add_mileage=0x7f090046;
+        public static final int ctxitem_set_default_car=0x7f090047;
+        public static final int ctxitem_show_mileage=0x7f090045;
         public static final int editText_amountOfOil=0x7f090019;
         public static final int editText_comments=0x7f09002b;
         public static final int editText_dateOfRefuel=0x7f090025;
@@ -47,9 +47,9 @@ public final class R {
         public static final int ll_horizParent=0x7f09000e;
         public static final int ll_vertParent=0x7f09000d;
         public static final int lv_mileagelist=0x7f09003a;
-        public static final int optionsmenu_addcar=0x7f09004a;
-        public static final int optionsmenu_carlist=0x7f090049;
-        public static final int optionsmenu_closeAPP=0x7f09004b;
+        public static final int optionsmenu_addcar=0x7f090049;
+        public static final int optionsmenu_carlist=0x7f090048;
+        public static final int optionsmenu_closeAPP=0x7f09004a;
         public static final int spinner_carName=0x7f090017;
         public static final int spinner_distanceUnit=0x7f090007;
         public static final int spinner_priceUnit=0x7f090005;
@@ -80,10 +80,10 @@ public final class R {
         public static final int tv_element_carname_suffix=0x7f090030;
         public static final int tv_label_defaultcar=0x7f09000f;
         public static final int tv_label_value_defaultcar=0x7f090010;
-        public static final int tv_spinner_carname=0x7f090045;
+        public static final int tv_spinner_carname=0x7f090044;
         public static final int tv_title_dateOfRefuel=0x7f090037;
         public static final int tv_title_unit_volume=0x7f090038;
-        public static final int tv_unit_amountOfOil=0x7f090043;
+        public static final int tv_unit_amountOfOil=0x7f090042;
         public static final int tv_unit_fuelMileage=0x7f09003e;
         public static final int tv_unit_fuelMileage2=0x7f090033;
         public static final int tv_unit_runningCosts=0x7f090040;
@@ -92,9 +92,8 @@ public final class R {
         public static final int tv_value_FuelMileage2=0x7f090032;
         public static final int tv_value_RunningCosts=0x7f09003f;
         public static final int tv_value_RunningCosts2=0x7f090035;
-        public static final int tv_value_amountOfOil=0x7f090044;
-        public static final int tv_value_dateOfRefuel=0x7f090042;
-        public static final int tv_value_number_refuel=0x7f090041;
+        public static final int tv_value_amountOfOil=0x7f090043;
+        public static final int tv_value_dateOfRefuel=0x7f090041;
     }
     public static final class layout {
         public static final int addcar=0x7f030000;
