@@ -130,12 +130,22 @@ public class DateManager {
 		double ret = 0;
 
 		// ISO 8601形式の日時を分解
-		int year = Integer.parseInt(iso8601Date.substring(0, 3));
-		int month = Integer.parseInt(iso8601Date.substring(5, 6));
-		int day = Integer.parseInt(iso8601Date.substring(8, 9));
-		int hour = Integer.parseInt(iso8601Date.substring(11, 12));
-		int minute = Integer.parseInt(iso8601Date.substring(14, 15));
-		int second = Integer.parseInt(iso8601Date.substring(17, 18));
+		Log.d("toJulianDay", "Input string = " + iso8601Date);
+		String[] elementDate = iso8601Date.split("[-: ]");
+
+		int year = Integer.parseInt(elementDate[0]);
+		int month = Integer.parseInt(elementDate[1]);
+		int day = Integer.parseInt(elementDate[2]);
+		int hour = Integer.parseInt(elementDate[3]);
+		int minute = Integer.parseInt(elementDate[4]);
+		int second = Integer.parseInt(elementDate[5]);
+
+		Log.d("toJulianDay", "year = " + String.valueOf(year));
+		Log.d("toJulianDay", "month = " + String.valueOf(month));
+		Log.d("toJulianDay", "day = " + String.valueOf(day));
+		Log.d("toJulianDay", "hour = " + String.valueOf(hour));
+		Log.d("toJulianDay", "minute = " + String.valueOf(minute));
+		Log.d("toJulianDay", "second = " + String.valueOf(second));
 
 		Calendar currentDay = Calendar.getInstance();
 		currentDay.set(year, month, day, hour, minute, second);
