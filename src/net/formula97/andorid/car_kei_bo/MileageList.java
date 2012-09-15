@@ -44,8 +44,15 @@ public class MileageList extends Activity implements OnClickListener {
 	public static SQLiteDatabase db;
 
 	Cursor cMileageList;
+	Cursor cLvRow;
 
 	AlertDialog.Builder adbuilder;
+
+	String priceUnit;
+	String distanceUnit;
+	String volumeUnit;
+
+	boolean hasRecord;
 
 	/**
 	 *
@@ -96,6 +103,7 @@ public class MileageList extends Activity implements OnClickListener {
 
 			}
 		});
+
 	}
 
 	/* (非 Javadoc)
@@ -106,7 +114,10 @@ public class MileageList extends Activity implements OnClickListener {
 		// TODO 自動生成されたメソッド・スタブ
 		super.onDestroy();
 
-		closeCursor(cMileageList);
+		if (hasRecord) {
+			closeCursor(cMileageList);
+			closeCursor(cLvRow);
+		}
 		closeDb(db);
 	}
 
@@ -118,7 +129,10 @@ public class MileageList extends Activity implements OnClickListener {
 		// TODO 自動生成されたメソッド・スタブ
 		super.onPause();
 
-		closeCursor(cMileageList);
+		if (hasRecord) {
+			closeCursor(cMileageList);
+			closeCursor(cLvRow);
+		}
 		closeDb(db);
 	}
 
@@ -131,6 +145,13 @@ public class MileageList extends Activity implements OnClickListener {
 		super.onResume();
 
 		db = dbman.getReadableDatabase();
+
+		hasRecord = dbman.hasLubRecords(db, getCAR_ID());
+
+		// 各種単位の取得
+		priceUnit = dbman.getPriceUnitById(db, getCAR_ID());
+		distanceUnit = dbman.getDistanceUnitById(db, getCAR_ID());
+		volumeUnit = dbman.getVolumeUnitById(db, getCAR_ID());
 
 		cMileageList = dbman.getRefuelRecordsById(db, getCAR_ID(), true);
 
@@ -158,39 +179,39 @@ public class MileageList extends Activity implements OnClickListener {
 			public void onItemClick(AdapterView<?> parent, View v, int position,
 					long id) {
 				// TODO 取得したCursorから給油記録の詳細を取得する
-				Cursor cLvRow = (Cursor)lv_mileagelist.getItemAtPosition(position);
+				cLvRow = (Cursor)lv_mileagelist.getItemAtPosition(position);
 	            for (int i =0; i < cLvRow.getColumnCount(); i++) {
-	            	Log.i("onItemClick", "name of Column Index " + String.valueOf(i) + ":" + cLvRow.getColumnName(i));
+	            	Log.i("onItemClick", "name of Column Index " + String.valueOf(i) + ":" + cLvRow.getColumnName(i) + " value = " + cLvRow.getString(i));
 	            }
 				cLvRow.moveToFirst();
-				// 給油日を表すユリウス通日は、検索を行う上で重要なので変数に格納する
-				double julianDay = dmngr.toJulianDay(cLvRow.getString(1));
+
+				int rowId = Integer.parseInt(cLvRow.getString(0));
 
 				// 給油記録の元ネタをDBから取得する
-				Cursor cRefuelRecord = dbman.getRefuelRecordByDate(db, getCAR_ID(), julianDay);
+				Cursor cRefuelRecord = dbman.getRefuelRecordById(db, getCAR_ID(), rowId);
+				Log.d("onItemClick", "returned rows = " + cRefuelRecord.getCount());
 
 				// AlertDialogに差し込むテキストの生成
-				// 各種単位の取得
-				String priceUnit = dbman.getPriceUnitById(db, getCAR_ID());
-				String distanceUnit = dbman.getDistanceUnitById(db, getCAR_ID());
-				String volumeUnit = dbman.getVolumeUnitById(db, getCAR_ID());
-
 				// 値の取得：計算用
-				double dblDistance = cRefuelRecord.getDouble(1);	// 走行距離
-				double dblOilAmount = cRefuelRecord.getDouble(2);	// 給油量
-				double dblUnitprice = cRefuelRecord.getDouble(3);	// 給油単価
+				double dblDistance = cRefuelRecord.getDouble(5);	// 走行距離
+				double dblOilAmount = cRefuelRecord.getDouble(3);	// 給油量
+				double dblUnitprice = cRefuelRecord.getDouble(4);	// 給油単価
 
 				// 給油時の燃費
 				double dblMileage = dblDistance / dblOilAmount;
-				BigDecimal bd = new BigDecimal(dblMileage);
-				String strMileage = String.valueOf(bd.setScale(1, BigDecimal.ROUND_HALF_UP).doubleValue());
+				BigDecimal bd1 = new BigDecimal(dblMileage);
+				String strMileage = String.valueOf(bd1.setScale(2, BigDecimal.ROUND_HALF_UP).doubleValue());
+
+				// 給油時のランニングコスト
+				double dblRunning = dblOilAmount * dblUnitprice / dblDistance;
+				BigDecimal bd2 = new BigDecimal(dblRunning);
+				String strRunningCost = String.valueOf(bd2.setScale(2, BigDecimal.ROUND_HALF_UP).doubleValue());
 
 				// 値の取得
-				String strRefuelDate = cLvRow.getString(1);			// 給油日時
-				String strDistance = String.valueOf(dblDistance);				// 走行距離
-				String strOilAmount = String.valueOf(dblOilAmount);				// 給油量
-				String strUnitPrice = String.valueOf(dblUnitprice);				// 給油単価
-				String strRunningCost = String.valueOf(cRefuelRecord.getDouble(4));	// ランニングコスト
+				String strRefuelDate = cLvRow.getString(1);				// 給油日時
+				String strDistance = String.valueOf(dblDistance);		// 走行距離
+				String strOilAmount = String.valueOf(dblOilAmount);		// 給油量
+				String strUnitPrice = String.valueOf(dblUnitprice);		// 給油単価
 
 				// AlertDialog内にセットするテキストの生成
 				String adtext = getString(R.string.label_dateOfRefuel) + " : " + strRefuelDate + "\n" +
@@ -201,12 +222,11 @@ public class MileageList extends Activity implements OnClickListener {
 						getString(R.string.label_runningcost) +  strRunningCost + " " + priceUnit + "/" + distanceUnit;
 				adbuilder.setMessage(adtext);
 
-				// Cursorを閉じる
-				cRefuelRecord.close();
-
 				// AlertDialogを表示する
 				adbuilder.create();
 				adbuilder.show();
+
+				cRefuelRecord.close();
 			}
 		});
 
@@ -217,6 +237,10 @@ public class MileageList extends Activity implements OnClickListener {
 		double txtRunning = dbman.getCurrentRunningCostById(db, getCAR_ID());
 		tv_value_FuelMileage2.setText(String.valueOf(txtMileage));
 		tv_value_RunningCosts2.setText(String.valueOf(txtRunning));
+
+		// 燃費とランニングコストの単位を差し込む
+		tv_unit_fuelMileage2.setText(distanceUnit + "/" + volumeUnit);
+		tv_unit_runningCosts2.setText(priceUnit + "/" + distanceUnit);
 
 	}
 
@@ -267,9 +291,10 @@ public class MileageList extends Activity implements OnClickListener {
 	private void closeCursor(Cursor c) {
 		if (c.isClosed() != true) {
 			c.close();
+			Log.d("closeCursor", "Cursor object closed, : " + c.toString());
+		} else {
+			Log.d("closeCursor", "Cursor object already closed.");
 		}
-
-		Log.d("closeCursor", "Cursor object closed, : " + c.toString());
 	}
 
 	private void closeDb(SQLiteDatabase db) {

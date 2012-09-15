@@ -639,6 +639,31 @@ public class DbManager extends SQLiteOpenHelper {
 		}
 	}
 
+	protected boolean hasLubRecords(SQLiteDatabase db, int carId) {
+		boolean ret = false;
+
+		Cursor q;
+
+		// SQL共通部分
+		String selection = "CAR_ID = ?";
+		String[] selectionArgs = {String.valueOf(carId)};
+		String groupBy = null;
+		String having = null;
+		String orderBy = null;
+
+		String[] columns = null;
+
+		q = db.query(LUB_MASTER, columns, selection, selectionArgs, groupBy, having, orderBy);
+		q.moveToFirst();
+
+		if (q.getCount() > 0) {
+			ret = true;
+		}
+
+		q.close();
+		return ret;
+	}
+
 	/**
 	 * 重複チェックその２
 	 *   すでにデフォルトカーフラグがセットされているか否かをチェックする。
@@ -1031,6 +1056,7 @@ public class DbManager extends SQLiteOpenHelper {
 		q.moveToFirst();
 
 		ret = q.getDouble(0);
+		q.close();
 
 		return ret;
 	}
@@ -1058,34 +1084,30 @@ public class DbManager extends SQLiteOpenHelper {
 		q.moveToFirst();
 
 		ret = q.getDouble(0);
+		q.close();
 
 		return ret;
 	}
 
 	/**
-	 * そのクルマの給油情報を日時で指定して取得する。
+	 * そのクルマの給油情報を取得する。
 	 * @param db SQLiteDatabase型、操作するDBインスタンス
 	 * @param carId int型、給油情報を取得するクルマのCAR_ID
-	 * @param julianDay double型、指定する日時のユリウス通日
+	 * @param rowId int型、レコードの一貫番号
 	 * @return Cursor型、
 	 */
-	protected Cursor getRefuelRecordByDate (SQLiteDatabase db, int carId, double julianDay) {
+	protected Cursor getRefuelRecordById (SQLiteDatabase db, int carId, int rowId) {
 		Cursor ret;
 
 		// 複数の検索条件を書く必要があるので、rawQueryにした
-		String sql = "SELECT LUB_MASTER.REFUEL_DATE, " +
-				"LUB_MASTER.TRIPMETER, " +
-				"LUB_MASTER.LUB_AMOUNT, " +
-				"LUB_MASTER.UNIT_PRICE, " +
-				"COSTS_MASTER.RUNNING_COST FROM LUB_MASTER, COSTS_MASTER " +
-					"WHERE LUB_MASTER.CAR_ID = COSTS_MASTER.CAR_ID " +
-					"AND LUB_MASTER.REFUEL_DATE = COSTS_MASTER.REFUEL_DATE " +
-					"AND LUB_MASTER.CAR_ID = '" + String.valueOf(carId) + "' " +
-					"AND LUB_MASTER.REFUEL_DATE = '" + String.valueOf(julianDay) + "';";
+		String sql = "SELECT * FROM LUB_MASTER " +
+					"WHERE CAR_ID = " + String.valueOf(carId) + " " +
+					"AND RECORD_ID = " + String.valueOf(rowId) + ";";
 
 		ret = db.rawQuery(sql, null);
 		ret.moveToFirst();
 
 		return ret;
 	}
+
 }
