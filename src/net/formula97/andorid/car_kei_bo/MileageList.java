@@ -40,7 +40,7 @@ public class MileageList extends Activity implements OnClickListener {
 	ListView lv_mileagelist;			// 燃費記録を表示するListView
 
 	private DbManager dbman = new DbManager(this);
-	private DateManager dmngr = new DateManager();
+	//private DateManager dmngr = new DateManager();
 	public static SQLiteDatabase db;
 
 	Cursor cMileageList;

@@ -4,9 +4,6 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 
-import org.junit.internal.matchers.SubstringMatcher;
-
-import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
 
 /**
