@@ -4,6 +4,8 @@
 package net.formula97.andorid.car_kei_bo;
 
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
@@ -189,14 +191,12 @@ public class CarList extends Activity implements OnClickListener {
             }
 
 	        // AdapterからListViewへ差し込むデータの整形
-	        String[] from = {	"_id",
-	        					"CAR_NAME",
+	        String[] from = {	"CAR_NAME",
 	        					"CURRENT_FUEL_MILEAGE",
 	        					"FUELMILEAGE_LABEL",
 	        					"CURRENT_RUNNING_COST",
 	        					"RUNNINGCOST_LABEL"};
-	        int[] to = {R.id.tv_carID,
-	        			 R.id.tv_element_CarName,
+	        int[] to = { R.id.tv_element_CarName,
 	        			 R.id.tv_value_FuelMileage,
 	        			 R.id.tv_unit_fuelMileage,
 	        			 R.id.tv_value_RunningCosts,
@@ -277,10 +277,10 @@ public class CarList extends Activity implements OnClickListener {
 			// 燃費記録追加画面を呼び出す
 			addMileage(currentCarID, currentCarName);
 			break;
-//		case R.id.ctxitem_delete_car:
-//			// クルマを削除する
-//			deleteCar(currentCarID, currentCarName);
-//			break;
+		case R.id.ctxitem_delete_car:
+			// クルマを削除する
+			deleteCar(currentCarID, currentCarName);
+			break;
 //		case R.id.ctxitem_edit_car_preference:
 //			// クルマの設定を変更する
 //			editCarPreference(currentCarID, currentCarName);
@@ -419,15 +419,17 @@ public class CarList extends Activity implements OnClickListener {
 	 */
 	protected void deleteCar(final int carId, final String carName) {
 		// TODO 削除確認を行うポップアップダイアログを表示させる
-//		AlertDialog.Builder adbuilder = new AlertDialog.Builder(this);
-//		adbuilder.setTitle(carName);
-//		adbuilder.setMessage(getString(R.string.adbuilder_confirm_deletecar));
-//
-//		// 「はい」ボタンの処理
-//		adbuilder.setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
-//
-//			public void onClick(DialogInterface dialog, int which) {
-//				// TODO 自動生成されたメソッド・スタブ
+		AlertDialog.Builder adbuilder = new AlertDialog.Builder(this);
+		adbuilder.setTitle(carName);
+		adbuilder.setMessage(getString(R.string.adbuilder_confirm_deletecar));
+		// [back]キーでキャンセルができないようにする
+		adbuilder.setCancelable(false);
+
+		// 「はい」ボタンの処理
+		adbuilder.setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+
+			public void onClick(DialogInterface dialog, int which) {
+				// TODO 自動生成されたメソッド・スタブ
 				int result;
 
 				// クルマのレコードを削除する
@@ -452,11 +454,27 @@ public class CarList extends Activity implements OnClickListener {
 
 				// DBを再編成する
 				dbman.reorgDb(db);
-//
-//			}
-//		});
-//
-//
+
+				// DBとCursorを閉じてActivityを再始動する
+				closeDbAndCursorIfOpen();
+				onResume();
+			}
+		});
+
+		// 「キャンセル」ボタンの処理
+		//   noなので「いいえ」かと思ったのだが....。
+		//   何もせずに終了する。
+		adbuilder.setNegativeButton(android.R.string.no, new DialogInterface.OnClickListener() {
+
+			@Override
+			public void onClick(DialogInterface dialog, int which) {
+				// TODO 自動生成されたメソッド・スタブ
+
+			}
+		});
+
+		// AlertDialogを表示する
+		adbuilder.show();
 	}
 
 	/**

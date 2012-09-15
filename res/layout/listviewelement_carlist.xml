@@ -4,38 +4,26 @@
 	android:layout_width="match_parent"
 	android:layout_height="match_parent"
 	android:orientation="vertical" >
-
+
 	<TextView
-		android:id="@+id/tv_carID"
-		android:layout_width="wrap_content"
-		android:layout_height="wrap_content"
-		android:layout_alignParentLeft="true"
-		android:layout_alignParentTop="true"
-		android:paddingRight="12dp"
-		android:text="tv"
-		android:textSize="11pt" />
-
+	    android:id="@+id/tv_element_CarName"
+	    android:layout_width="wrap_content"
+	    android:layout_height="wrap_content"
+	    android:layout_alignParentTop="true"
+	    android:text="car name is here..."
+	    android:textAppearance="?android:attr/textAppearanceLarge"
+	    android:textSize="11pt" />
+
 	<TextView
-		android:id="@+id/tv_element_CarName"
-		android:layout_width="wrap_content"
-		android:layout_height="wrap_content"
-		android:layout_alignBaseline="@+id/tv_carID"
-		android:layout_alignParentTop="true"
-		android:layout_toRightOf="@+id/tv_carID"
-		android:text="car name is here..."
-		android:textAppearance="?android:attr/textAppearanceLarge"
-		android:textSize="11pt" />
-
-	<TextView
-		android:id="@+id/tv_element_FuelMileageLabel"
-		android:layout_width="wrap_content"
-		android:layout_height="wrap_content"
-		android:layout_alignParentLeft="true"
-		android:layout_below="@+id/tv_carID"
-		android:paddingLeft="10dip"
-		android:text="@string/label_fuelmileage"
-		android:textAppearance="?android:attr/textAppearanceMedium"
-		android:textSize="7pt" />
+	    android:id="@+id/tv_element_FuelMileageLabel"
+	    android:layout_width="wrap_content"
+	    android:layout_height="wrap_content"
+	    android:layout_alignParentLeft="true"
+	    android:layout_below="@id/tv_element_CarName"
+	    android:paddingLeft="10dip"
+	    android:text="@string/label_fuelmileage"
+	    android:textAppearance="?android:attr/textAppearanceMedium"
+	    android:textSize="7pt" />
 
 	<TextView
 		android:id="@+id/tv_value_FuelMileage"
