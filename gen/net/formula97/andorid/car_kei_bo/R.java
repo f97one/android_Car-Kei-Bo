@@ -116,6 +116,7 @@ public final class R {
         public static final int adbuilder_confirm_deletecar=0x7f07002f;
         public static final int adbuilder_confirm_deletemileage=0x7f070030;
         public static final int adbuilder_confirm_reorg_db=0x7f070031;
+        public static final int adbuilder_toast_deleterecord=0x7f07003a;
         public static final int adtitle_detail_of_refuel=0x7f070039;
         public static final int app_name=0x7f070000;
         public static final int config_title_distance=0x7f07001f;

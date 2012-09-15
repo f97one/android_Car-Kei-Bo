@@ -59,5 +59,6 @@
 	<string name="toastmsg_addmileage3">Amount of Oil : </string>
 	<string name="toastmsg_addmileage4">Distance : </string>
 	<string name="adtitle_detail_of_refuel">Detail of refuel record</string>
+	<string name="adbuilder_toast_deleterecord"> \'s car record and related mileage have deleted.</string>
 
 </resources>

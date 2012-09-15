@@ -57,5 +57,6 @@
 	<string name="toastmsg_addmileage3">給油量 : </string>
 	<string name="toastmsg_addmileage4">走行距離 : </string>
 	<string name="adtitle_detail_of_refuel">給油記録の詳細</string>
+	<string name="adbuilder_toast_deleterecord">と、関連する燃費記録を削除しました。</string>
 
 </resources>

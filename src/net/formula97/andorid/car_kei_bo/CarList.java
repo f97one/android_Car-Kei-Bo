@@ -25,6 +25,7 @@ import android.widget.AdapterView;
 import android.widget.SimpleCursorAdapter;
 import android.widget.TableLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 /**
  * クルマリストを表示するActivity
@@ -313,7 +314,8 @@ public class CarList extends Activity implements OnClickListener {
 		// TODO 自動生成されたメソッド・スタブ
 		super.onContextMenuClosed(menu);
 
-		// クルマリストを描画しなおす。
+		// DBとCursorを閉じてActivityを再始動する
+		closeDbAndCursorIfOpen();
 		onResume();
 	}
 
@@ -432,6 +434,9 @@ public class CarList extends Activity implements OnClickListener {
 				// TODO 自動生成されたメソッド・スタブ
 				int result;
 
+				// 削除前に車の名前を取得しておく
+				String carname = dbman.getCarNameById(db, carId);
+
 				// クルマのレコードを削除する
 				result = dbman.deleteCarById(db, carId);
 				Log.d("deleteCar", "car record deleted, CAR_ID = " + String.valueOf(carId));
@@ -454,6 +459,10 @@ public class CarList extends Activity implements OnClickListener {
 
 				// DBを再編成する
 				dbman.reorgDb(db);
+
+				// レコードを消したというトーストを表示する。
+				String line = carname + getString(R.string.adbuilder_toast_deleterecord);
+				Toast.makeText(getApplicationContext(), line, Toast.LENGTH_LONG).show();
 
 				// DBとCursorを閉じてActivityを再始動する
 				closeDbAndCursorIfOpen();
