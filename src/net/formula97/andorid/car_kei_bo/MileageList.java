@@ -116,7 +116,7 @@ public class MileageList extends Activity implements OnClickListener {
 
 		if (hasRecord) {
 			closeCursor(cMileageList);
-			closeCursor(cLvRow);
+			//closeCursor(cLvRow);
 		}
 		closeDb(db);
 	}
@@ -131,7 +131,7 @@ public class MileageList extends Activity implements OnClickListener {
 
 		if (hasRecord) {
 			closeCursor(cMileageList);
-			closeCursor(cLvRow);
+			//closeCursor(cLvRow);
 		}
 		closeDb(db);
 	}
