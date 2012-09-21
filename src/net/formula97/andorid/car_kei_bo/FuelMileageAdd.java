@@ -222,7 +222,7 @@ public class FuelMileageAdd extends Activity implements OnClickListener {
 			@Override
 			public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
 				// 時刻をcurrentDateTimeにセットする
-				currentDateTime.set(Calendar.HOUR, hourOfDay);
+				currentDateTime.set(Calendar.HOUR_OF_DAY, hourOfDay);
 				currentDateTime.set(Calendar.MINUTE, minute);
 				// TimePickerDialogは秒を指定できないので、ユリウス通日を使用する関係上
 				// 秒を0としてセットする。
