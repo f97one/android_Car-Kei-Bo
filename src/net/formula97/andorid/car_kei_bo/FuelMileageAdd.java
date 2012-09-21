@@ -632,7 +632,7 @@ public class FuelMileageAdd extends Activity implements OnClickListener {
 
 		case R.id.button_editTime:					// 給油時刻の編集ボタン
 			// 時、分をそれぞれ取得する。
-			int hour = currentDateTime.get(Calendar.HOUR);
+			int hour = currentDateTime.get(Calendar.HOUR_OF_DAY);
 			int minute = currentDateTime.get(Calendar.MINUTE);
 
 			// TimePickerDialogには、「24時間制表記にするか」の設定があるため、
