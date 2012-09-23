@@ -3,7 +3,9 @@ package net.formula97.andorid.car_kei_bo;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.TimeZone;
 
+import android.text.format.Time;
 import android.util.Log;
 
 /**
@@ -52,19 +54,27 @@ public class DateManager {
 	 * @return ISO 8601形式の文字列
 	 */
 	public String getISO8601Date(double julianDay) {
-		String dateFormat = "yyyy-MM-dd HH:mm:ss";
-
 		// ユリウス通日に対応するDate型オブジェクトを取得する
 		//   milliSecOfDayは1日をミリ秒単位にしたものを、
 		//   originDateは1970年1月1日 00:00:00 UTCを、それぞれあらわす。
 		//   ※ちなみにこの方法を使えば、Calendar→ユリウス通日への変換も2、3行で記述できるんだが....。
 		int milliSecOfDay = 86400000;
 		double originDate = 2440587.5;
-		Date dateFromJ = new Date((long)((julianDay - originDate) * milliSecOfDay));
 
-		// SimpleDateFormatで整形したのち、文字列として返す
-		SimpleDateFormat sdf = new SimpleDateFormat(dateFormat);
-		return sdf.format(dateFromJ).toString();
+		long dateFromJ = (long)((julianDay - originDate) * milliSecOfDay);
+
+		// 端末のタイムゾーン設定を取得する
+		String currentTZ = Time.getCurrentTimezone();
+		Log.d("getISO8601Date", "Current Time zone is " + currentTZ);
+		TimeZone current = TimeZone.getTimeZone(currentTZ);
+		int offsetInMillis = current.getRawOffset();
+		int offsetHour = offsetInMillis / 1000 /60 / 60;
+
+		Calendar cal = Calendar.getInstance();
+		cal.setTimeInMillis(dateFromJ);
+		cal.set(Calendar.HOUR_OF_DAY, cal.get(Calendar.HOUR_OF_DAY) - offsetHour);
+
+		return getISO8601Date(cal, true);
 	}
 
 	/**
@@ -148,7 +158,7 @@ public class DateManager {
 		currentDay.set(year, month, day, hour, minute, second);
 
 		// 本当は
-		//ret = (currentDay.getTime()).getTime() / 86400000 + 2440587.5;
+		//ret = currentDay.getTimeInMillis() / 86400000 + 2440587.5;
 		// とやれば終わるのだが、計算結果の一貫性を保つためtoJulianDay(Calendar)を
 		// 呼び出す。
 		ret = toJulianDay(currentDay);
@@ -163,6 +173,71 @@ public class DateManager {
 	public Calendar getNow() {
 		Calendar nowDateTime = Calendar.getInstance();
 		return nowDateTime;
+	}
+
+	/**
+	 * ユリウス通日をCalendarオブジェクトに変換する。
+	 * @param julianDay 変換元のユリウス通日
+	 * @return Calendar型、ユリウス通日から換算したCalendarオブジェクト、
+	 *         ただし、ミリ秒以下は「000」になっている
+	 */
+	public Calendar jd2Calendar(double julianDay) {
+		// GMT+0:00とされているカサブランカのタイムゾーン文字列
+		//String strGmt = "Africa/Casablanca";
+
+		String currentTZ = Time.getCurrentTimezone();
+		//TimeZone gmtTz = TimeZone.getTimeZone(strGmt);
+		TimeZone current = TimeZone.getTimeZone(currentTZ);
+
+		// UTC(≒GMT)からの時差を取得する
+		int rawOffsetInMillis = current.getRawOffset();
+		// オフセットはミリ秒単位なので、時間単位に計算しなおす
+		int rawOffsetHour = rawOffsetInMillis / 1000 / 60 / 60;
+		Log.d("jd2Calendar", "Offset hour from GMT is " + String.valueOf(rawOffsetHour));
+
+		//Calendar ret = Calendar.getInstance(gmtTz);
+		Calendar ret = Calendar.getInstance();
+
+		// ユリウス通日に対応するDate型オブジェクトを取得する
+		//   milliSecOfDayは1日をミリ秒単位にしたものを、
+		//   originDateは1970年1月1日 00:00:00 UTCを、それぞれあらわす。
+		//   ※ちなみにこの方法を使えば、Calendar→ユリウス通日への変換も2、3行で記述できるんだが....。
+		int milliSecOfDay = 86400000;
+		double originDate = 2440587.5;
+
+		// 都合上、long型にキャストする必要があるのだが、ミリ秒単位がどうも切り捨てられてるっぽい....
+		long dayMilli = (long)((julianDay - originDate) * milliSecOfDay);
+		ret.setTimeInMillis(dayMilli);
+		//ret.setTimeZone(current);
+
+		// 取得したオフセットだけ、時間を減算する
+		ret.set(Calendar.HOUR_OF_DAY, ret.get(Calendar.HOUR_OF_DAY) - rawOffsetHour);
+
+		return ret;
+	}
+
+	/**
+	 * ISO 8601形式の日付文字列をCalendarオブジェクトに変換する。
+	 * @param iso8601Date String型、変換元のISO 8601形式の日付文字列
+	 * @return Calendar型、ISO 8601形式の日付文字列から換算したCalendarオブジェクト、
+	 *         ただし、ミリ秒以下は「000」になっている
+	 */
+	public Calendar iso2Calendar(String iso8601Date) {
+		Calendar ret = Calendar.getInstance();
+
+		String[] elementDate = iso8601Date.split("[-: ]");
+
+		int year = Integer.parseInt(elementDate[0]);
+		int month = Integer.parseInt(elementDate[1]);
+		int day = Integer.parseInt(elementDate[2]);
+		int hour = Integer.parseInt(elementDate[3]);
+		int minute = Integer.parseInt(elementDate[4]);
+		int second = Integer.parseInt(elementDate[5]);
+
+		ret.set(year, month, day, hour, minute, second);
+		ret.set(Calendar.MILLISECOND, 0);
+
+		return ret;
 	}
 
 }
