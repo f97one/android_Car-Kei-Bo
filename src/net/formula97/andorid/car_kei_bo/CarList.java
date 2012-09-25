@@ -114,19 +114,19 @@ public class CarList extends Activity implements OnClickListener {
 		 */
 
 		// 別画面呼び出しのためのインテント宣言
-		//Intent configActivity = new Intent(this, Config.class);		// 設定画面
+		Intent configActivity = new Intent(this, Config.class);		// 設定画面
 		Intent addCarActivity = new Intent(this, AddMyCar.class);	// 「クルマを追加」画面
-		//Intent carListActivity = new Intent(this, CarList.class);	// 「クルマリスト」画面
+		Intent carListActivity = new Intent(this, CarList.class);	// 「クルマリスト」画面
 
 		switch (item.getItemId()) {
 		case R.id.optionsmenu_closeAPP:
 			// アプリを終了させる
 			finish();
 			return true;
-//		case R.id.optionsmenu_call_preference:
-//			// 設定画面を呼び出す
-//			startActivity(configActivity);
-//			return true;
+		case R.id.optionsmenu_call_preference:
+			// 設定画面を呼び出す
+			startActivity(configActivity);
+			return true;
 		case R.id.optionsmenu_addcar:
 			// 「クルマを追加」画面を呼び出す
 			startActivity(addCarActivity);

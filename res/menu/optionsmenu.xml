@@ -2,11 +2,11 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android" >
 	<item android:id="@+id/optionsmenu_carlist" android:title="@string/opmenu_carlist"></item>
 	<item android:id="@+id/optionsmenu_addcar" android:title="@string/opmenu_addcar"></item>
-	<!--
+
 	<item android:id="@+id/optionsmenu_call_preference"
 		android:title="@string/opmenu_call_preference"
 		android:icon="@android:drawable/ic_menu_preferences"></item>
-	-->
+
 	<item android:id="@+id/optionsmenu_closeAPP"
 		android:title="@string/opmenu_close_app"
 		android:icon="@android:drawable/ic_menu_close_clear_cancel"></item>
