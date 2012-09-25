@@ -2,7 +2,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
 	package="net.formula97.andorid.car_kei_bo"
 	android:versionCode="1"
-	android:versionName="0.6-p2" android:installLocation="auto">
+	android:versionName="0.7" android:installLocation="auto">
 
 	<uses-sdk android:minSdkVersion="8" />
 
