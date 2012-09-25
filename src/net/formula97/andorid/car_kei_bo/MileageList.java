@@ -148,12 +148,15 @@ public class MileageList extends Activity implements OnClickListener {
 
 		hasRecord = dbman.hasLubRecords(db, getCAR_ID());
 
+		// TODO プリファレンスのSortOrderの値を読み出し、invertOrderに反映する。
+		boolean invertOrder = false;
+
 		// 各種単位の取得
 		priceUnit = dbman.getPriceUnitById(db, getCAR_ID());
 		distanceUnit = dbman.getDistanceUnitById(db, getCAR_ID());
 		volumeUnit = dbman.getVolumeUnitById(db, getCAR_ID());
 
-		cMileageList = dbman.getRefuelRecordsById(db, getCAR_ID(), true);
+		cMileageList = dbman.getRefuelRecordsById(db, getCAR_ID(), invertOrder);
 
 		String[] from = {
 				//"_id",
