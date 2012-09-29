@@ -1135,7 +1135,36 @@ public class DbManager extends SQLiteOpenHelper {
 	}
 
 	/**
-	 * そのクルマの最初の給油実施日をユリウス通日で返す。
+	 * そのクルマの累計給油量を返す。
+	 * @param db SQLiteDatabase型、操作するDBインスタンス
+	 * @param carId SQLiteDatabase型、操作するDBインスタンス
+	 * @return float型、そのクルマの累計給油量
+	 */
+	protected float getTotalOfRefuelById(SQLiteDatabase db, int carId) {
+		float ret = 0;
+		Cursor q;
+
+		// SQL共通部分
+		String selection = "CAR_ID = ?";
+		String[] selectionArgs = {String.valueOf(carId)};
+		String groupBy = null;
+		String having = null;
+		String orderBy = null;
+
+		String[] columns = {"SUM(LUB_AMOUNT)"};
+
+		q = db.query(LUB_MASTER, columns, selection, selectionArgs, groupBy, having, orderBy);
+		q.moveToFirst();
+
+		// Cursorから値を返す
+		ret = q.getFloat(0);
+		q.close();
+
+		return ret;
+	}
+
+	/**
+	 * そのクルマの最初の給油実施日を、ユリウス通日で返す。
 	 * @param db SQLiteDatabase型、操作するDBインスタンス
 	 * @param carId int型、給油情報を取得するクルマのCAR_ID
 	 * @return そのクルマの最初の給油実施日を表すユリウス通日
@@ -1161,7 +1190,7 @@ public class DbManager extends SQLiteOpenHelper {
 	}
 
 	/**
-	 * そのクルマの最後の給油実施日をユリウス通日で返す。
+	 * そのクルマの最後の給油実施日を、ユリウス通日で返す。
 	 * @param db SQLiteDatabase型、操作するDBインスタンス
 	 * @param carId int型、給油情報を取得するクルマのCAR_ID
 	 * @return そのクルマの最後の給油実施日を表すユリウス通日
@@ -1185,14 +1214,6 @@ public class DbManager extends SQLiteOpenHelper {
 		ret = q.getDouble(0);
 		return ret;
 	}
-
-//	protected Cursor getRefuelRecord(SQLiteDatabase db, int carId ) {
-//		Cursor ret;
-//
-//
-//
-//		return ret;
-//	}
 
 	protected int updateRefuelRecordById(SQLiteDatabase db, int carId ) {
 		int ret = 0;
