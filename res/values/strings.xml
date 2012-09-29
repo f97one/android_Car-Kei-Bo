@@ -63,5 +63,6 @@
 	<string name="pref_order_ascend">Show records of fuel consumption in ascending order</string>
 	<string name="pref_order_descend">Show records of fuel consumption in descending order</string>
 	<string name="pref_title_descend">Sort of fuel consumption record</string>
+	<string name="label_totalamountofoil">Total amount of Oil : </string>
 
 </resources>

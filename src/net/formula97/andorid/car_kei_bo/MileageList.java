@@ -38,6 +38,9 @@ public class MileageList extends Activity implements OnClickListener {
 	TextView tv_unit_runningCosts2;		// クルマのランニングコスト単位
 	Button btn_add_mileage;				// 燃費記録追加ボタン
 	ListView lv_mileagelist;			// 燃費記録を表示するListView
+	TextView tv_element_totalAmountOfOil;
+	TextView tv_value_totalAmountOfOil;
+	TextView tv_unit_totalAmountOfOil;
 
 	private DbManager dbman = new DbManager(this);
 	//private DateManager dmngr = new DateManager();
@@ -77,6 +80,9 @@ public class MileageList extends Activity implements OnClickListener {
 		tv_unit_runningCosts2 = (TextView)findViewById(R.id.tv_unit_runningCosts2);
 		btn_add_mileage = (Button)findViewById(R.id.btn_add_mileage);
 		lv_mileagelist = (ListView)findViewById(R.id.lv_mileagelist);
+		tv_element_totalAmountOfOil = (TextView)findViewById(R.id.tv_element_totalAmountOfOil);
+		tv_value_totalAmountOfOil = (TextView)findViewById(R.id.tv_value_totalAmountOfOil);
+		tv_unit_totalAmountOfOil = (TextView)findViewById(R.id.tv_unit_totalAmountOfOil);
 
 		// 渡された引数を解析してグローバル変数に格納
 		Intent i = getIntent();
@@ -248,6 +254,7 @@ public class MileageList extends Activity implements OnClickListener {
 		tv_unit_fuelMileage2.setText(distanceUnit + "/" + volumeUnit);
 		tv_unit_runningCosts2.setText(priceUnit + "/" + distanceUnit);
 
+		setTotalAmountOfOil(getCAR_ID());
 	}
 
 	public int getCAR_ID() {
@@ -309,6 +316,18 @@ public class MileageList extends Activity implements OnClickListener {
 
 			Log.d("closeDb", "SQLiteDatabase is closed.");
 		}
+	}
+
+	/**
+	 * 累計給油量をTextViewへセットする
+	 * @param carId int型、取得するクルマのCAR_ID
+	 */
+	private void setTotalAmountOfOil(int carId) {
+		float totalFuel = dbman.getTotalOfRefuelById(db, carId);
+		String unit = dbman.getVolumeUnitById(db, carId);
+
+		tv_value_totalAmountOfOil.setText(String.valueOf(totalFuel));
+		tv_unit_totalAmountOfOil.setText(unit);
 	}
 
 }

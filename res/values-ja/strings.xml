@@ -61,5 +61,6 @@
 	<string name="pref_order_ascend">昇順で燃費記録を表示します</string>
 	<string name="pref_order_descend">降順で燃費記録を表示します</string>
 	<string name="pref_title_descend">燃費記録の表示順</string>
+	<string name="label_totalamountofoil">累計給油量：</string>
 
 </resources>
