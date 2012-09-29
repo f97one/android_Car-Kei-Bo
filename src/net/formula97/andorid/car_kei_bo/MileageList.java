@@ -16,6 +16,7 @@ import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemLongClickListener;
 import android.widget.Button;
 import android.widget.ListView;
 import android.widget.SimpleCursorAdapter;
@@ -25,7 +26,7 @@ import android.widget.TextView;
  * @author kazutoshi
  *
  */
-public class MileageList extends Activity implements OnClickListener {
+public class MileageList extends Activity implements OnClickListener, OnItemLongClickListener {
 
 	private int CAR_ID;
 	private String CAR_NAME;
@@ -328,6 +329,13 @@ public class MileageList extends Activity implements OnClickListener {
 
 		tv_value_totalAmountOfOil.setText(String.valueOf(totalFuel));
 		tv_unit_totalAmountOfOil.setText(unit);
+	}
+
+	@Override
+	public boolean onItemLongClick(AdapterView<?> arg0, View arg1, int arg2,
+			long arg3) {
+		// TODO 自動生成されたメソッド・スタブ
+		return false;
 	}
 
 }
