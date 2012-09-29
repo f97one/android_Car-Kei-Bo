@@ -186,13 +186,16 @@ public class MileageList extends Activity implements OnClickListener {
 	            for (int i =0; i < cLvRow.getColumnCount(); i++) {
 	            	Log.i("onItemClick", "name of Column Index " + String.valueOf(i) + ":" + cLvRow.getColumnName(i) + " value = " + cLvRow.getString(i));
 	            }
-				cLvRow.moveToFirst();
 
-				int rowId = Integer.parseInt(cLvRow.getString(0));
+				int rowId = Integer.parseInt(cLvRow.getString(cLvRow.getColumnIndex("_id")));
+				Log.d("onItemClick", "rowid is " + String.valueOf(rowId));
 
 				// 給油記録の元ネタをDBから取得する
 				Cursor cRefuelRecord = dbman.getRefuelRecordById(db, getCAR_ID(), rowId);
 				Log.d("onItemClick", "returned rows = " + cRefuelRecord.getCount());
+				for (int i = 0; i < cRefuelRecord.getColumnCount(); i++) {
+					Log.i("onItemClick", "name of Column Index " + String.valueOf(i) + ":" + cRefuelRecord.getColumnName(i) + " value = " + cRefuelRecord.getString(i));
+				}
 
 				// AlertDialogに差し込むテキストの生成
 				// 値の取得：計算用
