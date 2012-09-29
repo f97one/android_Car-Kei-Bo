@@ -62,5 +62,7 @@
 	<string name="pref_order_descend">降順で燃費記録を表示します</string>
 	<string name="pref_title_descend">燃費記録の表示順</string>
 	<string name="label_totalamountofoil">累計給油量：</string>
+	<string name="ctxitem_edit_refuel_record">の給油記録を修正</string>
+	<string name="ctxitem_delete_refuel_record">この給油記録を削除</string>
 
 </resources>
