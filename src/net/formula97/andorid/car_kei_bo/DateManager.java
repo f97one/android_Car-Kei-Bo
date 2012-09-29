@@ -240,4 +240,39 @@ public class DateManager {
 		return ret;
 	}
 
+	/**
+	 * その月の1日 00:00:00.000であるCalendarオブジェクトを返す。
+	 * @param gcd Calendar型、取得する月を含むCalendarオブジェクト
+	 * @return Calendar型
+	 */
+	public Calendar getFirstMomentOfMonth(Calendar gcd) {
+		// 年と月はそのままとし、残りはとりうる最小値にする
+		gcd.set(gcd.get(Calendar.YEAR),							// 年
+				gcd.get(Calendar.MONTH),						// 月
+				gcd.getActualMinimum(Calendar.DAY_OF_MONTH),	// 日
+				gcd.getActualMinimum(Calendar.HOUR_OF_DAY),		// 時
+				gcd.getActualMinimum(Calendar.MINUTE),			// 分
+				gcd.getActualMinimum(Calendar.SECOND));			// 秒
+		gcd.set(Calendar.MILLISECOND, gcd.getActualMinimum(Calendar.MILLISECOND));
+
+		return gcd;
+	}
+
+	/**
+	 * その月の最終日 23:59:59.999であるCalendarオブジェクトを返す。
+	 * @param gcd Calendar型、取得する月を含むCalendarオブジェクト
+	 * @return Calendar型
+	 */
+	public Calendar getLastMomentOfMonth(Calendar gcd) {
+		// 年と月はそのままとし、残りはとりうる最大値にする
+		gcd.set(gcd.get(Calendar.YEAR),							// 年
+				gcd.get(Calendar.MONTH),						// 月
+				gcd.getActualMaximum(Calendar.DAY_OF_MONTH),	// 日
+				gcd.getActualMaximum(Calendar.HOUR_OF_DAY),		// 時
+				gcd.getActualMaximum(Calendar.MINUTE),			// 分
+				gcd.getActualMaximum(Calendar.SECOND));			// 秒
+		gcd.set(Calendar.MILLISECOND, gcd.getActualMaximum(Calendar.MILLISECOND));
+
+		return gcd;
+	}
 }

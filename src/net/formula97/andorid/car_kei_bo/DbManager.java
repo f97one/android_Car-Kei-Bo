@@ -1110,4 +1110,97 @@ public class DbManager extends SQLiteOpenHelper {
 		return ret;
 	}
 
+	/**
+	 * 指定した期間の給油量合計を返す。
+	 * @param db SQLiteDatabase型、操作するDBインスタンス
+	 * @param carId int型、給油情報を取得するクルマのCAR_ID
+	 * @param startJd double型、検索範囲の最初を示すユリウス通日
+	 * @param endJd double型、検索範囲の最後を示すユリウス通日
+	 * @return float型、指定した期間の給油量合計
+	 */
+	protected float getSubtotalOfRefuelById(SQLiteDatabase db, int carId, double startJd, double endJd) {
+		float ret = 0;
+		Cursor q;
+
+		// SQLを組み立てる
+		String sql = "SELECT SUM(LUB_AMOUNT) FROM LUB_MASTER " +
+					"WHERE CAR_ID = " + String.valueOf(carId) +
+					"AND REFUEL_DATE BETWEEN " + String.valueOf(startJd) + " AND " + String.valueOf(endJd) + ";";
+		q = db.rawQuery(sql, null);
+		q.moveToFirst();
+
+		// Cursorから値を返す
+		ret = q.getFloat(0);
+		return ret;
+	}
+
+	/**
+	 * そのクルマの最初の給油実施日をユリウス通日で返す。
+	 * @param db SQLiteDatabase型、操作するDBインスタンス
+	 * @param carId int型、給油情報を取得するクルマのCAR_ID
+	 * @return そのクルマの最初の給油実施日を表すユリウス通日
+	 */
+	protected double getOldestRefuelDateById(SQLiteDatabase db, int carId) {
+		double ret = 0;
+		Cursor q;
+
+		// SQL共通部分
+		String selection = "CAR_ID = ?";
+		String[] selectionArgs = {String.valueOf(carId)};
+		String groupBy = null;
+		String having = null;
+		String orderBy = null;
+
+		String[] columns = {"MIN(REFUEL_DATE)"};
+
+		q = db.query(LUB_MASTER, columns, selection, selectionArgs, groupBy, having, orderBy);
+		q.moveToFirst();
+
+		ret = q.getDouble(0);
+		return ret;
+	}
+
+	/**
+	 * そのクルマの最後の給油実施日をユリウス通日で返す。
+	 * @param db SQLiteDatabase型、操作するDBインスタンス
+	 * @param carId int型、給油情報を取得するクルマのCAR_ID
+	 * @return そのクルマの最後の給油実施日を表すユリウス通日
+	 */
+	protected double getLatestRefuelDateById(SQLiteDatabase db, int carId) {
+		double ret = 0;
+		Cursor q;
+
+		// SQL共通部分
+		String selection = "CAR_ID = ?";
+		String[] selectionArgs = {String.valueOf(carId)};
+		String groupBy = null;
+		String having = null;
+		String orderBy = null;
+
+		String[] columns = {"MAX(REFUEL_DATE)"};
+
+		q = db.query(LUB_MASTER, columns, selection, selectionArgs, groupBy, having, orderBy);
+		q.moveToFirst();
+
+		ret = q.getDouble(0);
+		return ret;
+	}
+
+//	protected Cursor getRefuelRecord(SQLiteDatabase db, int carId ) {
+//		Cursor ret;
+//
+//
+//
+//		return ret;
+//	}
+
+	protected int updateRefuelRecordById(SQLiteDatabase db, int carId ) {
+		int ret = 0;
+
+
+
+
+		return ret;
+	}
+
 }
