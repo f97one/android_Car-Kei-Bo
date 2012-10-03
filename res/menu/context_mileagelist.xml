@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android" >
+    <item android:id="@+id/ctxitem_edit_refuel_record" android:title="@string/ctxitem_edit_refuel_record"></item>
+    <item android:id="@+id/ctxitem_delete_refuel_record" android:title="@string/ctxitem_delete_refuel_record"></item>
+
+</menu>

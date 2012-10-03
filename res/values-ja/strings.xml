@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources>
+<resources xmlns:android="http://schemas.android.com/apk/res/android">
 
 	<string name="app_name">カー計簿 -燃費記録-</string>
 	<string name="title_config">設定</string>
@@ -58,9 +58,17 @@
 	<string name="toastmsg_addmileage4">走行距離 : </string>
 	<string name="adtitle_detail_of_refuel">給油記録の詳細</string>
 	<string name="adbuilder_toast_deleterecord">と、関連する燃費記録を削除しました。</string>
-	<string name="pref_order_ascend">昇順で燃費記録を表示します</string>
-	<string name="pref_order_descend">降順で燃費記録を表示します</string>
-	<string name="pref_title_descend">燃費記録の表示順</string>
-	<string name="label_totalamountofoil">累計給油量：</string>
+	<string name="pref_title_aboutthis">このソフトウェアについて</string><string name="pref_order_ascend">日付を昇順で表示します</string><string name="pref_order_descend">日付を降順で表示します</string>
+	<string name="pref_title_sortorder">ソート順序</string>
+	<string name="pref_title_softwareversion">ソフトウェアバージョン</string><string name="pref_title_refuelstat">給油量の小計</string><string name="pref_title_runningcoststat">ランニングコストの小計</string>
+	<string name="pref_title_changelog">更新履歴</string><string name="pref_title_mileagestat">燃費記録の小計</string>
+	<string name="pref_title_showchangelog">クリックすると、次の画面で更新履歴を表示します</string>
+	<string name="version_0_6">Google Drive上で限定公開</string>
+	<string name="version_0_6__p1">内部処理のバグを修正。</string>
+	<string name="version_0_6__p2">TimePickerに表示される時刻が正しくない場合があるバグを修正。</string>
+	<string name="label_totalamountofoil">累計給油量</string>
+	<string name="pref_title_descend">燃費記録</string><string name="pref_title_aboutthelicense">ライセンスについて</string><string name="pref_title_newbsdlicense">New BSD License</string>
+	<string name="ctxitem_delete_refuel_record">この燃費記録を削除</string>
+	<string name="ctxitem_edit_refuel_record">この燃費記録を修正</string>
 
 </resources>
