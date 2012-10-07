@@ -123,7 +123,6 @@ public final class R {
     }
     public static final class raw {
         public static final int ddl_create_table=0x7f050000;
-        public static final int new_bsd_license=0x7f050001;
     }
     public static final class string {
         public static final int adbuilder_confirm_deletecar=0x7f07002f;
