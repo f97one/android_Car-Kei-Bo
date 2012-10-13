@@ -82,7 +82,7 @@ public class ShowStats extends Activity {
 		//   格納値の実際はint型数値だが、String-Arrayに列挙しているため、
 		//   StringからIntへ変換している
 		int statRangeValue = Integer.parseInt(pref.getString("StatRangeValue", "0"));
-		Log.d("onResume", "StatRangeValue is " + String.valueOf(statRangeValue));
+		Log.i("onResume", "StatRangeValue is " + String.valueOf(statRangeValue));
 
 		statDaysRange = getStatDaysRange(db, getCAR_ID(), statRangeValue);
 
@@ -97,8 +97,7 @@ public class ShowStats extends Activity {
 	 */
 	private double[][] getStatDaysRange(SQLiteDatabase db, int carId, int statRangeValue){
 		// 最低限の値で初期化
-		double[][] daysRange = {{0.0, 0.0}, {0.0, 0.0}};
-		int counter = 0;
+		int dimcounter = 1;
 
 		// 指定したCAR_IDの給油記録のうち、最古、および最新の給油日時を取得する
 		double oldestRefuelJDay = dbman.getOldestRefuelDateById(db, carId);		// 最古
@@ -108,25 +107,38 @@ public class ShowStats extends Activity {
 		DateManager dmngr = new DateManager();
 		Calendar gcd = dmngr.jd2Calendar(latestRefuelJDay);
 
-		// cgdのMONTHを-1していき、latestRefuelJDayを超えるまで繰り返す
-		while (dmngr.toJulianDay(gcd) >= oldestRefuelJDay) {
-			daysRange[counter][STARTDAY_INDEX] = dmngr.getFirstMomentOfMonth(gcd);
-			daysRange[counter][ENDDAY_INDEX] = dmngr.getLastMomentOfMonth(gcd);
+		// statRangeValueが0でない場合は、上位配列を確保する数をループで求める
+		if (statRangeValue == 0) {
+			while (dmngr.toJulianDay(gcd) >= oldestRefuelJDay) {
+				// 上位配列の数を1加算
+				dimcounter++;
+				// 月を1減算
+				gcd.set(Calendar.MONTH, gcd.get(Calendar.MONTH) - 1);
+			}
+		} else {
+			// statRangeValueが0でない場合は、与えられた範囲の値を用いる
+			dimcounter = statRangeValue + 1;
+		}
+
+		Log.i("onResume", "index of stat. range is " + String.valueOf(dimcounter));
+
+		// 配列を初期化
+		double[][] daysRange = new double[dimcounter][];
+		// gcdの値を元に戻す
+		gcd.clear();
+		gcd = dmngr.jd2Calendar(latestRefuelJDay);
+
+		// cgdのMONTHを-1していき、latestRefuelJDayを超えるまで繰り返す。
+		// 繰り返し回数がその前の処理で判明しているので、forを使う。
+		for (int loopcounter = 0; loopcounter < dimcounter; loopcounter++) {
+			Log.i("onResume", "Loop counter value is now "+ String.valueOf(loopcounter));
+
+			daysRange[loopcounter] = new double[2];
+			daysRange[loopcounter][0] = dmngr.getFirstMomentOfMonth(gcd);
+			daysRange[loopcounter][1] = dmngr.getLastMomentOfMonth(gcd);
 
 			// 月を1減算
 			gcd.set(Calendar.MONTH, gcd.get(Calendar.MONTH) - 1);
-
-			// 統計範囲の値とカウンター値を比較し、カウンター値に達していたらwhileから脱出する
-			// なお、statRangeValue = 0はすべてのレコードを対象としているので、評価対象から
-			// 除外する
-			if (statRangeValue != 0) {
-				if (counter >= statRangeValue) {
-					break;
-				}
-			}
-
-			// カウンターを１加算
-			counter++;
 		}
 
 		// 最終的な配列を返す
