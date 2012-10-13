@@ -84,5 +84,6 @@
 	<string name="pref_stat_6month">Past 6 months</string>
 	<string name="pref_stat_12month">Past 12 months(1 year)</string>
 	<string name="pref_stat_allrange">All periods</string>
+	<string name="label_btn_showstats">Show Statistics</string>
 
 </resources>

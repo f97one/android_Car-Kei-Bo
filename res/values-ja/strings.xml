@@ -77,5 +77,6 @@
 	<string name="pref_stat_6month">過去6か月間</string>
 	<string name="pref_stat_12month">過去12か月(1年間)</string>
 	<string name="pref_stat_allrange">すべての期間</string>
+	<string name="label_btn_showstats">統計を表示</string>
 
 </resources>
