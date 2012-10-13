@@ -70,5 +70,6 @@
 	<string name="pref_title_descend">燃費記録</string><string name="pref_title_aboutthelicense">ライセンスについて</string><string name="pref_title_newbsdlicense">New BSD License</string>
 	<string name="ctxitem_delete_refuel_record">この燃費記録を削除</string>
 	<string name="ctxitem_edit_refuel_record">この燃費記録を修正</string>
+	<string name="ctxmenutitle_mileagelist">燃費記録リスト メニュー</string>
 
 </resources>

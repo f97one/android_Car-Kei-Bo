@@ -142,6 +142,7 @@ public final class R {
         public static final int ctxitem_set_default_car=0x7f070027;
         public static final int ctxitem_show_mileage=0x7f070025;
         public static final int ctxmenutitle_carlist=0x7f07002a;
+        public static final int ctxmenutitle_mileagelist=0x7f070051;
         public static final int intent_launch_aboutlicense=0x7f070050;
         public static final int label_UNIT_distance_kirometer=0x7f070012;
         public static final int label_UNIT_distance_mile=0x7f070013;
