@@ -5,19 +5,22 @@
 		<CheckBoxPreference android:key="RefuelStatSortOrder" android:enabled="true" android:selectable="true" android:defaultValue="true" android:title="@string/pref_title_refuelstat" android:summaryOn="@string/pref_order_descend" android:summaryOff="@string/pref_order_ascend"/>
 		<CheckBoxPreference android:key="MileageStatSortOrder" android:enabled="true" android:defaultValue="true" android:selectable="true" android:title="@string/pref_title_mileagestat" android:summaryOn="@string/pref_order_descend" android:summaryOff="@string/pref_order_ascend"/>
 		<CheckBoxPreference android:key="RunningCostStatSortOrder" android:enabled="true" android:defaultValue="true" android:selectable="true" android:title="@string/pref_title_runningcoststat" android:summaryOn="@string/pref_order_descend" android:summaryOff="@string/pref_order_ascend"/>
+
+	</PreferenceCategory><PreferenceCategory android:key="StatRange" android:title="@string/pref_title_statrange">
+		<ListPreference android:entries="@array/statperiod_name" android:entryValues="@array/statperiod_value" android:key="StatRangeValue" android:summary="@string/pref_summary_statrange" android:defaultValue="0" android:dialogTitle="@string/pref_title_statrange" android:title="@string/pref_title_statrange"/>
 	</PreferenceCategory>
 
 	<PreferenceCategory android:title="@string/pref_title_aboutthis" android:key="AboutThisSoftware">
 		<!-- <PreferenceScreen android:key="SoftwareLicense" android:title="@string/pref_title_aboutthelicense">
 		    <intent android:action="android.intent.action.VIEW" android:data="@string/intent_launch_aboutlicense" />
 		</PreferenceScreen> -->
-		<Preference android:key="SoftwareVersion" android:title="@string/pref_title_softwareversion" android:summary="@string/pref_text_versionstring"/>
-
-			<PreferenceScreen android:title="@string/pref_title_changelog" android:key="ChangeLog" android:summary="@string/pref_title_showchangelog">
-				<Preference android:key="0_6__p2" android:title="0.6-p2" android:summary="@string/version_0_6__p2"/>
-				<Preference android:title="0.6-p1" android:key="0_6__p1" android:summary="@string/version_0_6__p1"/>
-				<Preference android:title="0.6" android:key="0_6" android:summary="@string/version_0_6"/>
+		<Preference android:key="SoftwareVersion" android:title="@string/pref_title_softwareversion" android:summary="@string/pref_text_versionstring"/><PreferenceScreen android:title="@string/pref_title_changelog" android:key="ChangeLog" android:summary="@string/pref_title_showchangelog">
+				<Preference android:key="0_6__p2" android:title="0.6-p2" android:summary="@string/version_0_6__p2" />
+				<Preference android:title="0.6-p1" android:key="0_6__p1" android:summary="@string/version_0_6__p1" />
+				<Preference android:title="0.6" android:key="0_6" android:summary="@string/version_0_6" />
 			</PreferenceScreen>
+
+
 
 	</PreferenceCategory>
 </PreferenceScreen>

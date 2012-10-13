@@ -71,5 +71,11 @@
 	<string name="ctxitem_delete_refuel_record">この燃費記録を削除</string>
 	<string name="ctxitem_edit_refuel_record">この燃費記録を修正</string>
 	<string name="ctxmenutitle_mileagelist">燃費記録リスト メニュー</string>
+	<string name="pref_title_statrange">統計範囲</string>
+	<string name="pref_summary_statrange">統計を行う期間を設定します</string>
+	<string name="pref_stat_3month">過去3か月間</string>
+	<string name="pref_stat_6month">過去6か月間</string>
+	<string name="pref_stat_12month">過去12か月(1年間)</string>
+	<string name="pref_stat_allrange">すべての期間</string>
 
 </resources>

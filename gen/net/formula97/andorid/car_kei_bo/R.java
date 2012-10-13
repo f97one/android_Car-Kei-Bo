@@ -11,7 +11,9 @@ public final class R {
     public static final class array {
         public static final int distanceUnit=0x7f060000;
         public static final int priceUnit=0x7f060001;
-        public static final int volumeUnit=0x7f060002;
+        public static final int statperiod_name=0x7f060002;
+        public static final int statperiod_value=0x7f060003;
+        public static final int volumeUnit=0x7f060004;
     }
     public static final class attr {
     }
@@ -179,6 +181,11 @@ public final class R {
         public static final int opmenu_close_app=0x7f07001a;
         public static final int pref_order_ascend=0x7f070042;
         public static final int pref_order_descend=0x7f070043;
+        public static final int pref_stat_12month=0x7f070056;
+        public static final int pref_stat_3month=0x7f070054;
+        public static final int pref_stat_6month=0x7f070055;
+        public static final int pref_stat_allrange=0x7f070057;
+        public static final int pref_summary_statrange=0x7f070053;
         public static final int pref_text_versionstring=0x7f070041;
         public static final int pref_title_aboutthelicense=0x7f07004e;
         public static final int pref_title_aboutthis=0x7f07003c;
@@ -191,6 +198,7 @@ public final class R {
         public static final int pref_title_showchangelog=0x7f070040;
         public static final int pref_title_softwareversion=0x7f07003e;
         public static final int pref_title_sortorder=0x7f07003d;
+        public static final int pref_title_statrange=0x7f070052;
         public static final int title_addcar=0x7f070003;
         public static final int title_carlist=0x7f070002;
         public static final int title_config=0x7f070001;
