@@ -15,9 +15,14 @@ import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.util.Log;
+import android.view.ContextMenu;
+import android.view.ContextMenu.ContextMenuInfo;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.AdapterView;
+import android.widget.AdapterView.AdapterContextMenuInfo;
 import android.widget.AdapterView.OnItemLongClickListener;
 import android.widget.Button;
 import android.widget.ListView;
@@ -28,7 +33,11 @@ import android.widget.TextView;
  * @author kazutoshi
  *
  */
-public class MileageList extends Activity implements OnClickListener, OnItemLongClickListener {
+/**
+ * @author kazutoshi
+ *
+ */
+public class MileageList extends Activity implements OnClickListener {
 
 	private int CAR_ID;
 	private String CAR_NAME;
@@ -51,6 +60,9 @@ public class MileageList extends Activity implements OnClickListener, OnItemLong
 
 	Cursor cMileageList;
 	Cursor cLvRow;
+	Cursor selectedRow = null;
+
+	int currentRecordId = 0;
 
 	AlertDialog.Builder adbuilder;
 
@@ -179,6 +191,9 @@ public class MileageList extends Activity implements OnClickListener, OnItemLong
 
 		SimpleCursorAdapter sca = new SimpleCursorAdapter(getApplicationContext(), R.layout.listviewelemnt_mileagelist, cMileageList, from, to);
 		lv_mileagelist.setAdapter(sca);
+
+		// ListViewの要素を長押しした時のコンテキストメニューのリスナーをセット
+		registerForContextMenu(lv_mileagelist);
 
 		// ListViewの要素をクリックしたときのリスナーを宣言する
 		// implementしてないので匿名メソッド
@@ -342,13 +357,6 @@ public class MileageList extends Activity implements OnClickListener, OnItemLong
 		tv_unit_totalAmountOfOil.setText(unit);
 	}
 
-	@Override
-	public boolean onItemLongClick(AdapterView<?> arg0, View arg1, int arg2,
-			long arg3) {
-		// TODO 自動生成されたメソッド・スタブ
-		return false;
-	}
-
 	/**
 	 * プリファレンスから、燃費記録の表示順を決めるboolean値を読み出す。
 	 * @return boolean型、trueなら降順、falseなら昇順を表す
@@ -363,5 +371,71 @@ public class MileageList extends Activity implements OnClickListener, OnItemLong
 		Log.d("getMileageOrder", "Mileage list sort order is " + new Boolean(ret).toString());
 
 		return ret;
+	}
+
+	/* (非 Javadoc)
+	 * @see android.app.Activity#onContextItemSelected(android.view.MenuItem)
+	 */
+	@Override
+	public boolean onContextItemSelected(MenuItem item) {
+		// TODO 自動生成されたメソッド・スタブ
+
+		switch(item.getItemId()) {
+		case R.id.ctxitem_edit_refuel_record:
+			// 燃費記録を修正する処理
+			break;
+		case R.id.ctxitem_delete_refuel_record:
+			// 燃費記録を削除する処理
+			break;
+		default:
+			return super.onContextItemSelected(item);
+		}
+
+		return true;
+	}
+
+	/* (非 Javadoc)
+	 * @see android.app.Activity#onContextMenuClosed(android.view.Menu)
+	 */
+	@Override
+	public void onContextMenuClosed(Menu menu) {
+		// TODO 自動生成されたメソッド・スタブ
+		super.onContextMenuClosed(menu);
+
+		// DBとCursorを閉じてActivityを再始動する
+		closeCursor(cMileageList);
+		closeDb(db);
+
+		onResume();
+	}
+
+	/* (非 Javadoc)
+	 * @see android.app.Activity#onCreateContextMenu(android.view.ContextMenu, android.view.View, android.view.ContextMenu.ContextMenuInfo)
+	 */
+	@Override
+	public void onCreateContextMenu(ContextMenu menu, View v,
+			ContextMenuInfo menuInfo) {
+		// TODO 自動生成されたメソッド・スタブ
+		super.onCreateContextMenu(menu, v, menuInfo);
+
+		// 呼び出されたListViewの要素位置を取得する
+		AdapterContextMenuInfo acmi = (AdapterContextMenuInfo)menuInfo;
+		selectedRow = (Cursor)lv_mileagelist.getItemAtPosition(acmi.position);
+		currentRecordId = selectedRow.getInt(selectedRow.getColumnIndex("_id"));
+
+		getMenuInflater().inflate(R.menu.context_mileagelist, menu);
+		menu.setHeaderTitle(getString(R.string.ctxmenutitle_mileagelist));
+
+		// Cursorを閉じる。
+		// ※副作用で、現在表示されている燃費記録リストが消える。
+		selectedRow.close();
+	}
+
+	private void callEditMileage() {
+		// TODO 修正するレコードのrowIdを引き渡してstartActivity
+	}
+
+	private void deleteMileage(SQLiteDatabase db) {
+		// TODO 消去するレコードのrowIdを指定してDBから消去
 	}
 }
