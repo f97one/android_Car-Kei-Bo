@@ -49,6 +49,7 @@ public class MileageList extends Activity implements OnClickListener {
 	TextView tv_value_RunningCosts2;		// クルマのトータルランニングコスト
 	TextView tv_unit_runningCosts2;		// クルマのランニングコスト単位
 	Button btn_add_mileage;				// 燃費記録追加ボタン
+	Button btn_show_stats;
 	ListView lv_mileagelist;			// 燃費記録を表示するListView
 	TextView tv_element_totalAmountOfOil;
 	TextView tv_value_totalAmountOfOil;
@@ -94,6 +95,7 @@ public class MileageList extends Activity implements OnClickListener {
 		tv_value_RunningCosts2 = (TextView)findViewById(R.id.tv_value_RunningCosts2);
 		tv_unit_runningCosts2 = (TextView)findViewById(R.id.tv_unit_runningCosts2);
 		btn_add_mileage = (Button)findViewById(R.id.btn_add_mileage);
+		btn_show_stats = (Button)findViewById(R.id.btn_show_stats);
 		lv_mileagelist = (ListView)findViewById(R.id.lv_mileagelist);
 		tv_element_totalAmountOfOil = (TextView)findViewById(R.id.tv_element_totalAmountOfOil);
 		tv_value_totalAmountOfOil = (TextView)findViewById(R.id.tv_value_totalAmountOfOil);
@@ -258,6 +260,7 @@ public class MileageList extends Activity implements OnClickListener {
 		});
 
 		btn_add_mileage.setOnClickListener(this);
+		btn_show_stats.setOnClickListener(this);
 
 		// 燃費とランニングコストの値を差し込む
 		double txtMileage = dbman.getCurrentMileageById(db, getCAR_ID());
@@ -309,10 +312,18 @@ public class MileageList extends Activity implements OnClickListener {
 			Log.d("onClick", "btn_add_mileage pressed.");
 
 			// 取得したCAR_IDとCAR_NAMEを引数にセットしてstartActivity
-			Intent i = new Intent(getApplicationContext(), FuelMileageAdd.class);
-			i.putExtra("CAR_ID", getCAR_ID());
-			i.putExtra("CAR_NAME", getCAR_NAME());
-			startActivity(i);
+			Intent addmileage = new Intent(getApplicationContext(), FuelMileageAdd.class);
+			addmileage.putExtra("CAR_ID", getCAR_ID());
+			addmileage.putExtra("CAR_NAME", getCAR_NAME());
+			startActivity(addmileage);
+
+			break;
+		case R.id.btn_show_stats:
+			// 「統計を表示」ボタンを押した時の処理
+			Intent showstat = new Intent(getApplicationContext(), ShowStats.class);
+			showstat.putExtra("CAR_ID", getCAR_ID());
+			showstat.putExtra("CAR_NAME", getCAR_NAME());
+			startActivity(showstat);
 
 			break;
 		default:
