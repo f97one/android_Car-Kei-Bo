@@ -9,13 +9,20 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.util.Log;
+import android.view.ContextMenu;
+import android.view.ContextMenu.ContextMenuInfo;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.AdapterView;
+import android.widget.AdapterView.AdapterContextMenuInfo;
 import android.widget.AdapterView.OnItemLongClickListener;
 import android.widget.Button;
 import android.widget.ListView;
@@ -26,7 +33,11 @@ import android.widget.TextView;
  * @author kazutoshi
  *
  */
-public class MileageList extends Activity implements OnClickListener, OnItemLongClickListener {
+/**
+ * @author kazutoshi
+ *
+ */
+public class MileageList extends Activity implements OnClickListener {
 
 	private int CAR_ID;
 	private String CAR_NAME;
@@ -38,6 +49,7 @@ public class MileageList extends Activity implements OnClickListener, OnItemLong
 	TextView tv_value_RunningCosts2;		// クルマのトータルランニングコスト
 	TextView tv_unit_runningCosts2;		// クルマのランニングコスト単位
 	Button btn_add_mileage;				// 燃費記録追加ボタン
+	Button btn_show_stats;
 	ListView lv_mileagelist;			// 燃費記録を表示するListView
 	TextView tv_element_totalAmountOfOil;
 	TextView tv_value_totalAmountOfOil;
@@ -49,6 +61,9 @@ public class MileageList extends Activity implements OnClickListener, OnItemLong
 
 	Cursor cMileageList;
 	Cursor cLvRow;
+	Cursor selectedRow = null;
+
+	int currentRecordId = 0;
 
 	AlertDialog.Builder adbuilder;
 
@@ -80,6 +95,7 @@ public class MileageList extends Activity implements OnClickListener, OnItemLong
 		tv_value_RunningCosts2 = (TextView)findViewById(R.id.tv_value_RunningCosts2);
 		tv_unit_runningCosts2 = (TextView)findViewById(R.id.tv_unit_runningCosts2);
 		btn_add_mileage = (Button)findViewById(R.id.btn_add_mileage);
+		btn_show_stats = (Button)findViewById(R.id.btn_show_stats);
 		lv_mileagelist = (ListView)findViewById(R.id.lv_mileagelist);
 		tv_element_totalAmountOfOil = (TextView)findViewById(R.id.tv_element_totalAmountOfOil);
 		tv_value_totalAmountOfOil = (TextView)findViewById(R.id.tv_value_totalAmountOfOil);
@@ -106,8 +122,8 @@ public class MileageList extends Activity implements OnClickListener, OnItemLong
 
 			@Override
 			public void onClick(DialogInterface dialog, int which) {
-				// TODO 自動生成されたメソッド・スタブ
-
+				// AlertDialogでは、表示を消す以外のことをさせる予定はないため、
+				// 何もせずそのまま抜ける。
 			}
 		});
 
@@ -118,7 +134,6 @@ public class MileageList extends Activity implements OnClickListener, OnItemLong
 	 */
 	@Override
 	protected void onDestroy() {
-		// TODO 自動生成されたメソッド・スタブ
 		super.onDestroy();
 
 		if (hasRecord) {
@@ -133,7 +148,6 @@ public class MileageList extends Activity implements OnClickListener, OnItemLong
 	 */
 	@Override
 	protected void onPause() {
-		// TODO 自動生成されたメソッド・スタブ
 		super.onPause();
 
 		if (hasRecord) {
@@ -148,15 +162,14 @@ public class MileageList extends Activity implements OnClickListener, OnItemLong
 	 */
 	@Override
 	protected void onResume() {
-		// TODO 自動生成されたメソッド・スタブ
 		super.onResume();
 
 		db = dbman.getReadableDatabase();
 
 		hasRecord = dbman.hasLubRecords(db, getCAR_ID());
 
-		// TODO プリファレンスのSortOrderの値を読み出し、invertOrderに反映する。
-		boolean invertOrder = false;
+		// プリファレンスのSortOrderの値を読み出し、invertOrderに反映する。
+		boolean invertOrder = getMileageOrder();
 
 		// 各種単位の取得
 		priceUnit = dbman.getPriceUnitById(db, getCAR_ID());
@@ -181,6 +194,9 @@ public class MileageList extends Activity implements OnClickListener, OnItemLong
 		SimpleCursorAdapter sca = new SimpleCursorAdapter(getApplicationContext(), R.layout.listviewelemnt_mileagelist, cMileageList, from, to);
 		lv_mileagelist.setAdapter(sca);
 
+		// ListViewの要素を長押しした時のコンテキストメニューのリスナーをセット
+		registerForContextMenu(lv_mileagelist);
+
 		// ListViewの要素をクリックしたときのリスナーを宣言する
 		// implementしてないので匿名メソッド
 		lv_mileagelist.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -188,7 +204,7 @@ public class MileageList extends Activity implements OnClickListener, OnItemLong
 			@Override
 			public void onItemClick(AdapterView<?> parent, View v, int position,
 					long id) {
-				// TODO 取得したCursorから給油記録の詳細を取得する
+				// 取得したCursorから給油記録の詳細を取得する
 				cLvRow = (Cursor)lv_mileagelist.getItemAtPosition(position);
 	            for (int i =0; i < cLvRow.getColumnCount(); i++) {
 	            	Log.i("onItemClick", "name of Column Index " + String.valueOf(i) + ":" + cLvRow.getColumnName(i) + " value = " + cLvRow.getString(i));
@@ -244,6 +260,7 @@ public class MileageList extends Activity implements OnClickListener, OnItemLong
 		});
 
 		btn_add_mileage.setOnClickListener(this);
+		btn_show_stats.setOnClickListener(this);
 
 		// 燃費とランニングコストの値を差し込む
 		double txtMileage = dbman.getCurrentMileageById(db, getCAR_ID());
@@ -280,6 +297,10 @@ public class MileageList extends Activity implements OnClickListener, OnItemLong
 		CAR_NAME = cAR_NAME;
 	}
 
+	/**
+	 * ボタン等をクリックしたときの処理一式、onClickListenerが宣言されているウィジェットが対象。
+	 * @param v View型、コールバックリスナーのあるビューのID
+	 */
 	@Override
 	public void onClick(View v) {
 		// コールバックリスナーのあるビューのIDを取得する
@@ -291,10 +312,18 @@ public class MileageList extends Activity implements OnClickListener, OnItemLong
 			Log.d("onClick", "btn_add_mileage pressed.");
 
 			// 取得したCAR_IDとCAR_NAMEを引数にセットしてstartActivity
-			Intent i = new Intent(getApplicationContext(), FuelMileageAdd.class);
-			i.putExtra("CAR_ID", getCAR_ID());
-			i.putExtra("CAR_NAME", getCAR_NAME());
-			startActivity(i);
+			Intent addmileage = new Intent(getApplicationContext(), FuelMileageAdd.class);
+			addmileage.putExtra("CAR_ID", getCAR_ID());
+			addmileage.putExtra("CAR_NAME", getCAR_NAME());
+			startActivity(addmileage);
+
+			break;
+		case R.id.btn_show_stats:
+			// 「統計を表示」ボタンを押した時の処理
+			Intent showstat = new Intent(getApplicationContext(), ShowStats.class);
+			showstat.putExtra("CAR_ID", getCAR_ID());
+			showstat.putExtra("CAR_NAME", getCAR_NAME());
+			startActivity(showstat);
 
 			break;
 		default:
@@ -302,6 +331,10 @@ public class MileageList extends Activity implements OnClickListener, OnItemLong
 		}
 	}
 
+	/**
+	 * 開かれているCursorオブジェクトを閉じる。
+	 * @param c Cursor型、閉じる予定のCursorオブジェクト
+	 */
 	private void closeCursor(Cursor c) {
 		if (c.isClosed() != true) {
 			c.close();
@@ -311,6 +344,10 @@ public class MileageList extends Activity implements OnClickListener, OnItemLong
 		}
 	}
 
+	/**
+	 * 開かれているSQLiteDatabaseオブジェクトを閉じる。
+	 * @param db SQLiteDatabase型、閉じる予定のSQLiteDatabaseオブジェクト
+	 */
 	private void closeDb(SQLiteDatabase db) {
 		if (db.isOpen()) {
 			db.close();
@@ -331,11 +368,85 @@ public class MileageList extends Activity implements OnClickListener, OnItemLong
 		tv_unit_totalAmountOfOil.setText(unit);
 	}
 
-	@Override
-	public boolean onItemLongClick(AdapterView<?> arg0, View arg1, int arg2,
-			long arg3) {
-		// TODO 自動生成されたメソッド・スタブ
-		return false;
+	/**
+	 * プリファレンスから、燃費記録の表示順を決めるboolean値を読み出す。
+	 * @return boolean型、trueなら降順、falseなら昇順を表す
+	 */
+	private boolean getMileageOrder() {
+		boolean ret = false;
+
+		// 目的のboolean設定値は、"MileageListSortOrder"という名前で保存されているので、
+		// これをgetDefaultSharedPreferencesで読みだす
+		SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(this);
+		ret = pref.getBoolean("MileageListSortOrder", false);
+		Log.d("getMileageOrder", "Mileage list sort order is " + new Boolean(ret).toString());
+
+		return ret;
 	}
 
+	/* (非 Javadoc)
+	 * @see android.app.Activity#onContextItemSelected(android.view.MenuItem)
+	 */
+	@Override
+	public boolean onContextItemSelected(MenuItem item) {
+		// TODO 自動生成されたメソッド・スタブ
+
+		switch(item.getItemId()) {
+		case R.id.ctxitem_edit_refuel_record:
+			// 燃費記録を修正する処理
+			break;
+		case R.id.ctxitem_delete_refuel_record:
+			// 燃費記録を削除する処理
+			break;
+		default:
+			return super.onContextItemSelected(item);
+		}
+
+		return true;
+	}
+
+	/* (非 Javadoc)
+	 * @see android.app.Activity#onContextMenuClosed(android.view.Menu)
+	 */
+	@Override
+	public void onContextMenuClosed(Menu menu) {
+		// TODO 自動生成されたメソッド・スタブ
+		super.onContextMenuClosed(menu);
+
+		// DBとCursorを閉じてActivityを再始動する
+		closeCursor(cMileageList);
+		closeDb(db);
+
+		onResume();
+	}
+
+	/* (非 Javadoc)
+	 * @see android.app.Activity#onCreateContextMenu(android.view.ContextMenu, android.view.View, android.view.ContextMenu.ContextMenuInfo)
+	 */
+	@Override
+	public void onCreateContextMenu(ContextMenu menu, View v,
+			ContextMenuInfo menuInfo) {
+		// TODO 自動生成されたメソッド・スタブ
+		super.onCreateContextMenu(menu, v, menuInfo);
+
+		// 呼び出されたListViewの要素位置を取得する
+		AdapterContextMenuInfo acmi = (AdapterContextMenuInfo)menuInfo;
+		selectedRow = (Cursor)lv_mileagelist.getItemAtPosition(acmi.position);
+		currentRecordId = selectedRow.getInt(selectedRow.getColumnIndex("_id"));
+
+		getMenuInflater().inflate(R.menu.context_mileagelist, menu);
+		menu.setHeaderTitle(getString(R.string.ctxmenutitle_mileagelist));
+
+		// Cursorを閉じる。
+		// ※副作用で、現在表示されている燃費記録リストが消える。
+		selectedRow.close();
+	}
+
+	private void callEditMileage() {
+		// TODO 修正するレコードのrowIdを引き渡してstartActivity
+	}
+
+	private void deleteMileage(SQLiteDatabase db) {
+		// TODO 消去するレコードのrowIdを指定してDBから消去
+	}
 }

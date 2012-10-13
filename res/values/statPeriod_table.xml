@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="statperiod_name">
+        <item >@string/pref_stat_3month</item>
+        <item >@string/pref_stat_6month</item>
+        <item >@string/pref_stat_12month</item>
+        <item >@string/pref_stat_allrange</item>
+    </string-array>
+    <string-array name="statperiod_value">
+        <item >2</item>
+        <item >5</item>
+        <item >11</item>
+        <item >0</item>
+    </string-array>
+    
+</resources>

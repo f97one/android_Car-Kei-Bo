@@ -241,11 +241,11 @@ public class DateManager {
 	}
 
 	/**
-	 * その月の1日 00:00:00.000であるCalendarオブジェクトを返す。
+	 * その月の1日 00:00:00.000であるユリウス通日を返す。
 	 * @param gcd Calendar型、取得する月を含むCalendarオブジェクト
-	 * @return Calendar型
+	 * @return double型、その月の1日 00:00:00.000であるユリウス通日
 	 */
-	public Calendar getFirstMomentOfMonth(Calendar gcd) {
+	public double getFirstMomentOfMonth(Calendar gcd) {
 		// 年と月はそのままとし、残りはとりうる最小値にする
 		gcd.set(gcd.get(Calendar.YEAR),							// 年
 				gcd.get(Calendar.MONTH),						// 月
@@ -255,15 +255,15 @@ public class DateManager {
 				gcd.getActualMinimum(Calendar.SECOND));			// 秒
 		gcd.set(Calendar.MILLISECOND, gcd.getActualMinimum(Calendar.MILLISECOND));
 
-		return gcd;
+		return toJulianDay(gcd);
 	}
 
 	/**
-	 * その月の最終日 23:59:59.999であるCalendarオブジェクトを返す。
+	 * その月の最終日 23:59:59.999であるユリウス通日を返す。
 	 * @param gcd Calendar型、取得する月を含むCalendarオブジェクト
-	 * @return Calendar型
+	 * @return double型、その月の最終日 23:59:59.999であるユリウス通日
 	 */
-	public Calendar getLastMomentOfMonth(Calendar gcd) {
+	public double getLastMomentOfMonth(Calendar gcd) {
 		// 年と月はそのままとし、残りはとりうる最大値にする
 		gcd.set(gcd.get(Calendar.YEAR),							// 年
 				gcd.get(Calendar.MONTH),						// 月
@@ -273,6 +273,6 @@ public class DateManager {
 				gcd.getActualMaximum(Calendar.SECOND));			// 秒
 		gcd.set(Calendar.MILLISECOND, gcd.getActualMaximum(Calendar.MILLISECOND));
 
-		return gcd;
+		return toJulianDay(gcd);
 	}
 }

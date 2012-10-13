@@ -1186,6 +1186,7 @@ public class DbManager extends SQLiteOpenHelper {
 		q.moveToFirst();
 
 		ret = q.getDouble(0);
+		q.close();
 		return ret;
 	}
 
@@ -1212,6 +1213,7 @@ public class DbManager extends SQLiteOpenHelper {
 		q.moveToFirst();
 
 		ret = q.getDouble(0);
+		q.close();
 		return ret;
 	}
 
