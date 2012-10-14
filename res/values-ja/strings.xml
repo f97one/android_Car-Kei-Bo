@@ -78,5 +78,11 @@
 	<string name="pref_stat_12month">過去12か月(1年間)</string>
 	<string name="pref_stat_allrange">すべての期間</string>
 	<string name="label_btn_showstats">統計を表示</string>
+	<string name="tv_title_statType">統計の種別：</string>
+	<string name="spinneritem_statType_mileage">燃費記録</string>
+	<string name="spinneritem_statType_Refuel">給油小計</string>
+	<string name="spinneritem_statType_RunningCost">ランニングコスト</string>
+	<string name="tv_label_statPeriod">期間</string>
+	<string name="tv_label_statValue">値</string>
 
 </resources>

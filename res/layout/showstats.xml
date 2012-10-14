@@ -1,46 +1,55 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent" >
-
-    <Spinner
-        android:id="@+id/spinner1"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentRight="true"
-        android:layout_alignParentTop="true" />
-
-    <TextView
-        android:id="@+id/textView1"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignBaseline="@+id/spinner1"
-        android:layout_alignBottom="@+id/spinner1"
-        android:layout_alignParentLeft="true"
-        android:text="TextView" />
-
-    <Spinner
-        android:id="@+id/spinner2"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentRight="true"
-        android:layout_below="@+id/spinner1" />
-
-    <TextView
-        android:id="@+id/textView2"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignBaseline="@+id/spinner2"
-        android:layout_alignBottom="@+id/spinner2"
-        android:layout_alignParentLeft="true"
-        android:text="TextView" />
-
+
     <ListView
-        android:id="@+id/listView1"
+        android:id="@+id/lv_statList"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentLeft="true"
-        android:layout_below="@+id/spinner2" >
+        android:layout_below="@+id/tv_header_statPeriod" >
+
     </ListView>
+
+    <Spinner
+        android:id="@+id/spinner_statType"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentTop="true"
+        android:layout_toRightOf="@+id/tv_title_statType"
+        android:entries="@array/stayTypeArray"
+        tools:listitem="@android:layout/simple_spinner_item" />
+
+    <TextView
+        android:id="@+id/tv_title_statType"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBaseline="@+id/spinner_statType"
+        android:layout_alignBottom="@+id/spinner_statType"
+        android:layout_alignParentLeft="true"
+        android:text="@string/tv_title_statType"
+        android:textColor="#ffffff"
+        android:textSize="9pt" />
+
+    <TextView
+        android:id="@+id/tv_header_statPeriod"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_below="@+id/tv_title_statType"
+        android:layout_marginLeft="10dip"
+        android:text="@string/tv_label_statPeriod" />
+
+    <TextView
+        android:id="@+id/tv_header_statValue"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:layout_below="@+id/tv_title_statType"
+        android:layout_marginRight="10dip"
+        android:text="@string/tv_label_statValue" />
 
 </RelativeLayout>
