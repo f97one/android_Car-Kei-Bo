@@ -1124,13 +1124,15 @@ public class DbManager extends SQLiteOpenHelper {
 
 		// SQLを組み立てる
 		String sql = "SELECT SUM(LUB_AMOUNT) FROM LUB_MASTER " +
-					"WHERE CAR_ID = " + String.valueOf(carId) +
+					"WHERE CAR_ID = " + String.valueOf(carId) + " " +
 					"AND REFUEL_DATE BETWEEN " + String.valueOf(startJd) + " AND " + String.valueOf(endJd) + ";";
 		q = db.rawQuery(sql, null);
 		q.moveToFirst();
 
 		// Cursorから値を返す
 		ret = q.getFloat(0);
+		q.close();
+
 		return ret;
 	}
 
@@ -1159,6 +1161,70 @@ public class DbManager extends SQLiteOpenHelper {
 		// Cursorから値を返す
 		ret = q.getFloat(0);
 		q.close();
+
+		return ret;
+	}
+
+	/**
+	 * 指定したクルマの、指定した期間の燃費記録を返す。トリップメーターが0の場合は、統計から除外する。
+	 * @param db SQLiteDatabase型、操作するDBインスタンス
+	 * @param carId int型、給油情報を取得するクルマのCAR_ID
+	 * @param startJd double型、検索範囲の最初を示すユリウス通日
+	 * @param endJd double型、検索範囲の最後を示すユリウス通日
+	 * @return float型、指定した期間の燃費
+	 */
+	protected float getSubtotalOfMileageById(SQLiteDatabase db, int carId, double startJd, double endJd) {
+		float ret = 0;
+		Cursor q;
+
+		// SQLを組み立てる
+		String sql = "SELECT SUM(LUB_AMOUNT), SUM(TRIPMETER), AVG(UNIT_PRICE) FROM LUB_MASTER " +
+					"WHERE CAR_ID = " + String.valueOf(carId) + " " +
+					"AND TRIPMETER > 0 " +
+					"AND REFUEL_DATE BETWEEN " + String.valueOf(startJd) + " AND " + String.valueOf(endJd) + ";";
+		q = db.rawQuery(sql, null);
+		q.moveToFirst();
+
+		// Cursorから値を取り出してCursorを閉じる
+		float lubAmount = q.getFloat(0);
+		float trip = q.getFloat(1);
+		float price = q.getFloat(2);
+		q.close();
+
+		// 燃費を計算する
+		ret = trip / lubAmount * price;
+
+		return ret;
+	}
+
+	/**
+	 * 指定したクルマの、指定した期間のランニングコストを返す。トリップメーターが0の場合は、統計から除外する。
+	 * @param db SQLiteDatabase型、操作するDBインスタンス
+	 * @param carId int型、給油情報を取得するクルマのCAR_ID
+	 * @param startJd double型、検索範囲の最初を示すユリウス通日
+	 * @param endJd double型、検索範囲の最後を示すユリウス通日
+	 * @return float型、指定した期間のランニングコスト
+	 */
+	protected float getSubtotalOfRunningCostsById(SQLiteDatabase db, int carId, double startJd, double endJd) {
+		float ret = 0;
+		Cursor q;
+
+		// SQLを組み立てる
+		String sql = "SELECT SUM(LUB_AMOUNT), SUM(TRIPMETER), AVG(UNIT_PRICE) FROM LUB_MASTER " +
+					"WHERE CAR_ID = " + String.valueOf(carId) + " " +
+					"AND TRIPMETER > 0 " +
+					"AND REFUEL_DATE BETWEEN " + String.valueOf(startJd) + " AND " + String.valueOf(endJd) + ";";
+		q = db.rawQuery(sql, null);
+		q.moveToFirst();
+
+		// Cursorから値を取り出してCursorを閉じる
+		float lubAmount = q.getFloat(0);
+		float trip = q.getFloat(1);
+		float price = q.getFloat(2);
+		q.close();
+
+		// 燃費を計算する
+		ret = lubAmount * price / trip;
 
 		return ret;
 	}
