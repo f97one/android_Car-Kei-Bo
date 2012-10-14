@@ -85,5 +85,11 @@
 	<string name="pref_stat_12month">Past 12 months(1 year)</string>
 	<string name="pref_stat_allrange">All periods</string>
 	<string name="label_btn_showstats">Show Statistics</string>
+	<string name="tv_title_statType">Statistics Type : </string>
+	<string name="spinneritem_statType_mileage">Fuel Mileage</string>
+	<string name="spinneritem_statType_Refuel">Subtotal of refueling</string>
+	<string name="spinneritem_statType_RunningCost">Running costs</string>
+	<string name="tv_label_statPeriod">Period</string>
+	<string name="tv_label_statValue">Value</string>
 
 </resources>
