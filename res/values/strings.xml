@@ -91,5 +91,9 @@
 	<string name="spinneritem_statType_RunningCost">Running costs</string>
 	<string name="tv_label_statPeriod">Period</string>
 	<string name="tv_label_statValue">Value</string>
+	<string name="pref_title_returnprevious">Return to the previous screen</string>
+	<string name="pref_title_screentransition">Screen Transition</string>
+	<string name="pref_title_returnifadd">Return to the previous screen to add a record</string>
+	<string name="pref_title_donotreturn">Do not return to the previous screen to add a record</string>
 
 </resources>

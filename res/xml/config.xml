@@ -8,6 +8,9 @@
 
 	</PreferenceCategory><PreferenceCategory android:key="StatRange" android:title="@string/pref_title_statrange">
 		<ListPreference android:entries="@array/statperiod_name" android:entryValues="@array/statperiod_value" android:key="StatRangeValue" android:summary="@string/pref_summary_statrange" android:defaultValue="0" android:dialogTitle="@string/pref_title_statrange" android:title="@string/pref_title_statrange"/>
+		
+	</PreferenceCategory><PreferenceCategory android:key="ScreenTranstion" android:title="@string/pref_title_screentransition">
+		<CheckBoxPreference android:key="ReturnFromPreviousActivity" android:defaultValue="true" android:summaryOff="@string/pref_title_donotreturn" android:summaryOn="@string/pref_title_returnifadd" android:title="@string/pref_title_returnprevious"/>
 	</PreferenceCategory>
 
 	<PreferenceCategory android:title="@string/pref_title_aboutthis" android:key="AboutThisSoftware">
