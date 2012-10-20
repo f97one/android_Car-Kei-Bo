@@ -196,10 +196,14 @@ public final class R {
         public static final int pref_title_aboutthis=0x7f07003c;
         public static final int pref_title_changelog=0x7f07003f;
         public static final int pref_title_descend=0x7f070048;
+        public static final int pref_title_donotreturn=0x7f070062;
         public static final int pref_title_mileagestat=0x7f07004a;
         public static final int pref_title_newbsdlicense=0x7f07003b;
         public static final int pref_title_refuelstat=0x7f070049;
+        public static final int pref_title_returnifadd=0x7f070061;
+        public static final int pref_title_returnprevious=0x7f07005f;
         public static final int pref_title_runningcoststat=0x7f07004b;
+        public static final int pref_title_screentransition=0x7f070060;
         public static final int pref_title_showchangelog=0x7f070040;
         public static final int pref_title_softwareversion=0x7f07003e;
         public static final int pref_title_sortorder=0x7f07003d;

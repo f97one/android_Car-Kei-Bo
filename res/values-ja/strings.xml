@@ -84,5 +84,9 @@
 	<string name="spinneritem_statType_RunningCost">ランニングコスト</string>
 	<string name="tv_label_statPeriod">期間</string>
 	<string name="tv_label_statValue">値</string>
+	<string name="pref_title_returnprevious">元の画面への復帰</string>
+	<string name="pref_title_screentransition">画面遷移</string>
+	<string name="pref_title_returnifadd">レコード追加後、元の画面へ戻ります</string>
+	<string name="pref_title_donotreturn">レコードを追加しても、元の画面へは戻りません</string>
 
 </resources>

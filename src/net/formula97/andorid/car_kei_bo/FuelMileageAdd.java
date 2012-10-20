@@ -14,9 +14,11 @@ import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.provider.Settings;
 import android.text.SpannableStringBuilder;
 import android.util.Log;
@@ -542,6 +544,10 @@ public class FuelMileageAdd extends Activity implements OnClickListener {
 		// リスナーを読んだViewのIDを取得する
 		int viewId = v.getId();
 
+		// プリファレンスから「前の画面へ戻る」設定を読み出す
+		SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(this);
+		boolean returnPreviousView = sp.getBoolean("ReturnFromPreviousActivity", true);
+
 		switch (viewId) {
 		case R.id.button_addRefuelRecord:			// 燃費記録追加ボタン
 			// 燃費記録を追加するにあたり、DBにセットするための値を取得する
@@ -575,7 +581,8 @@ public class FuelMileageAdd extends Activity implements OnClickListener {
 			String comments = ssbComments.toString();
 
 			// 給油量、単価、トリップメーター値のいずれもが0より大きい場合のみ、給油記録を追加する。
-			if (amountOfOil <= 0 || unitPrice <= 0 || tripMeter <= 0) {
+			//if (amountOfOil <= 0 || unitPrice <= 0 || tripMeter <= 0) {
+			if (amountOfOil <= 0 || unitPrice <= 0) {
 				Log.w("onClick#R.id.button_addRefuelRecord", "Can't add mileage record(Maybe no value is set in one of the variables?)");
 				Log.w("onClick#R.id.button_addRefuelRecord", "amountOfOil : " + String.valueOf(amountOfOil));
 				Log.w("onClick#R.id.button_addRefuelRecord", "unitPrice : " + String.valueOf(unitPrice));
@@ -609,8 +616,13 @@ public class FuelMileageAdd extends Activity implements OnClickListener {
 				Log.d("button_addRefuelRecord_Click", "Adding Mileage record successful. rowId = " + String.valueOf(ret));
 				showToastMsg(db, targetCarId, currentDateTime, amountOfOil, tripMeter);
 
-				// 画面表示を初期化する。
-				resetUi();
+				// 「前の画面へ戻る」設定が有効の場合はActivityを終了させ、
+				// そうでない場合は入力値を初期化する。
+				if (returnPreviousView) {
+					finish();
+				} else {
+					resetUi();
+				}
 			}
 
 			break;
