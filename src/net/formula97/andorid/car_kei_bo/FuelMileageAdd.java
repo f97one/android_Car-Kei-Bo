@@ -575,7 +575,8 @@ public class FuelMileageAdd extends Activity implements OnClickListener {
 			String comments = ssbComments.toString();
 
 			// 給油量、単価、トリップメーター値のいずれもが0より大きい場合のみ、給油記録を追加する。
-			if (amountOfOil <= 0 || unitPrice <= 0 || tripMeter <= 0) {
+			//if (amountOfOil <= 0 || unitPrice <= 0 || tripMeter <= 0) {
+			if (amountOfOil <= 0 || unitPrice <= 0) {
 				Log.w("onClick#R.id.button_addRefuelRecord", "Can't add mileage record(Maybe no value is set in one of the variables?)");
 				Log.w("onClick#R.id.button_addRefuelRecord", "amountOfOil : " + String.valueOf(amountOfOil));
 				Log.w("onClick#R.id.button_addRefuelRecord", "unitPrice : " + String.valueOf(unitPrice));
@@ -610,7 +611,8 @@ public class FuelMileageAdd extends Activity implements OnClickListener {
 				showToastMsg(db, targetCarId, currentDateTime, amountOfOil, tripMeter);
 
 				// 画面表示を初期化する。
-				resetUi();
+				//resetUi();
+				finish();
 			}
 
 			break;
