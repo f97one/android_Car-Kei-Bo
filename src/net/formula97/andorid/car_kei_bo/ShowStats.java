@@ -3,7 +3,9 @@
  */
 package net.formula97.andorid.car_kei_bo;
 
+import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.HashMap;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -12,12 +14,17 @@ import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.util.Log;
+import android.view.View;
+import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemSelectedListener;
+import android.widget.ListView;
+import android.widget.Spinner;
 
 /**
  * @author kazutoshi
  *
  */
-public class ShowStats extends Activity {
+public class ShowStats extends Activity implements OnItemSelectedListener {
 
 	private double[][] statDaysRange;
 	private int CAR_ID;
@@ -28,6 +35,13 @@ public class ShowStats extends Activity {
 
 	private DbManager dbman = new DbManager(this);
 	public static SQLiteDatabase db;
+
+	private DateManager dmngr = new DateManager();
+
+	// ウィジェット
+	Spinner spinner_statType;
+	Spinner spinner_statPeriod;
+	ListView lv_statValue;
 
 	/* (非 Javadoc)
 	 * @see android.app.Activity#onCreate(android.os.Bundle)
@@ -42,6 +56,12 @@ public class ShowStats extends Activity {
 		Intent i = getIntent();
 		setCAR_ID(i.getIntExtra("CAR_ID", 0));
 		setCAR_NAME(i.getStringExtra("CAR_NAME"));
+
+		// ウィジェットのリソースIDを取得
+		spinner_statType = (Spinner)findViewById(R.id.spinner_statType);
+		spinner_statPeriod = (Spinner)findViewById(R.id.spinner_statPeriod);
+		lv_statValue = (ListView)findViewById(R.id.lv_statValue);
+
 	}
 
 	/* (非 Javadoc)
@@ -86,6 +106,31 @@ public class ShowStats extends Activity {
 
 		statDaysRange = getStatDaysRange(db, getCAR_ID(), statRangeValue);
 
+		// スピナーにイベントリスナーをセット
+		spinner_statPeriod.setOnItemSelectedListener(this);
+		spinner_statType.setOnItemSelectedListener(this);
+
+		// プリファレンスにある統計期間の初期値を反映
+		// ハードコーディングしてしまっているが、上から
+		//   過去3か月間
+		//   過去6か月間
+		//   過去12か月間
+		//   すべて
+		// を表す
+		switch (statRangeValue) {
+			case 2:
+				spinner_statPeriod.setSelection(0);
+				break;
+			case 5:
+				spinner_statPeriod.setSelection(1);
+				break;
+			case 11:
+				spinner_statPeriod.setSelection(2);
+				break;
+			default:
+				spinner_statPeriod.setSelection(3);
+				break;
+		}
 	}
 
 	/**
@@ -145,6 +190,51 @@ public class ShowStats extends Activity {
 		return daysRange;
 	}
 
+	private ArrayList<HashMap<String,String>> getStatDataArray(SQLiteDatabase db, double[][] refuelDayList, int carId, String statType) {
+		// 戻り値の宣言
+		ArrayList<HashMap<String,String>> result = new ArrayList<HashMap<String,String>>();
+		HashMap<String,String> map = new HashMap<String, String>();
+
+		// 配列の個数を取得
+		int refuelDayListIndex = refuelDayList.length;
+		Log.i("getStatDataArray", "Number of Refuel day index is " + String.valueOf(refuelDayListIndex));
+
+		// 差込データ作成のループで使用する変数たち
+		double subtotal = 0;
+		double startJd = 0;
+		double endJd = 0;
+		String perioDay = null;
+
+		// HashMapのキー名称
+		String hmPeriod = "PERIOD";
+		String hmValue = "VALUE";
+
+		// HashMapに値を追加する
+		for (int i = 0; i < refuelDayListIndex; i++) {
+			// 日付範囲を取得する
+			startJd = refuelDayList[i][STARTDAY_INDEX];
+			endJd = refuelDayList[i][ENDDAY_INDEX];
+
+			// 給油量の小計を取得
+			// TODO statTypeの値を判断し、取得する値を分岐する処理を書く
+			subtotal = dbman.getSubtotalOfRefuelById(db, carId, startJd, endJd);
+
+			//給油期間をあらわす文字列（yyyy-MM）を取得
+			perioDay = dmngr.getISO8601Date(startJd).substring(0, 6);
+
+			// HashMapに値を追加した後、ArrayListに値を収める
+			map.put(hmPeriod, perioDay);
+			map.put(hmValue, String.valueOf(subtotal));
+
+			result.add(map);
+		}
+
+		return result;
+	}
+
+
+	//private void setAdapterToLV()
+
 	/**
 	 * CAR_IDを取得します。
 	 * @return CAR_ID
@@ -175,6 +265,19 @@ public class ShowStats extends Activity {
 	 */
 	public String getCAR_NAME() {
 	    return CAR_NAME;
+	}
+
+	@Override
+	public void onItemSelected(AdapterView<?> parent, View view, int position,
+			long id) {
+		// TODO 自動生成されたメソッド・スタブ
+
+	}
+
+	@Override
+	public void onNothingSelected(AdapterView<?> parent) {
+		// TODO 自動生成されたメソッド・スタブ
+
 	}
 
 }
