@@ -30,18 +30,24 @@ public class ShowStats extends Activity implements OnItemSelectedListener {
 	private int CAR_ID;
 	private String CAR_NAME;
 
-	private static int STARTDAY_INDEX = 0;
-	private static int ENDDAY_INDEX = 1;
+	// 差込データで使うHashMapのキー名称
+	private String hmPeriod = "PERIOD";
+	private String hmValue = "VALUE";
+
+	// 差込データで使う２次配列のインデックス値
+	private static final int STARTDAY_INDEX = 0;
+	private static final int ENDDAY_INDEX = 1;
 
 	// 統計を行う種別を規定
-	private static final int STATTYPE_FUEL_VOLUME = 0;	// 給油量
-	private static final int STATTYPE_MILEAGE = 1;		// 燃費記録
-	private static final int STATTYPE_RUNNINGCOSTS = 2;	// ランニングコスト
+	private static final int STATTYPE_FUEL_VOLUME = 2;	// 給油量
+	private static final int STATTYPE_MILEAGE = 3;		// 燃費記録
+	private static final int STATTYPE_RUNNINGCOSTS = 4;	// ランニングコスト
 
-
+	// DBインスタンス
 	private DbManager dbman = new DbManager(this);
 	public static SQLiteDatabase db;
 
+	// 時刻関連処理インスタンス
 	private DateManager dmngr = new DateManager();
 
 	// ウィジェット
@@ -226,10 +232,6 @@ public class ShowStats extends Activity implements OnItemSelectedListener {
 		double startJd = 0;
 		double endJd = 0;
 		String periodDay = null;
-
-		// HashMapのキー名称
-		String hmPeriod = "PERIOD";
-		String hmValue = "VALUE";
 
 		// HashMapに値を追加する
 		for (int i = 0; i < refuelDayListIndex; i++) {
