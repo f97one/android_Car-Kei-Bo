@@ -34,9 +34,9 @@ public class ShowStats extends Activity implements OnItemSelectedListener {
 	private static int ENDDAY_INDEX = 1;
 
 	// 統計を行う種別を規定
-	private static int STATTYPE_FUEL_VOLUME = 0;	// 給油量
-	private static int STATTYPE_MILEAGE = 1;		// 燃費記録
-	private static int STATTYPE_RUNNINGCOSTS = 2;	// ランニングコスト
+	private static final int STATTYPE_FUEL_VOLUME = 0;	// 給油量
+	private static final int STATTYPE_MILEAGE = 1;		// 燃費記録
+	private static final int STATTYPE_RUNNINGCOSTS = 2;	// ランニングコスト
 
 
 	private DbManager dbman = new DbManager(this);
@@ -237,9 +237,20 @@ public class ShowStats extends Activity implements OnItemSelectedListener {
 			startJd = refuelDayList[i][STARTDAY_INDEX];
 			endJd = refuelDayList[i][ENDDAY_INDEX];
 
-			// 給油量の小計を取得
-			// TODO statTypeの値を判断し、取得する値を分岐する処理を書く
-			subtotal = dbman.getSubtotalOfRefuelById(db, carId, startJd, endJd);
+			// 給油量、燃費記録、ランニングコストの小計のうち、引数に応じたものを取得
+			switch (statType) {
+			case STATTYPE_FUEL_VOLUME:
+				subtotal = dbman.getSubtotalOfRefuelById(db, carId, startJd, endJd);
+				break;
+			case STATTYPE_MILEAGE:
+				// 取得値をfloat型にしていたので、doubleにキャストしている
+				subtotal = (double)dbman.getSubtotalOfMileageById(db, carId, startJd, endJd);
+				break;
+			case STATTYPE_RUNNINGCOSTS:
+				// 取得値をfloat型にしていたので、doubleにキャストしている
+				subtotal = (double)dbman.getSubtotalOfRunningCostsById(db, carId, startJd, endJd);
+				break;
+			}
 
 			// 給油期間をあらわす文字列（yyyy-MM）を取得（＝先頭から７文字取り出す）
 			periodDay = dmngr.getISO8601Date(startJd).substring(0, 7);
