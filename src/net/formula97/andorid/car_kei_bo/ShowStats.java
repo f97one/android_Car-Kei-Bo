@@ -33,6 +33,12 @@ public class ShowStats extends Activity implements OnItemSelectedListener {
 	private static int STARTDAY_INDEX = 0;
 	private static int ENDDAY_INDEX = 1;
 
+	// 統計を行う種別を規定
+	private static int STATTYPE_FUEL_VOLUME = 0;	// 給油量
+	private static int STATTYPE_MILEAGE = 1;		// 燃費記録
+	private static int STATTYPE_RUNNINGCOSTS = 2;	// ランニングコスト
+
+
 	private DbManager dbman = new DbManager(this);
 	public static SQLiteDatabase db;
 
@@ -101,6 +107,8 @@ public class ShowStats extends Activity implements OnItemSelectedListener {
 		// 統計範囲の日時を配列で取得する
 		//   格納値の実際はint型数値だが、String-Arrayに列挙しているため、
 		//   StringからIntへ変換している
+		//   プリファレンスに何も値がセットされていない場合は、統計範囲をすべて（＝0）
+		//   としている
 		int statRangeValue = Integer.parseInt(pref.getString("StatRangeValue", "0"));
 		Log.i("onResume", "StatRangeValue is " + String.valueOf(statRangeValue));
 
@@ -140,6 +148,9 @@ public class ShowStats extends Activity implements OnItemSelectedListener {
 	 * @param statRangeValue int型、統計範囲とするカウンター値
 	 * @return double[][]型、統計範囲のユリウス通日
 	 */
+	// TODO 現状は「値を返す順」が降順になっているが、これを昇順に入れ替える
+	//      方法を模索する。
+	//      引数に boolean invertOrder とか
 	private double[][] getStatDaysRange(SQLiteDatabase db, int carId, int statRangeValue){
 		// 最低限の値で初期化
 		int dimcounter = 1;
@@ -186,11 +197,22 @@ public class ShowStats extends Activity implements OnItemSelectedListener {
 			gcd.set(Calendar.MONTH, gcd.get(Calendar.MONTH) - 1);
 		}
 
+		// TODO このあたりに配列の降順->昇順変換処理を入れる
+		//      当然のことながら、引数により条件分岐を入れる
+
 		// 最終的な配列を返す
 		return daysRange;
 	}
 
-	private ArrayList<HashMap<String,String>> getStatDataArray(SQLiteDatabase db, double[][] refuelDayList, int carId, String statType) {
+	/**
+	 * ListViewへ差し込むデータのもととなるArrayListを作成する。
+	 * @param db SQLiteDatabase型、差込データを取得するDBインスタンス
+	 * @param refuelDayList double[][]型、差込データ作成範囲のユリウス通日を配列化したもの
+	 * @param carId int型、差込データを取得するクルマのCAR_ID
+	 * @param statType int型、取得する統計データの種類
+	 * @return
+	 */
+	private ArrayList<HashMap<String,String>> getStatDataArray(SQLiteDatabase db, double[][] refuelDayList, int carId, int statType) {
 		// 戻り値の宣言
 		ArrayList<HashMap<String,String>> result = new ArrayList<HashMap<String,String>>();
 		HashMap<String,String> map = new HashMap<String, String>();
@@ -203,7 +225,7 @@ public class ShowStats extends Activity implements OnItemSelectedListener {
 		double subtotal = 0;
 		double startJd = 0;
 		double endJd = 0;
-		String perioDay = null;
+		String periodDay = null;
 
 		// HashMapのキー名称
 		String hmPeriod = "PERIOD";
@@ -219,11 +241,11 @@ public class ShowStats extends Activity implements OnItemSelectedListener {
 			// TODO statTypeの値を判断し、取得する値を分岐する処理を書く
 			subtotal = dbman.getSubtotalOfRefuelById(db, carId, startJd, endJd);
 
-			//給油期間をあらわす文字列（yyyy-MM）を取得
-			perioDay = dmngr.getISO8601Date(startJd).substring(0, 6);
+			// 給油期間をあらわす文字列（yyyy-MM）を取得（＝先頭から７文字取り出す）
+			periodDay = dmngr.getISO8601Date(startJd).substring(0, 7);
 
 			// HashMapに値を追加した後、ArrayListに値を収める
-			map.put(hmPeriod, perioDay);
+			map.put(hmPeriod, periodDay);
 			map.put(hmValue, String.valueOf(subtotal));
 
 			result.add(map);
@@ -267,13 +289,35 @@ public class ShowStats extends Activity implements OnItemSelectedListener {
 	    return CAR_NAME;
 	}
 
+	/* (非 Javadoc)
+	 * @see android.widget.AdapterView.OnItemSelectedListener#onItemSelected(android.widget.AdapterView<?>, android.view.View, int, long)
+	 */
 	@Override
 	public void onItemSelected(AdapterView<?> parent, View view, int position,
 			long id) {
 		// TODO 自動生成されたメソッド・スタブ
 
+		switch (view.getId()) {
+		case R.id.spinner_statType:
+			// TODO 統計タイプを取得する処理を実装する
+
+			break;
+
+		case R.id.spinner_statPeriod:
+			// TODO 統計期間を取得する処理を実装する
+
+
+			break;
+
+		}
+
+		// TODO スピナーから得た値を、ListView作成処理に投げる処理を実装する
+
 	}
 
+	/* (非 Javadoc)
+	 * @see android.widget.AdapterView.OnItemSelectedListener#onNothingSelected(android.widget.AdapterView<?>)
+	 */
 	@Override
 	public void onNothingSelected(AdapterView<?> parent) {
 		// TODO 自動生成されたメソッド・スタブ
