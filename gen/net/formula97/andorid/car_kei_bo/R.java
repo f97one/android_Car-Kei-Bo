@@ -54,7 +54,7 @@ public final class R {
         public static final int ll_horizParent=0x7f09000e;
         public static final int ll_vertParent=0x7f09000d;
         public static final int lv_mileagelist=0x7f09003e;
-        public static final int lv_statValue=0x7f09004d;
+        public static final int lv_statValue=0x7f090048;
         public static final int optionsmenu_addcar=0x7f090056;
         public static final int optionsmenu_call_preference=0x7f090057;
         public static final int optionsmenu_carlist=0x7f090055;
@@ -62,8 +62,8 @@ public final class R {
         public static final int spinner_carName=0x7f090017;
         public static final int spinner_distanceUnit=0x7f090007;
         public static final int spinner_priceUnit=0x7f090005;
-        public static final int spinner_statPeriod=0x7f090048;
-        public static final int spinner_statType=0x7f090047;
+        public static final int spinner_statPeriod=0x7f09004b;
+        public static final int spinner_statType=0x7f09004a;
         public static final int spinner_volumeUnit=0x7f090009;
         public static final int tableRow_1=0x7f090016;
         public static final int tableRow_2=0x7f090018;
@@ -83,8 +83,8 @@ public final class R {
         public static final int textView_moneyUnit=0x7f090022;
         public static final int textView_oilUnit=0x7f09001a;
         public static final int textview_addCarName=0x7f090003;
-        public static final int tv_banner_statPeriod=0x7f090049;
-        public static final int tv_banner_statType=0x7f09004b;
+        public static final int tv_banner_statPeriod=0x7f09004c;
+        public static final int tv_banner_statType=0x7f090047;
         public static final int tv_element_CarName=0x7f09003f;
         public static final int tv_element_CarName2=0x7f09002f;
         public static final int tv_element_FuelMileageLabel=0x7f090031;
@@ -93,8 +93,8 @@ public final class R {
         public static final int tv_element_totalAmountOfOil=0x7f090037;
         public static final int tv_label_defaultcar=0x7f09000f;
         public static final int tv_label_value_defaultcar=0x7f090010;
-        public static final int tv_lvHeader_statPeriod=0x7f09004a;
-        public static final int tv_lvHeader_statValue=0x7f09004c;
+        public static final int tv_lvHeader_statPeriod=0x7f090049;
+        public static final int tv_lvHeader_statValue=0x7f09004d;
         public static final int tv_spinner_carname=0x7f09004e;
         public static final int tv_title_dateOfRefuel=0x7f09003b;
         public static final int tv_title_unit_volume=0x7f09003a;

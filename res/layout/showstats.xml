@@ -3,22 +3,41 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent" >
-
-    <Spinner
-        android:id="@+id/spinner_statType"
+
+    <TextView
+        android:id="@+id/tv_banner_statType"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentRight="true"
+        android:layout_alignParentLeft="true"
+        android:paddingLeft="5dip"
+        android:text="@string/tv_title_statType"
+        android:textColor="#ffffff"
+        android:textSize="9pt" />
+
+    <ListView
+        android:id="@+id/lv_statValue"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_below="@+id/tv_lvHeader_statPeriod" >
+
+    </ListView>
+
+    <Spinner
+        android:id="@+id/spinner_statType"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
+        android:layout_toRightOf="@+id/tv_banner_statType"
         android:entries="@array/stayTypeArray"
         tools:listitem="@android:layout/simple_spinner_item" />
 
     <Spinner
         android:id="@+id/spinner_statPeriod"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_alignParentRight="true"
         android:layout_below="@+id/spinner_statType"
+        android:layout_toRightOf="@+id/tv_banner_statType"
         android:entries="@array/statperiod_name" />
 
     <TextView
@@ -43,33 +62,12 @@
         android:text="@string/tv_label_statPeriod" />
 
     <TextView
-        android:id="@+id/tv_banner_statType"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignBaseline="@+id/spinner_statType"
-        android:layout_alignBottom="@+id/spinner_statType"
-        android:layout_alignParentLeft="true"
-        android:paddingLeft="5dip"
-        android:text="@string/tv_title_statType"
-        android:textColor="#ffffff"
-        android:textSize="9pt" />
-
-    <TextView
         android:id="@+id/tv_lvHeader_statValue"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignBaseline="@+id/tv_lvHeader_statPeriod"
-        android:layout_alignBottom="@+id/tv_lvHeader_statPeriod"
         android:layout_alignParentRight="true"
+        android:layout_below="@+id/spinner_statPeriod"
         android:paddingRight="30dip"
         android:text="@string/tv_label_statValue" />
-
-    <ListView
-        android:id="@+id/lv_statValue"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_alignParentLeft="true"
-        android:layout_below="@+id/tv_lvHeader_statPeriod" >
-    </ListView>
 
 </RelativeLayout>
