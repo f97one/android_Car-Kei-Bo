@@ -178,6 +178,13 @@ public class MileageList extends Activity implements OnClickListener {
 
 		cMileageList = dbman.getRefuelRecordsById(db, getCAR_ID(), invertOrder);
 
+		// Cursorのレコード数に応じ、「統計を表示」ボタンをロックする処理
+		if (cMileageList.getCount() == 0) {
+			btn_show_stats.setEnabled(false);
+		} else {
+			btn_show_stats.setEnabled(true);
+		}
+
 		String[] from = {
 				//"_id",
 				"DATE_OF_REFUEL",
