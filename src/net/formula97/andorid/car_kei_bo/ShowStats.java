@@ -27,8 +27,12 @@ import android.widget.Spinner;
 public class ShowStats extends Activity implements OnItemSelectedListener {
 
 	private double[][] statDaysRange;
+	private ArrayList<HashMap<String,String>> statData;
 	private int CAR_ID;
 	private String CAR_NAME;
+
+	private int intStatType;
+	private int intStatPeriod;
 
 	// 差込データで使うHashMapのキー名称
 	private String hmPeriod = "PERIOD";
@@ -42,6 +46,12 @@ public class ShowStats extends Activity implements OnItemSelectedListener {
 	private static final int STATTYPE_FUEL_VOLUME = 2;	// 給油量
 	private static final int STATTYPE_MILEAGE = 3;		// 燃費記録
 	private static final int STATTYPE_RUNNINGCOSTS = 4;	// ランニングコスト
+
+	// 統計範囲を規定
+	private static final int STATPERIOD_3MONTHS = 2;
+	private static final int STATPERIOD_6MONTHS = 5;
+	private static final int STATPERIOD_12MONTHS = 11;
+	private static final int STATPERIOD_ALL = 0;
 
 	// DBインスタンス
 	private DbManager dbman = new DbManager(this);
@@ -132,19 +142,26 @@ public class ShowStats extends Activity implements OnItemSelectedListener {
 		//   すべて
 		// を表す
 		switch (statRangeValue) {
-			case 2:
+			case STATPERIOD_3MONTHS:
 				spinner_statPeriod.setSelection(0);
 				break;
-			case 5:
+			case STATPERIOD_6MONTHS:
 				spinner_statPeriod.setSelection(1);
 				break;
-			case 11:
+			case STATPERIOD_12MONTHS:
 				spinner_statPeriod.setSelection(2);
 				break;
 			default:
 				spinner_statPeriod.setSelection(3);
 				break;
 		}
+
+		// 各スピナーの現在値を取得してフィールドへ格納する
+		setStatTypeFromSpinner();
+		setStatPeriodFromSpinner();
+
+		// 差込データを取得する
+		statData = getStatDataArray(db, statDaysRange, getCAR_ID(), intStatType);
 	}
 
 	/**
@@ -302,29 +319,77 @@ public class ShowStats extends Activity implements OnItemSelectedListener {
 	    return CAR_NAME;
 	}
 
+	/**
+	 * 統計種別スピナーの現在値から、統計種別IDを求めてフィールドへ格納する。
+	 */
+	private void setStatTypeFromSpinner() {
+		int statTypeId;
+
+		// 統計種別スピナーの現在値を取得
+		//   文字列で取得したほうが分かりやすいのだが、文字列をswitch文の条件にできないので、
+		//   ItemIdを取得するようにしている。
+		//   ※注：文字列をswitch文の条件にするにはJava 7が必要だが、
+		//         Android SDKがJava 7に対応していないため、使用できない。
+		statTypeId = (int)spinner_statType.getSelectedItemId();
+		Log.d("setStatTypeFromSpinner", "Stat Type Selector is now selected as follow, resId = " + String.valueOf(statTypeId));
+
+		// 統計種別をセットする
+		switch (statTypeId) {
+		case 0:
+			intStatType = STATTYPE_MILEAGE;
+			break;
+		case 1:
+			intStatType = STATTYPE_FUEL_VOLUME;
+			break;
+		case 2:
+			intStatType = STATTYPE_RUNNINGCOSTS;
+			break;
+		}
+	}
+
+	/**
+	 * 統計範囲スピナーの現在値から、統計範囲IDを求めてフィールドへ格納する。
+	 */
+	private void setStatPeriodFromSpinner() {
+		int statPeriodId;
+
+		// 統計範囲スピナーの現在値を取得
+		//   ItemIdにしている理由は、setStatTypeFromSpinner()に同じ。
+		statPeriodId = (int)spinner_statPeriod.getSelectedItemId();
+		Log.d("setStatPeriodFromSpinner", "Stat Period Selector is now selected as follow, resId = " + String.valueOf(statPeriodId));
+
+		// 統計種別をセットする
+		switch (statPeriodId) {
+		case 0:
+			intStatPeriod = STATPERIOD_3MONTHS;
+			break;
+		case 1:
+			intStatPeriod = STATPERIOD_6MONTHS;
+			break;
+		case 2:
+			intStatPeriod = STATPERIOD_12MONTHS;
+			break;
+		case 3:
+			intStatPeriod = STATPERIOD_ALL;
+			break;
+		}
+	}
+
 	/* (非 Javadoc)
 	 * @see android.widget.AdapterView.OnItemSelectedListener#onItemSelected(android.widget.AdapterView<?>, android.view.View, int, long)
 	 */
 	@Override
 	public void onItemSelected(AdapterView<?> parent, View view, int position,
 			long id) {
-		// TODO 自動生成されたメソッド・スタブ
+		// 統計種別と統計範囲をセットしなおす
+		setStatTypeFromSpinner();
+		setStatPeriodFromSpinner();
 
-		switch (view.getId()) {
-		case R.id.spinner_statType:
-			// TODO 統計タイプを取得する処理を実装する
+		// 統計範囲の配列を作成しなおす
+		statDaysRange = getStatDaysRange(db, getCAR_ID(), intStatPeriod);
 
-			break;
-
-		case R.id.spinner_statPeriod:
-			// TODO 統計期間を取得する処理を実装する
-
-
-			break;
-
-		}
-
-		// TODO スピナーから得た値を、ListView作成処理に投げる処理を実装する
+		// 差込データを取得し直す
+		statData = getStatDataArray(db, statDaysRange, getCAR_ID(), intStatType);
 
 	}
 
