@@ -1159,9 +1159,14 @@ public class DbManager extends SQLiteOpenHelper {
 		q.moveToFirst();
 
 		// Cursorから値を返す
-		ret = q.getFloat(0);
-		q.close();
+		//   Cursorの中身がnull（＝該当レコードなし）の場合は、0を返す
+		if (q.isNull(0)) {
+			ret = 0;
+		} else {
+			ret = q.getFloat(0);
+		}
 
+		q.close();
 		return ret;
 	}
 
@@ -1178,7 +1183,7 @@ public class DbManager extends SQLiteOpenHelper {
 		Cursor q;
 
 		// SQLを組み立てる
-		String sql = "SELECT SUM(LUB_AMOUNT), SUM(TRIPMETER), AVG(UNIT_PRICE) FROM LUB_MASTER " +
+		String sql = "SELECT SUM(LUB_AMOUNT), SUM(TRIPMETER) FROM LUB_MASTER " +
 					"WHERE CAR_ID = " + String.valueOf(carId) + " " +
 					"AND TRIPMETER > 0 " +
 					"AND REFUEL_DATE BETWEEN " + String.valueOf(startJd) + " AND " + String.valueOf(endJd) + ";";
@@ -1188,12 +1193,17 @@ public class DbManager extends SQLiteOpenHelper {
 		// Cursorから値を取り出してCursorを閉じる
 		float lubAmount = q.getFloat(0);
 		float trip = q.getFloat(1);
-		float price = q.getFloat(2);
-		q.close();
 
 		// 燃費を計算する
-		ret = trip / lubAmount * price;
+		//   Cursorの中身がnull（＝該当レコードなし）の場合は、0を返す
+		if (q.isNull(0)) {
+			ret = 0;
+		} else {
+			ret = trip / lubAmount;
+		}
+		Log.i("getSubtotalOfMileageById", "current Subtotal of mileage is " + String.valueOf(ret));
 
+		q.close();
 		return ret;
 	}
 
@@ -1221,11 +1231,17 @@ public class DbManager extends SQLiteOpenHelper {
 		float lubAmount = q.getFloat(0);
 		float trip = q.getFloat(1);
 		float price = q.getFloat(2);
-		q.close();
 
 		// 燃費を計算する
-		ret = lubAmount * price / trip;
+		//   Cursorの中身がnull（＝該当レコードなし）の場合は、0を返す
+		if (q.isNull(0)) {
+			ret = 0;
+		} else {
+			ret = lubAmount * price / trip;
+		}
+		Log.i("getSubtotalOfRunningCostsById", "current Subtotal of Running costs is " + String.valueOf(ret));
 
+		q.close();
 		return ret;
 	}
 
