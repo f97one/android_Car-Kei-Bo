@@ -8,22 +8,21 @@
 
 	</PreferenceCategory><PreferenceCategory android:key="StatRange" android:title="@string/pref_title_statrange">
 		<ListPreference android:entries="@array/statperiod_name" android:entryValues="@array/statperiod_value" android:key="StatRangeValue" android:summary="@string/pref_summary_statrange" android:defaultValue="0" android:dialogTitle="@string/pref_title_statrange" android:title="@string/pref_title_statrange"/>
-		
+
 	</PreferenceCategory><PreferenceCategory android:key="ScreenTranstion" android:title="@string/pref_title_screentransition">
 		<CheckBoxPreference android:key="ReturnFromPreviousActivity" android:defaultValue="true" android:summaryOff="@string/pref_title_donotreturn" android:summaryOn="@string/pref_title_returnifadd" android:title="@string/pref_title_returnprevious"/>
 	</PreferenceCategory>
 
+	<!--
 	<PreferenceCategory android:title="@string/pref_title_aboutthis" android:key="AboutThisSoftware">
-		<!-- <PreferenceScreen android:key="SoftwareLicense" android:title="@string/pref_title_aboutthelicense">
+		<PreferenceScreen android:key="SoftwareLicense" android:title="@string/pref_title_aboutthelicense">
 		    <intent android:action="android.intent.action.VIEW" android:data="@string/intent_launch_aboutlicense" />
-		</PreferenceScreen> -->
+		</PreferenceScreen>
 		<Preference android:key="SoftwareVersion" android:title="@string/pref_title_softwareversion" android:summary="@string/pref_text_versionstring"/><PreferenceScreen android:title="@string/pref_title_changelog" android:key="ChangeLog" android:summary="@string/pref_title_showchangelog">
 				<Preference android:key="0_6__p2" android:title="0.6-p2" android:summary="@string/version_0_6__p2" />
 				<Preference android:title="0.6-p1" android:key="0_6__p1" android:summary="@string/version_0_6__p1" />
 				<Preference android:title="0.6" android:key="0_6" android:summary="@string/version_0_6" />
-			</PreferenceScreen>
-
-
-
+		</PreferenceScreen>
 	</PreferenceCategory>
+	-->
 </PreferenceScreen>
