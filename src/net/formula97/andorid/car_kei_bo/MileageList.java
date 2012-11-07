@@ -171,6 +171,12 @@ public class MileageList extends Activity implements OnClickListener {
 		// プリファレンスのSortOrderの値を読み出し、invertOrderに反映する。
 		boolean invertOrder = getMileageOrder();
 
+		// 画面幅を取得
+		int displayWidth = getWindowManager().getDefaultDisplay().getWidth();
+		// ボタン幅の修正
+		btn_add_mileage.setWidth(displayWidth / 2);
+		btn_show_stats.setWidth(displayWidth / 2);
+
 		// 各種単位の取得
 		priceUnit = dbman.getPriceUnitById(db, getCAR_ID());
 		distanceUnit = dbman.getDistanceUnitById(db, getCAR_ID());
