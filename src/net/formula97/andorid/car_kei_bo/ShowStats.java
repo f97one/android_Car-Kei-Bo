@@ -3,6 +3,7 @@
  */
 package net.formula97.andorid.car_kei_bo;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
@@ -18,6 +19,7 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.ListView;
+import android.widget.SimpleAdapter;
 import android.widget.Spinner;
 
 /**
@@ -60,6 +62,8 @@ public class ShowStats extends Activity implements OnItemSelectedListener {
 	// 時刻関連処理インスタンス
 	private DateManager dmngr = new DateManager();
 
+	private SimpleAdapter saStatList;
+
 	// ウィジェット
 	Spinner spinner_statType;
 	Spinner spinner_statPeriod;
@@ -84,6 +88,7 @@ public class ShowStats extends Activity implements OnItemSelectedListener {
 		spinner_statPeriod = (Spinner)findViewById(R.id.spinner_statPeriod);
 		lv_statValue = (ListView)findViewById(R.id.lv_statValue);
 
+
 	}
 
 	/* (非 Javadoc)
@@ -93,6 +98,10 @@ public class ShowStats extends Activity implements OnItemSelectedListener {
 	protected void onDestroy() {
 		// TODO 自動生成されたメソッド・スタブ
 		super.onDestroy();
+
+		if (db.isOpen() != true) {
+			db.close();
+		}
 	}
 
 	/* (非 Javadoc)
@@ -162,6 +171,8 @@ public class ShowStats extends Activity implements OnItemSelectedListener {
 
 		// 差込データを取得する
 		statData = getStatDataArray(db, statDaysRange, getCAR_ID(), intStatType);
+
+		setAdapters();
 	}
 
 	/**
@@ -192,7 +203,7 @@ public class ShowStats extends Activity implements OnItemSelectedListener {
 				// 上位配列の数を1加算
 				dimcounter++;
 				// 月を1減算
-				gcd.set(Calendar.MONTH, gcd.get(Calendar.MONTH) - 1);
+				gcd.add(Calendar.MONTH, -1);
 			}
 		} else {
 			// statRangeValueが0でない場合は、与えられた範囲の値を用いる
@@ -216,8 +227,12 @@ public class ShowStats extends Activity implements OnItemSelectedListener {
 			daysRange[loopcounter][0] = dmngr.getFirstMomentOfMonth(gcd);
 			daysRange[loopcounter][1] = dmngr.getLastMomentOfMonth(gcd);
 
+			Log.d("getStatDaysRange", "Period of first: " + dmngr.getISO8601Date(daysRange[loopcounter][0]));
+			Log.d("getStatDaysRange", "Period of last: " + dmngr.getISO8601Date(daysRange[loopcounter][1]));
+
 			// 月を1減算
-			gcd.set(Calendar.MONTH, gcd.get(Calendar.MONTH) - 1);
+			gcd.add(Calendar.MONTH, -1);
+			Log.d("getStatDaysRange", "Now " + dmngr.getISO8601Date(gcd, false));
 		}
 
 		// TODO このあたりに配列の降順->昇順変換処理を入れる
@@ -238,7 +253,7 @@ public class ShowStats extends Activity implements OnItemSelectedListener {
 	private ArrayList<HashMap<String,String>> getStatDataArray(SQLiteDatabase db, double[][] refuelDayList, int carId, int statType) {
 		// 戻り値の宣言
 		ArrayList<HashMap<String,String>> result = new ArrayList<HashMap<String,String>>();
-		HashMap<String,String> map = new HashMap<String, String>();
+		HashMap<String,String> map;
 
 		// 配列の個数を取得
 		int refuelDayListIndex = refuelDayList.length;
@@ -249,6 +264,24 @@ public class ShowStats extends Activity implements OnItemSelectedListener {
 		double startJd = 0;
 		double endJd = 0;
 		String periodDay = null;
+		String statUnit = null;
+
+		// ListViewに差し込む値の単位
+		String volUnit = dbman.getVolumeUnitById(db, carId);
+		String priceUnit = dbman.getPriceUnitById(db, carId);
+		String distanceUnit = dbman.getDistanceUnitById(db, carId);
+
+		switch (statType) {
+		case STATTYPE_FUEL_VOLUME:
+			statUnit = volUnit;
+			break;
+		case STATTYPE_MILEAGE:
+			statUnit = volUnit + "/" + priceUnit;
+			break;
+		case STATTYPE_RUNNINGCOSTS:
+			statUnit = priceUnit + "/" + distanceUnit;
+			break;
+		}
 
 		// HashMapに値を追加する
 		for (int i = 0; i < refuelDayListIndex; i++) {
@@ -274,9 +307,18 @@ public class ShowStats extends Activity implements OnItemSelectedListener {
 			// 給油期間をあらわす文字列（yyyy-MM）を取得（＝先頭から７文字取り出す）
 			periodDay = dmngr.getISO8601Date(startJd).substring(0, 7);
 
+			// 統計値を小数点２ケタまで表示するように加工
+			//   ->小数点３ケタを四捨五入する
+			BigDecimal bi = new BigDecimal(String.valueOf(subtotal));
+			double biSubtotal = bi.setScale(2,BigDecimal.ROUND_HALF_UP).doubleValue();
+
 			// HashMapに値を追加した後、ArrayListに値を収める
+			map  = new HashMap<String, String>();
 			map.put(hmPeriod, periodDay);
-			map.put(hmValue, String.valueOf(subtotal));
+			map.put(hmValue, String.valueOf(biSubtotal) + " " + statUnit);
+
+			Log.d("getStatDataArray"," put a value " + periodDay + " to hmPeriod.");
+			Log.d("getStatDataArray"," put a value " + String.valueOf(biSubtotal) + " " + statUnit + " to hmValue.");
 
 			result.add(map);
 		}
@@ -391,6 +433,7 @@ public class ShowStats extends Activity implements OnItemSelectedListener {
 		// 差込データを取得し直す
 		statData = getStatDataArray(db, statDaysRange, getCAR_ID(), intStatType);
 
+		setAdapters();
 	}
 
 	/* (非 Javadoc)
@@ -400,6 +443,18 @@ public class ShowStats extends Activity implements OnItemSelectedListener {
 	public void onNothingSelected(AdapterView<?> parent) {
 		// TODO 自動生成されたメソッド・スタブ
 
+	}
+
+	/**
+	 * ListViewにArrayListの値を差し込む。
+	 */
+	private void setAdapters() {
+		// 差込データの位置定義
+		String[] from = {hmPeriod, hmValue};
+		int[] to = {R.id.tv_value_statPeriod, R.id.tv_value_statValue};
+
+		saStatList = new SimpleAdapter(this, statData, R.layout.listviewelemnt_statlist, from, to);
+		lv_statValue.setAdapter(saStatList);
 	}
 
 }
