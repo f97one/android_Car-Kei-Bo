@@ -91,15 +91,12 @@ public final class R {
         public static final int tv_element_RunningCostsLabel=0x7f090034;
         public static final int tv_element_carname_suffix=0x7f090030;
         public static final int tv_element_totalAmountOfOil=0x7f090037;
-        public static final int tv_header_statPeriod=0x7f090048;
-        public static final int tv_header_statValue=0x7f09004b;
         public static final int tv_label_defaultcar=0x7f09000f;
         public static final int tv_label_value_defaultcar=0x7f090010;
         public static final int tv_lvHeader_statPeriod=0x7f09004b;
         public static final int tv_lvHeader_statValue=0x7f09004f;
         public static final int tv_spinner_carname=0x7f090050;
         public static final int tv_title_dateOfRefuel=0x7f09003b;
-        public static final int tv_title_statType=0x7f09004a;
         public static final int tv_title_unit_volume=0x7f09003a;
         public static final int tv_unit_amountOfOil=0x7f090045;
         public static final int tv_unit_fuelMileage=0x7f090041;
