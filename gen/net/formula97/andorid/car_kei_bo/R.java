@@ -168,6 +168,7 @@ public final class R {
         public static final int label_btn_cancel=0x7f07000a;
         public static final int label_btn_edit=0x7f070034;
         public static final int label_btn_showstats=0x7f070058;
+        public static final int label_btn_updatefuelmileagerecord=0x7f070064;
         public static final int label_carName=0x7f070006;
         public static final int label_cb_setdfault=0x7f070007;
         public static final int label_comments=0x7f070033;

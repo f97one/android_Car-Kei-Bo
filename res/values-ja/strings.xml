@@ -89,5 +89,6 @@
 	<string name="pref_title_returnifadd">レコード追加後、元の画面へ戻ります</string>
 	<string name="pref_title_donotreturn">レコードを追加しても、元の画面へは戻りません</string>
 	<string name="tv_title_statPeriod">統計期間：</string>
+	<string name="label_btn_updatefuelmileagerecord">燃費記録を更新</string>
 
 </resources>

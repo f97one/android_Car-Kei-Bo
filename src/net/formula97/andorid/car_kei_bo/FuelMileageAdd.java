@@ -62,7 +62,9 @@ public class FuelMileageAdd extends Activity implements OnClickListener {
 	TimePickerDialog.OnTimeSetListener tpListener;
 
 	private int CAR_ID;
+	private int RECORD_ID;
 	private String CAR_NAME;
+	private boolean UPDATE_MODE;
 
 	private DbManager dbman = new DbManager(this);
 	public static SQLiteDatabase db;
@@ -103,7 +105,9 @@ public class FuelMileageAdd extends Activity implements OnClickListener {
 		// 渡された引数を解析してグローバル変数に格納
 		Intent i = getIntent();
 		setCAR_ID(i.getIntExtra("CAR_ID", 0));
+		setRECORD_ID(i.getIntExtra("RECORD_ID", 0));
 		setCAR_NAME(i.getStringExtra("CAR_NAME"));
+		setUPDATE_MODE(i.getBooleanExtra("UPDATE_MODE", false));
 
 		Log.d("onCreate", "got CAR_ID : " + String.valueOf(CAR_ID));
 		Log.d("onCreate", "gor CAR_NAME : " + CAR_NAME);
@@ -153,6 +157,12 @@ public class FuelMileageAdd extends Activity implements OnClickListener {
 		// ボタンの幅を、取得した画面幅の1/2にセット
 		button_addRefuelRecord.setWidth(displayWidth / 2);
 		button_cancelAddRefuelRecord.setWidth(displayWidth / 2);
+
+		// UPDATE_MODEが有効の場合は、「燃費記録を追加」ボタンを
+		// 「燃費記録を更新」に変える。
+		if (isUPDATE_MODE()) {
+			button_addRefuelRecord.setText(R.string.label_btn_updatefuelmileagerecord);
+		}
 
 		// DBをReadableで開く
 		//  ※注：Androidの仕様によれば、ReadableでもDBへの書き込みができるため、
@@ -716,6 +726,34 @@ public class FuelMileageAdd extends Activity implements OnClickListener {
 		ret = bd.setScale(1, BigDecimal.ROUND_HALF_UP).doubleValue();
 
 		return ret;
+	}
+
+	/**
+	 * @return UPDATE_MODE
+	 */
+	public boolean isUPDATE_MODE() {
+		return UPDATE_MODE;
+	}
+
+	/**
+	 * @param uPDATE_MODE セットする uPDATE_MODE
+	 */
+	public void setUPDATE_MODE(boolean uPDATE_MODE) {
+		UPDATE_MODE = uPDATE_MODE;
+	}
+
+	/**
+	 * @return rECORD_ID
+	 */
+	public int getRECORD_ID() {
+		return RECORD_ID;
+	}
+
+	/**
+	 * @param rECORD_ID セットする rECORD_ID
+	 */
+	public void setRECORD_ID(int rECORD_ID) {
+		RECORD_ID = rECORD_ID;
 	}
 
 

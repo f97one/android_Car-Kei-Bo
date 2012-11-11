@@ -96,5 +96,6 @@
 	<string name="pref_title_returnifadd">Return to the previous screen to add a record</string>
 	<string name="pref_title_donotreturn">Do not return to the previous screen to add a record</string>
 	<string name="tv_title_statPeriod">Statistic period : </string>
+	<string name="label_btn_updatefuelmileagerecord">Update Refuel Record</string>
 
 </resources>
