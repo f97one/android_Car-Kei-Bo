@@ -88,6 +88,59 @@ public class DbManager extends SQLiteOpenHelper {
 	}
 
 	/**
+	 * RECORD_IDに相当する給油レコードを修正する。
+	 * @param db  SQLiteDatabase型、燃費を記録するDBインスタンス
+	 * @param recordId int型、記録を修正する給油記録のRECORD_ID
+	 * @param amountOfOil long型、給油量
+	 * @param tripMeter double型、給油を行った時のトリップメーター値
+	 * @param unitPrice double型、給油を行った時の給油単価
+	 * @param comments String型、給油時のコメントを入力
+	 * @param gregolianDay Calendar型、給油を行った日時
+	 * @return int型、UPDATEしたレコード数(通常は1)、UPDATEが行わなければ0を返す
+	 */
+	protected int updatedMileageByRecordId (SQLiteDatabase db, int recordId, double amountOfOil, double tripMeter,
+			double unitPrice, String comments, Calendar gregolianDay) {
+		int result = 0;
+
+		// レコードを追加する
+		ContentValues value = new ContentValues();
+		// 入力されたCalendarをユリウス通日に変換する
+		DateManager dm = new DateManager();
+		double julianDay = dm.toJulianDay(gregolianDay);
+
+		// 価格、距離、体積の各単位をセット
+		value.put("REFUEL_DATE", julianDay);
+		value.put("LUB_AMOUNT", amountOfOil);
+		value.put("UNIT_PRICE", unitPrice);
+		value.put("TRIPMETER", tripMeter);
+		value.put("COMMENTS", comments);
+
+		// クエリ範囲とその値
+		String whereClause = "RECORD ID = ?";
+		String[] whereArgs = {String.valueOf(recordId)};
+
+		// トランザクション開始
+		db.beginTransaction();
+		try {
+			// 失敗したら例外を投げるinsertOrThrowでレコードをINSERT
+			result = db.update(LUB_MASTER, value, whereClause, whereArgs);
+
+			// 例外が投げられなければ、トランザクション成功をセット
+			db.setTransactionSuccessful();
+		} catch (SQLException e) {
+			Log.e(DATABASE_NAME, "SQLException occured, car record update failed, ");
+		} catch (Exception e) {
+			Log.e(DATABASE_NAME, "Other Exception occured, car record update failed, ");
+		} finally {
+			// トランザクション終了
+			// INSERTに失敗した場合は、endTransaction()を呼んだところでロールバックされる
+			db.endTransaction();
+		}
+
+		return result;
+	}
+
+	/**
 	 * クルマのレコードを追加する。
 	 *   ....引数多いな、オイ(^^;)
 	 * @param db SQLiteDatabase型、操作するDBインスタンス

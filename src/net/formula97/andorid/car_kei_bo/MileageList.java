@@ -407,6 +407,7 @@ public class MileageList extends Activity implements OnClickListener {
 		switch(item.getItemId()) {
 		case R.id.ctxitem_edit_refuel_record:
 			// 燃費記録を修正する処理
+			callEditMileage(currentRecordId, getCAR_ID(), getCAR_NAME());
 			break;
 		case R.id.ctxitem_delete_refuel_record:
 			// 燃費記録を削除する処理
@@ -455,8 +456,21 @@ public class MileageList extends Activity implements OnClickListener {
 		selectedRow.close();
 	}
 
-	private void callEditMileage() {
-		// TODO 修正するレコードのrowIdを引き渡してstartActivity
+	/**
+	 * 給油記録を更新するための引き渡しデータを作成し、給油記録追加画面を呼び出す。
+	 * @param recordId int型、給油記録を修正するレコードのRECORD_ID
+	 * @param carId int型、給油記録を修正するレコードのCAR_ID
+	 * @param carName String型、給油記録を修正するレコードのCAR_NAME
+	 */
+	private void callEditMileage(int recordId, int carId, String carName) {
+		Intent i = new Intent(getApplicationContext(), FuelMileageAdd.class);
+		i.putExtra("UPDATE_MODE", true);
+		i.putExtra("RECORD_ID", recordId);
+		i.putExtra("CAR_ID", carId);
+		i.putExtra("CAR_NAME", carName);
+
+		Log.d("callEditMileage", "UPDATE_MODE=true, RECORD_ID=" + String.valueOf(recordId));
+		startActivity(i);
 	}
 
 	private void deleteMileage(SQLiteDatabase db) {
