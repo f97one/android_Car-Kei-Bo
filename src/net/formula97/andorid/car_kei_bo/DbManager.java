@@ -299,6 +299,27 @@ public class DbManager extends SQLiteOpenHelper {
 	}
 
 	/**
+	 * クルマのCAR_IDに対応するランニングコスト記録を削除する。
+	 * @param db SQLiteDatabase型、レコード削除対象のDBインスタンス
+	 * @param carId int型、削除するクルマのCAR_ID
+	 * @param recordId int型、削除するランニングコスト記録のRECORD_ID
+	 * @return int型、削除したレコード数
+	 */
+	protected int deleteCostsByCarId(SQLiteDatabase db, int carId, int recordId) {
+		int result;
+
+		// deleteメソッドに渡す値
+		String table = COSTS_MASTER;
+		String where = "CAR_ID = ? AND RECORD_ID = ?";
+		String[] args = {String.valueOf(carId), String.valueOf(recordId)};
+
+		// 削除したレコード数を格納する。
+		result = db.delete(table, where, args);
+
+		return result;
+	}
+
+	/**
 	 * クルマのCAR_IDに対応する給油記録を削除する。
 	 * @param db SQLiteDatabase型、レコード削除対象のDBインスタンス
 	 * @param carId int型、削除するクルマのCAR_ID
@@ -311,6 +332,27 @@ public class DbManager extends SQLiteOpenHelper {
 		String table = LUB_MASTER;
 		String where = "CAR_ID = ?";
 		String[] args = {String.valueOf(carId)};
+
+		// 削除したレコード数を格納する。
+		result = db.delete(table, where, args);
+
+		return result;
+	}
+
+	/**
+	 * クルマのCAR_IDに対応する給油記録を削除する。
+	 * @param db SQLiteDatabase型、レコード削除対象のDBインスタンス
+	 * @param carId int型、削除するクルマのCAR_ID
+	 * @param recordId int型、削除する燃費記録のRECORD_ID
+	 * @return int型、削除したレコード数
+	 */
+	protected int deleteLubsByCarId(SQLiteDatabase db, int carId, int recordId) {
+		int result;
+
+		// deleteメソッドに渡す値
+		String table = LUB_MASTER;
+		String where = "CAR_ID = ? AND RECORD_ID = ?";
+		String[] args = {String.valueOf(carId), String.valueOf(recordId)};
 
 		// 削除したレコード数を格納する。
 		result = db.delete(table, where, args);
