@@ -65,6 +65,7 @@ public class FuelMileageAdd extends Activity implements OnClickListener {
 	private int RECORD_ID;
 	private String CAR_NAME;
 	private boolean UPDATE_MODE;
+	private double refuelRcordDate = 0;
 
 	private DbManager dbman = new DbManager(this);
 	public static SQLiteDatabase db;
@@ -158,12 +159,6 @@ public class FuelMileageAdd extends Activity implements OnClickListener {
 		button_addRefuelRecord.setWidth(displayWidth / 2);
 		button_cancelAddRefuelRecord.setWidth(displayWidth / 2);
 
-		// UPDATE_MODEが有効の場合は、「燃費記録を追加」ボタンを
-		// 「燃費記録を更新」に変える。
-		if (isUPDATE_MODE()) {
-			button_addRefuelRecord.setText(R.string.label_btn_updatefuelmileagerecord);
-		}
-
 		// DBをReadableで開く
 		//  ※注：Androidの仕様によれば、ReadableでもDBへの書き込みができるため、
 		//        これで問題はない。
@@ -226,6 +221,7 @@ public class FuelMileageAdd extends Activity implements OnClickListener {
 				Log.d("onDateSet", "Current date has set to " + dmngr.getISO8601Date(currentDateTime, false));
 			}
 
+
 		};
 
 		// TimePickerlistenerをセットする
@@ -247,6 +243,15 @@ public class FuelMileageAdd extends Activity implements OnClickListener {
 				Log.d("onTimeSet", "Current datetime has set to " + dmngr.getISO8601Date(currentDateTime, true));
 			}
 		};
+
+		// UPDATE_MODEが有効の場合は、
+		//   1.「燃費記録を追加」ボタンを「燃費記録を更新」に変更
+		//   2.ウィジェットに編集するレコードをセット
+		if (isUPDATE_MODE()) {
+			button_addRefuelRecord.setText(R.string.label_btn_updatefuelmileagerecord);
+			setModifyingRecords(db, getCAR_ID(), getRECORD_ID());
+		}
+
 	}
 
 	/**
@@ -565,6 +570,7 @@ public class FuelMileageAdd extends Activity implements OnClickListener {
 			double amountOfOil, tripMeter, unitPrice;
 			double runningCosts = 0;
 			long ret = 0;
+			long retRunningCost = 0;
 
 			// EditTextに入力されている値を取り出す
 			SpannableStringBuilder ssbAmountOfOil = (SpannableStringBuilder)editText_amountOfOil.getText();
@@ -600,13 +606,16 @@ public class FuelMileageAdd extends Activity implements OnClickListener {
 
 				ret = -1;
 			} else {
-				// 日時は、currentDateTimeをgetInstance()した時の値をそのまま使う(^^;)
-				ret = dbman.addMileageById(db, targetCarId, amountOfOil, tripMeter, unitPrice, comments, currentDateTime);
-
-				// ランニングコストを計算し、その値をDBに書きこむ
+				// ランニングコストを計算する
 				runningCosts = getRunningCostValue(amountOfOil, unitPrice, tripMeter);
 
-				long retRunningCost = dbman.addRunningCostRecord(db, targetCarId, runningCosts, currentDateTime);
+				// 日時は、currentDateTimeをgetInstance()した時の値をそのまま使う(^^;)
+				if (isUPDATE_MODE()) {
+					ret = dbman.updatedMileageByRecordId(db, getRECORD_ID(), amountOfOil, tripMeter, unitPrice, comments, currentDateTime);
+				} else {
+					ret = dbman.addMileageById(db, targetCarId, amountOfOil, tripMeter, unitPrice, comments, currentDateTime);
+					retRunningCost = dbman.addRunningCostRecord(db, targetCarId, runningCosts, currentDateTime);
+				}
 
 				// ランニングコスト追加の成否をLog出力する
 				if (retRunningCost > 0) {
@@ -756,5 +765,37 @@ public class FuelMileageAdd extends Activity implements OnClickListener {
 		RECORD_ID = rECORD_ID;
 	}
 
+	/**
+	 * 編集モードでよばれた時の、編集する給油レコードをウィジェットへセットする。
+	 * @param db
+	 * @param carId
+	 * @param recordId
+	 */
+	private void setModifyingRecords(SQLiteDatabase db, int carId, int recordId) {
+		// Cursorのインデックスに使う値に名前付けをしておく
+		int REFUEL_DATE = 1;
+		//int CAR_ID      = 2;
+		int LUB_AMOUNT  = 3;
+		int UNIT_PRICE  = 4;
+		int TRIPMETER   = 5;
+		int COMMENTS    = 6;
 
+		// 対象レコードを取得
+		Cursor record = dbman.getLUBRecordByRecordId(db, recordId);
+
+		// 取得したCursorから、ウィジェットに値をセットする
+		editText_amountOfOil.setText(String.valueOf(record.getFloat(LUB_AMOUNT)));		// 給油量
+		EditText_odometer.setText(String.valueOf(record.getFloat(TRIPMETER)));			// トリップメーター
+		editText_unitPrice.setText(String.valueOf(record.getFloat(UNIT_PRICE)));		// 単価
+		editText_comments.setText(record.getString(COMMENTS));							// 給油時コメント
+
+		// 給油日時はユリウス通日なので、Calendarに変換する必要があるが、
+		// あとで給油日時を再利用する必要があるので、いったんフィールドに格納する
+		refuelRcordDate = record.getDouble(REFUEL_DATE);
+		Calendar refuelDate = dmngr.jd2Calendar(refuelRcordDate);
+
+		// EditTextへ給油日時をセットする
+		setDateToEdit(refuelDate);
+		setTimeToEdit(refuelDate);
+	}
 }

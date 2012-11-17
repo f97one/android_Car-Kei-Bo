@@ -955,6 +955,39 @@ public class DbManager extends SQLiteOpenHelper {
 		return ret;
 	}
 
+	protected int updateRunningCostRecord(SQLiteDatabase db, int carId, double runningCosts, Calendar gregorianDay, double refuelJulianDay) {
+		int ret = 0;
+
+		// Calendar型の日付はユリウス通日に変換する
+		DateManager dmngr = new DateManager();
+		double jDay = dmngr.toJulianDay(gregorianDay);
+
+		// フィールドにセットする値を一式作成する
+		ContentValues values = new ContentValues();
+		values.put("CAR_ID", carId);
+		values.put("REFUEL_DATE", jDay);
+		values.put("RUNNING_COST", runningCosts);
+
+		String whereClause = "REFUEL_DATE = ?";
+		String[] whereArgs = {String.valueOf(refuelJulianDay)};
+
+		db.beginTransaction();
+
+		try {
+			ret = db.update(COSTS_MASTER, values, whereClause, whereArgs);
+
+			db.setTransactionSuccessful();
+		} catch (SQLException sqle) {
+			Log.e("addRunningCostRecord", "SQLException occured, update failed");
+		} catch (Exception e) {
+			Log.e("addRunningCostRecord", "Other Exception occured, update failed");
+		} finally {
+			db.endTransaction();
+		}
+
+		return ret;
+	}
+
 	/**
 	 * クルマのCAR_IDに対応した「燃費全レコードの平均」を更新する。
 	 * 「燃費全レコードの平均」は、メソッド内部で計算する。
@@ -1352,13 +1385,29 @@ public class DbManager extends SQLiteOpenHelper {
 		return ret;
 	}
 
-	protected int updateRefuelRecordById(SQLiteDatabase db, int carId ) {
-		int ret = 0;
+	/**
+	 * レコード修正のために、特定のRECORD_IDの給油記録を呼び出す。
+	 * @param  SQLiteDatabase型、操作するDBインスタンス
+	 * @param recordId int型、給油記録を取得するRECORD_ID
+	 * @return 編集する給油レコード(1レコード分)
+	 */
+	protected Cursor getLUBRecordByRecordId(SQLiteDatabase db, int recordId) {
+		Cursor q;
 
+		// SQL共通部分
+		String selection = "RECORD_ID = ?";
+		String[] selectionArgs = {String.valueOf(recordId)};
+		String groupBy = null;
+		String having = null;
+		String orderBy = null;
 
+		// columnsを空にして、1レコード丸ごと引っこ抜く
+		String[] columns = null;
 
+		q = db.query(LUB_MASTER, columns, selection, selectionArgs, groupBy, having, orderBy);
+		q.moveToFirst();
 
-		return ret;
+		return q;
 	}
 
 }
