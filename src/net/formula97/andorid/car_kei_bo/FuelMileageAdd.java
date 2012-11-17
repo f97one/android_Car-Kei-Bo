@@ -541,7 +541,11 @@ public class FuelMileageAdd extends Activity implements OnClickListener {
 		String carName = dbman.getCarNameById(db, carId);
 
 		// 表示する文章を組み立てる
-		line1 = carName + getString(R.string.toastmsg_addmileage1);
+		if (isUPDATE_MODE()) {
+			line1 = carName + getString(R.string.toastmsg_addmileage11);
+		} else {
+			line1 = carName + getString(R.string.toastmsg_addmileage1);
+		}
 		line2 = getString(R.string.toastmsg_addmileage2) + dmngr.getISO8601Date(gcd, true);
 		line3 = getString(R.string.toastmsg_addmileage3) + String.valueOf(amountOfOil);
 		line4 = getString(R.string.toastmsg_addmileage4) + String.valueOf(tripMeter);
@@ -610,8 +614,10 @@ public class FuelMileageAdd extends Activity implements OnClickListener {
 				runningCosts = getRunningCostValue(amountOfOil, unitPrice, tripMeter);
 
 				// 日時は、currentDateTimeをgetInstance()した時の値をそのまま使う(^^;)
+				// UPDATE_MODEの値で処理を変える
 				if (isUPDATE_MODE()) {
 					ret = dbman.updatedMileageByRecordId(db, getRECORD_ID(), amountOfOil, tripMeter, unitPrice, comments, currentDateTime);
+					retRunningCost = dbman.updateRunningCostRecord(db, targetCarId, runningCosts, currentDateTime, refuelRcordDate);
 				} else {
 					ret = dbman.addMileageById(db, targetCarId, amountOfOil, tripMeter, unitPrice, comments, currentDateTime);
 					retRunningCost = dbman.addRunningCostRecord(db, targetCarId, runningCosts, currentDateTime);
@@ -774,7 +780,7 @@ public class FuelMileageAdd extends Activity implements OnClickListener {
 	private void setModifyingRecords(SQLiteDatabase db, int carId, int recordId) {
 		// Cursorのインデックスに使う値に名前付けをしておく
 		int REFUEL_DATE = 1;
-		//int CAR_ID      = 2;
+		//int CAR_ID    = 2;
 		int LUB_AMOUNT  = 3;
 		int UNIT_PRICE  = 4;
 		int TRIPMETER   = 5;
@@ -793,9 +799,13 @@ public class FuelMileageAdd extends Activity implements OnClickListener {
 		// あとで給油日時を再利用する必要があるので、いったんフィールドに格納する
 		refuelRcordDate = record.getDouble(REFUEL_DATE);
 		Calendar refuelDate = dmngr.jd2Calendar(refuelRcordDate);
+		currentDateTime = dmngr.jd2Calendar(refuelRcordDate);
 
 		// EditTextへ給油日時をセットする
 		setDateToEdit(refuelDate);
 		setTimeToEdit(refuelDate);
+
+		// Cursorを閉じる
+		record.close();
 	}
 }

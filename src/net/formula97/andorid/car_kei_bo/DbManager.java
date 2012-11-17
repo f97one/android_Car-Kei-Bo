@@ -116,7 +116,7 @@ public class DbManager extends SQLiteOpenHelper {
 		value.put("COMMENTS", comments);
 
 		// クエリ範囲とその値
-		String whereClause = "RECORD ID = ?";
+		String whereClause = "RECORD_ID = ?";
 		String[] whereArgs = {String.valueOf(recordId)};
 
 		// トランザクション開始

@@ -226,6 +226,7 @@ public final class R {
         public static final int toastmsg_addcar2=0x7f07002c;
         public static final int toastmsg_addcar3=0x7f07002d;
         public static final int toastmsg_addmileage1=0x7f070035;
+        public static final int toastmsg_addmileage11=0x7f070065;
         public static final int toastmsg_addmileage2=0x7f070036;
         public static final int toastmsg_addmileage3=0x7f070037;
         public static final int toastmsg_addmileage4=0x7f070038;
