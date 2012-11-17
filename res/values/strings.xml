@@ -66,12 +66,17 @@
 	<string name="pref_title_softwareversion">Software version</string>
 	<string name="pref_title_changelog">CHANGELOG</string>
 	<string name="pref_title_showchangelog">Click to show CHANGELOG on next screen</string>
-	<string name="pref_text_versionstring">0.7</string><string name="pref_order_ascend">Show in ascending order by date</string><string name="pref_order_descend">Show in descending order in date</string>
+	<string name="pref_text_versionstring">0.7</string>
+	<string name="pref_order_ascend">Show in ascending order by date</string>
+	<string name="pref_order_descend">Show in descending order in date</string>
 	<string name="version_0_6">Limited release on the Google Drive.</string>
 	<string name="version_0_6__p1">Fixed a bug in the internal processing.</string>
 	<string name="version_0_6__p2">Fixed a bug that might appear in the TimePicker time is incorrect.</string>
 	<string name="label_totalamountofoil">Total amount of oil</string>
-	<string name="pref_title_descend">Fuel mileage record</string><string name="pref_title_refuelstat">Subtotal of oil</string><string name="pref_title_mileagestat">Subtotal of fuel mileage</string><string name="pref_title_runningcoststat">Subtotal of running costs</string>
+	<string name="pref_title_descend">Fuel mileage record</string>
+	<string name="pref_title_refuelstat">Subtotal of oil</string>
+	<string name="pref_title_mileagestat">Subtotal of fuel mileage</string>
+	<string name="pref_title_runningcoststat">Subtotal of running costs</string>
 	<string name="ctxitem_delete_refuel_record">Delete this refule record</string>
 	<string name="ctxitem_edit_refuel_record">Edit this refuel record</string>
 	<string name="pref_title_aboutthelicense">About the license</string>
@@ -98,5 +103,7 @@
 	<string name="tv_title_statPeriod">Statistic period : </string>
 	<string name="label_btn_updatefuelmileagerecord">Update Refuel Record</string>
 	<string name="toastmsg_addmileage11"> \'s fuel mileage record has modified.</string>
+	<string name="adbuilder_confirm_deletefuelrecord">Do you wish to delete this fuel mileage from database?</string>
+	<string name="adbuilder_toast_deletefuel"> \'s mileage has deleted.</string>
 
 </resources>

@@ -28,6 +28,7 @@ import android.widget.Button;
 import android.widget.ListView;
 import android.widget.SimpleCursorAdapter;
 import android.widget.TextView;
+import android.widget.Toast;
 
 /**
  * @author kazutoshi
@@ -411,6 +412,59 @@ public class MileageList extends Activity implements OnClickListener {
 			break;
 		case R.id.ctxitem_delete_refuel_record:
 			// 燃費記録を削除する処理
+			DateManager dmngr = new DateManager();
+
+			Cursor record = dbman.getLUBRecordByRecordId(db, currentRecordId);
+			final String refuelDate = dmngr.getISO8601Date(record.getDouble(1));
+			record.close();
+
+			AlertDialog.Builder adbuilder = new AlertDialog.Builder(this);
+			adbuilder.setTitle(refuelDate);
+			adbuilder.setMessage(getString(R.string.adbuilder_confirm_deletefuelrecord));
+			// [back]キーでキャンセルできるようにする
+			adbuilder.setCancelable(true);
+
+			// 「はい」ボタンの処理
+			adbuilder.setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+
+				public void onClick(DialogInterface dialog, int which) {
+					int ret;
+
+					ret = dbman.deleteLubsByCarId(db, getCAR_ID(), currentRecordId);
+					Log.i("onContextItemSelected", "Lub record has deleted, RECORD_ID = " + String.valueOf(currentRecordId));
+					ret = dbman.deleteCostsByCarId(db, getCAR_ID(), currentRecordId);
+					Log.i("onContextItemSelected", "Costs record has deleted, RECORD_ID = " + String.valueOf(currentRecordId));
+
+					// レコードを消したというトーストを表示する。
+					String line = refuelDate + getString(R.string.adbuilder_toast_deletefuel);
+					Toast.makeText(getApplicationContext(), line, Toast.LENGTH_LONG).show();
+
+					// トータルのランニングコストと燃費を再計算する
+					dbman.updateCurrentFuelMileageById(db, getCAR_ID());
+					dbman.updateCurrentRunningCostById(db, getCAR_ID());
+
+					// DBとCursorを閉じてActivityを再始動する
+					closeCursor(cMileageList);
+					closeDb(db);
+					onResume();
+				}
+			});
+
+			// 「キャンセル」ボタンの処理
+			//   noなので「いいえ」かと思ったのだが....。
+			//   何もせずに終了する。
+			adbuilder.setNegativeButton(android.R.string.no, new DialogInterface.OnClickListener() {
+
+				@Override
+				public void onClick(DialogInterface dialog, int which) {
+					// TODO 自動生成されたメソッド・スタブ
+
+				}
+			});
+
+			// AlertDialogを表示する
+			adbuilder.show();
+
 			break;
 		default:
 			return super.onContextItemSelected(item);
@@ -473,7 +527,4 @@ public class MileageList extends Activity implements OnClickListener {
 		startActivity(i);
 	}
 
-	private void deleteMileage(SQLiteDatabase db) {
-		// TODO 消去するレコードのrowIdを指定してDBから消去
-	}
 }
