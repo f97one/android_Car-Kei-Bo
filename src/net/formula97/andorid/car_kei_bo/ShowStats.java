@@ -187,7 +187,7 @@ public class ShowStats extends Activity implements OnItemSelectedListener {
 	//      引数に boolean invertOrder とか
 	private double[][] getStatDaysRange(SQLiteDatabase db, int carId, int statRangeValue){
 		// 最低限の値で初期化
-		int dimcounter = 1;
+		int dimcounter = 0;
 
 		// 指定したCAR_IDの給油記録のうち、最古、および最新の給油日時を取得する
 		double oldestRefuelJDay = dbman.getOldestRefuelDateById(db, carId);		// 最古
