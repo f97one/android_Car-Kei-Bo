@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:android="http://schemas.android.com/apk/res/android">
+
+	<string name="app_name">カー計簿 -燃費記録-</string>
+	<string name="title_config">設定</string>
+	<string name="title_carlist">クルマリスト</string>
+	<string name="title_addcar">クルマの追加</string>
+	<string name="title_fuelMileageAdd">燃費データを追加</string>
+	<string name="title_fuelMileageList">燃費記録のリスト</string>
+	<string name="label_carName">クルマの名前</string>
+	<string name="label_cb_setdfault">デフォルトの車にする</string>
+	<string name="label_hint_inputYourCarName">クルマの名前を入力してください....</string>
+	<string name="label_btn_addCar">クルマを追加</string>
+	<string name="label_btn_cancel">キャンセル</string>
+	<string name="label_btn_addfuelmileagerecord">燃費記録を追加</string>
+	<string name="label_amountOfOil">給油量</string>
+	<string name="label_odometer">トリップメーター</string>
+	<string name="label_unitPrice">単価</string>
+	<string name="label_dateOfRefuel">給油日</string>
+	<string name="label_btn_addRefuelRecord">給油記録を追加</string>
+	<string name="lael_btn_cancel_AddRefuelRecord">キャンセル</string>
+	<string name="label_UNIT_fuel_litter">リットル</string>
+	<string name="label_UNIT_fuel_gallon">ガロン</string>
+	<string name="label_UNIT_money_jpy">円</string>
+	<string name="label_UNIT_money_usd">米ドル</string>
+	<string name="label_fuelmileage">燃費： </string>
+	<string name="label_runningcost">ランニングコスト： </string>
+	<string name="opmenu_close_app">アプリを終了</string>
+	<string name="opmenu_call_preference">設定</string>
+	<string name="opmenu_carlist">クルマリスト</string>
+	<string name="opmenu_addcar">クルマを追加</string>
+	<string name="config_title_price">価格の単位</string>
+	<string name="config_title_distance">距離の単位</string>
+	<string name="config_title_volume">容量の単位</string>
+	<string name="tv_label_defaultcar">デフォルトのクルマ：</string>
+	<string name="label_spinner_price">価格の単位</string>
+	<string name="label_spinner_distance">距離の単位</string>
+	<string name="label_spinner_volume">体積の単位</string>
+	<string name="ctxitem_show_mileage">燃費記録を表示</string>
+	<string name="ctxitem_add_mileage">燃費記録を追加....</string>
+	<string name="ctxitem_set_default_car">デフォルトのクルマに変更</string>
+	<string name="ctxitem_edit_car_preference">クルマの設定を変更</string>
+	<string name="ctxitem_delete_car">クルマを削除</string>
+	<string name="ctxmenutitle_carlist">クルマリスト メニュー</string>
+	<string name="toastmsg_addcar1"> を追加しました。</string>
+	<string name="toastmsg_addcar2">別の車を追加できます。</string>
+	<string name="toastmsg_addcar3">追加を終了するには、「戻る」キーを押します。</string>
+	<string name="label_mileagelist_suffix">の燃費記録</string>
+	<string name="adbuilder_confirm_deletecar">このクルマをデータベースから削除しますか？</string>
+	<string name="adbuilder_confirm_deletemileage">関連する燃費記録も、データベースから削除しますか？</string>
+	<string name="adbuilder_confirm_reorg_db">データベースの再編成を行いますか？</string>
+	<string name="label_timeOfRefuel">給油時刻</string>
+	<string name="label_comments">コメント</string>
+	<string name="label_btn_edit">修正...</string>
+	<string name="toastmsg_addmileage1"> の燃費記録をデータベースに追加しました。</string>
+	<string name="toastmsg_addmileage2">給油日時 : </string>
+	<string name="toastmsg_addmileage3">給油量 : </string>
+	<string name="toastmsg_addmileage4">走行距離 : </string>
+	<string name="adtitle_detail_of_refuel">給油記録の詳細</string>
+	<string name="adbuilder_toast_deleterecord">と、関連する燃費記録を削除しました。</string>
+	<string name="pref_title_aboutthis">このソフトウェアについて</string><string name="pref_order_ascend">日付を昇順で表示します</string><string name="pref_order_descend">日付を降順で表示します</string>
+	<string name="pref_title_sortorder">ソート順序</string>
+	<string name="pref_title_softwareversion">ソフトウェアバージョン</string><string name="pref_title_refuelstat">給油量の小計</string><string name="pref_title_runningcoststat">ランニングコストの小計</string>
+	<string name="pref_title_changelog">更新履歴</string><string name="pref_title_mileagestat">燃費記録の小計</string>
+	<string name="pref_title_showchangelog">クリックすると、次の画面で更新履歴を表示します</string>
+	<string name="version_0_6">Google Drive上で限定公開</string>
+	<string name="version_0_6__p1">内部処理のバグを修正。</string>
+	<string name="version_0_6__p2">TimePickerに表示される時刻が正しくない場合があるバグを修正。</string>
+	<string name="label_totalamountofoil">累計給油量</string>
+	<string name="pref_title_descend">燃費記録</string><string name="pref_title_aboutthelicense">ライセンスについて</string><string name="pref_title_newbsdlicense">New BSD License</string>
+	<string name="ctxitem_delete_refuel_record">この燃費記録を削除</string>
+	<string name="ctxitem_edit_refuel_record">この燃費記録を修正</string>
+	<string name="ctxmenutitle_mileagelist">燃費記録リスト メニュー</string>
+	<string name="pref_title_statrange">統計範囲</string>
+	<string name="pref_summary_statrange">統計を行う期間を設定します</string>
+	<string name="pref_stat_3month">過去3か月間</string>
+	<string name="pref_stat_6month">過去6か月間</string>
+	<string name="pref_stat_12month">過去12か月(1年間)</string>
+	<string name="pref_stat_allrange">すべての期間</string>
+	<string name="label_btn_showstats">統計を表示</string>
+	<string name="tv_title_statType">統計の種別：</string>
+	<string name="spinneritem_statType_mileage">燃費記録</string>
+	<string name="spinneritem_statType_Refuel">給油小計</string>
+	<string name="spinneritem_statType_RunningCost">ランニングコスト</string>
+	<string name="tv_label_statPeriod">期間</string>
+	<string name="tv_label_statValue">値</string>
+	<string name="pref_title_returnprevious">元の画面への復帰</string>
+	<string name="pref_title_screentransition">画面遷移</string>
+	<string name="pref_title_returnifadd">レコード追加後、元の画面へ戻ります</string>
+	<string name="pref_title_donotreturn">レコードを追加しても、元の画面へは戻りません</string>
+	<string name="tv_title_statPeriod">統計期間：</string>
+	<string name="label_btn_updatefuelmileagerecord">燃費記録を更新</string>
+	<string name="toastmsg_addmileage11"> の燃費記録を修正しました。</string>
+	<string name="adbuilder_confirm_deletefuelrecord">この燃費記録をデータベースから削除しますか？</string>
+	<string name="adbuilder_toast_deletefuel"> の燃費記録を削除しました。</string>
+
+</resources>

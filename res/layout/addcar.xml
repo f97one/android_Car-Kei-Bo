@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/RelativeLayout1"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:orientation="vertical" >
+
+    <TextView
+        android:id="@+id/TextView1"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentTop="true"
+        android:text="@string/label_carName"
+        android:textSize="10pt" />
+
+    <AutoCompleteTextView
+        android:id="@+id/textview_addCarName"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_below="@+id/TextView1"
+        android:hint="@string/label_hint_inputYourCarName"
+        android:singleLine="true" >
+    </AutoCompleteTextView>
+
+    <CheckBox
+        android:id="@+id/checkBox_SetDefault"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_below="@+id/textview_addCarName"
+        android:text="@string/label_cb_setdfault" />
+
+    <TextView
+        android:id="@+id/textView1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBaseline="@+id/spinner_priceUnit"
+        android:layout_alignParentLeft="true"
+        android:layout_below="@+id/checkBox_SetDefault"
+        android:layout_gravity="center_vertical"
+        android:layout_marginTop="20dp"
+        android:text="@string/label_spinner_price"
+        android:textSize="8pt" />
+
+    <Spinner
+        android:id="@+id/spinner_priceUnit"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:layout_below="@+id/checkBox_SetDefault"
+        android:layout_gravity="right|center_vertical"
+        android:layout_toRightOf="@+id/textView1" android:entries="@array/priceUnit">
+
+        <!-- Preview: listitem=@android:layout/simple_spinner_item -->
+    </Spinner>
+
+    <TextView
+        android:id="@+id/textView2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBaseline="@+id/spinner_distanceUnit"
+        android:layout_alignParentLeft="true"
+        android:layout_below="@+id/spinner_priceUnit"
+        android:layout_gravity="center_vertical"
+        android:layout_marginTop="20dp"
+        android:text="@string/label_spinner_distance"
+        android:textSize="8pt" />
+
+    <Spinner
+        android:id="@+id/spinner_distanceUnit"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:layout_below="@+id/spinner_priceUnit"
+        android:layout_gravity="right|center_vertical"
+        android:layout_toRightOf="@+id/textView2" android:entries="@array/distanceUnit"/>
+
+    <TextView
+        android:id="@+id/textView3"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBaseline="@+id/spinner_volumeUnit"
+        android:layout_alignParentLeft="true"
+        android:layout_below="@+id/spinner_distanceUnit"
+        android:layout_gravity="center_vertical"
+        android:layout_marginTop="20dp"
+        android:text="@string/label_spinner_volume"
+        android:textSize="8pt" />
+
+    <Spinner
+        android:id="@+id/spinner_volumeUnit"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:layout_below="@+id/spinner_distanceUnit"
+        android:layout_gravity="right|center_vertical"
+        android:layout_toRightOf="@+id/textView3" android:entries="@array/volumeUnit"/>
+
+    <Button
+        android:id="@+id/button_addCar"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:onClick="onClickAddCar"
+        android:text="@string/label_btn_addCar" android:layout_alignParentBottom="true"/>
+
+    <Button
+        android:id="@+id/button_cancel_addCar"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBaseline="@+id/button_addCar"
+        android:layout_alignTop="@+id/button_addCar"
+        android:onClick="onClickCancel"
+        android:text="@string/label_btn_cancel" android:layout_alignParentRight="true" android:layout_alignParentBottom="true"/>
+
+</RelativeLayout>

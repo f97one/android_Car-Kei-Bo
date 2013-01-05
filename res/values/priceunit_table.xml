@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="priceUnit">
+        <item >@string/label_UNIT_money_jpy</item>
+        <item >@string/label_UNIT_money_usd</item>
+    </string-array>
+    
+</resources>

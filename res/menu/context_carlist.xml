@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android" >
+    <item android:id="@+id/ctxitem_show_mileage" android:title="@string/ctxitem_show_mileage"></item>
+    <item android:id="@+id/ctxitem_add_mileage" android:title="@string/ctxitem_add_mileage"></item>
+    <item android:id="@+id/ctxitem_set_default_car" android:title="@string/ctxitem_set_default_car"></item>
+    <!--
+    <item android:id="@+id/ctxitem_edit_car_preference" android:title="@string/ctxitem_edit_car_preference"></item>
+    -->
+    <item android:id="@+id/ctxitem_delete_car" android:title="@string/ctxitem_delete_car"></item>
+
+</menu>

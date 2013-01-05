@@ -1,0 +1,166 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/RelativeLayout1"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical" >
+
+    <TextView
+        android:id="@+id/tv_element_CarName2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:text="car name is here..."
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:textSize="8pt" />
+
+    <TextView
+        android:id="@+id/tv_element_carname_suffix"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_toRightOf="@id/tv_element_CarName2"
+        android:text="@string/label_mileagelist_suffix"
+        android:textSize="8pt" />
+
+    <TextView
+        android:id="@+id/tv_element_FuelMileageLabel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_below="@id/tv_element_CarName2"
+        android:paddingLeft="10dip"
+        android:text="@string/label_fuelmileage"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:textSize="7pt" />
+
+    <TextView
+        android:id="@+id/tv_value_FuelMileage2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBaseline="@+id/tv_element_FuelMileageLabel"
+        android:layout_toRightOf="@+id/tv_element_FuelMileageLabel"
+        android:paddingLeft="5dip"
+        android:paddingRight="5dip"
+        android:text="99.99"
+        android:textSize="7pt" />
+
+    <TextView
+        android:id="@+id/tv_unit_fuelMileage2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBaseline="@+id/tv_element_FuelMileageLabel"
+        android:layout_alignTop="@+id/tv_element_FuelMileageLabel"
+        android:layout_toRightOf="@+id/tv_value_FuelMileage2"
+        android:text="km/l"
+        android:textSize="7pt" />
+
+    <TextView
+        android:id="@+id/tv_element_RunningCostsLabel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_below="@+id/tv_element_FuelMileageLabel"
+        android:paddingLeft="10dip"
+        android:text="@string/label_runningcost"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:textSize="7pt" />
+
+    <TextView
+        android:id="@+id/tv_value_RunningCosts2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBaseline="@+id/tv_element_RunningCostsLabel"
+        android:layout_toRightOf="@+id/tv_element_RunningCostsLabel"
+        android:paddingLeft="5dip"
+        android:paddingRight="5dip"
+        android:text="99.99"
+        android:textSize="7pt" />
+
+    <TextView
+        android:id="@+id/tv_unit_runningCosts2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBaseline="@+id/tv_element_RunningCostsLabel"
+        android:layout_alignTop="@+id/tv_element_RunningCostsLabel"
+        android:layout_toRightOf="@+id/tv_value_RunningCosts2"
+        android:text="Yen/km"
+        android:textSize="7pt" />
+
+    <TextView
+        android:id="@+id/tv_element_totalAmountOfOil"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_below="@+id/tv_element_FuelMileageLabel"
+        android:layout_marginTop="18dp"
+        android:paddingLeft="10dip"
+        android:text="@string/label_totalamountofoil"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:textSize="7pt" />
+
+    <TextView
+        android:id="@+id/tv_value_totalAmountOfOil"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBaseline="@+id/tv_element_totalAmountOfOil"
+        android:layout_toRightOf="@+id/tv_element_totalAmountOfOil"
+        android:paddingLeft="5dip"
+        android:paddingRight="5dip"
+        android:text="99.99"
+        android:textSize="7pt" />
+
+    <TextView
+        android:id="@+id/tv_unit_totalAmountOfOil"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBaseline="@+id/tv_element_totalAmountOfOil"
+        android:layout_toRightOf="@+id/tv_value_totalAmountOfOil"
+        android:text="l"
+        android:textSize="7pt" />
+
+    <TextView
+        android:id="@+id/tv_title_unit_volume"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBaseline="@+id/tv_title_dateOfRefuel"
+        android:layout_alignParentRight="true"
+        android:layout_below="@+id/tv_unit_totalAmountOfOil"
+        android:paddingLeft="15dip"
+        android:paddingRight="15dip"
+        android:text="@string/label_amountOfOil" />
+
+    <TextView
+        android:id="@+id/tv_title_dateOfRefuel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/tv_element_totalAmountOfOil"
+        android:paddingLeft="15dip"
+        android:text="@string/label_dateOfRefuel" />
+
+    <Button
+        android:id="@+id/btn_add_mileage"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:text="@string/label_btn_addRefuelRecord" />
+
+    <Button
+        android:id="@+id/btn_show_stats"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentRight="true"
+        android:layout_toRightOf="@+id/btn_add_mileage"
+        android:text="@string/label_btn_showstats" />
+
+    <ListView
+        android:id="@+id/lv_mileagelist"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/btn_add_mileage"
+        android:layout_below="@+id/tv_title_dateOfRefuel"
+        android:fastScrollEnabled="true" >
+
+    </ListView>
+
+</RelativeLayout>

@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="stayTypeArray">
+        <item >@string/spinneritem_statType_mileage</item>
+        <item >@string/spinneritem_statType_Refuel</item>
+        <item >@string/spinneritem_statType_RunningCost</item>
+    </string-array>
+    
+</resources>

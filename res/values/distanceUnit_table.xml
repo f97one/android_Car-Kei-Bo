@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="distanceUnit">
+        <item >@string/label_UNIT_distance_kirometer</item>
+        <item >@string/label_UNIT_distance_mile</item>
+    </string-array>
+    
+</resources>

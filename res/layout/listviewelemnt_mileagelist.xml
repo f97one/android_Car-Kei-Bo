@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/RelativeLayout1"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:paddingBottom="15dip"
+    android:paddingTop="15dip" >
+
+<TextView
+        android:id="@+id/tv_value_dateOfRefuel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:paddingLeft="5sp"
+        android:text="yyyy-MM-dd HH:mm:ss" />
+
+    <TextView
+        android:id="@+id/tv_unit_amountOfOil"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:paddingLeft="5dip"
+        android:text="Litter" />
+
+    <TextView
+        android:id="@+id/tv_value_amountOfOil"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_toLeftOf="@+id/tv_unit_amountOfOil"
+        android:paddingLeft="10dip"
+        android:text="9999" />
+
+</RelativeLayout>
