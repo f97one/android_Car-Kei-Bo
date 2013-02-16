@@ -737,8 +737,15 @@ public class FuelMileageAdd extends Activity implements OnClickListener {
 		double runningCost = amountOfOil * unitPrice / tripMeter;
 
 		// 小数点2ケタで四捨五入する
-		BigDecimal bd = new BigDecimal(runningCost);
-		ret = bd.setScale(1, BigDecimal.ROUND_HALF_UP).doubleValue();
+		try {
+			BigDecimal bd = new BigDecimal(runningCost);
+			ret = bd.setScale(1, BigDecimal.ROUND_HALF_UP).doubleValue();
+		} catch (NumberFormatException nfe) {
+			Log.e("getRunningCostValue", "NumberFormatException occured, stack trace is : " + nfe.getMessage());
+		} catch (Exception e) {
+			// TODO 自動生成された catch ブロック
+			Log.e("getRunningCostValue", "Other Exception occured, stack trace is : " + e.getMessage());
+		}
 
 		return ret;
 	}
