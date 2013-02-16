@@ -5,7 +5,16 @@
     android:layout_height="match_parent"
     android:paddingBottom="15dip"
     android:paddingTop="15dip" >
-
+
+
+
+
+
+
+
+
+
+
     <TextView
         android:id="@+id/tv_value_statValue"
         android:layout_width="wrap_content"

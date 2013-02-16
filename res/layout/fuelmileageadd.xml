@@ -46,7 +46,8 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/label_amountOfOil" />
-
+
+
                 <EditText
                     android:id="@+id/editText_amountOfOil"
                     android:layout_width="wrap_content"
@@ -58,7 +59,8 @@
                     android:singleLine="true" >
 
                     <requestFocus />
-                    <requestFocus />
+
+                    <requestFocus />
 
                 </EditText>
 
@@ -79,7 +81,8 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/label_odometer" />
-
+
+
                 <EditText
                     android:id="@+id/EditText_odometer"
                     android:layout_width="wrap_content"
@@ -106,7 +109,8 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/label_unitPrice" />
-
+
+
                 <EditText
                     android:id="@+id/editText_unitPrice"
                     android:layout_width="wrap_content"
@@ -133,7 +137,10 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/label_dateOfRefuel" />
-
+
+
+
+
                 <EditText
                     android:id="@+id/editText_dateOfRefuel"
                     android:layout_width="wrap_content"
@@ -144,7 +151,9 @@
                     android:focusable="false"
                     android:focusableInTouchMode="false"
                     android:inputType="date" />
-
+
+
+
                 <Button
                     android:id="@+id/button_editDate"
                     android:layout_width="wrap_content"
@@ -163,7 +172,10 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/label_timeOfRefuel" />
-
+
+
+
+
                 <EditText
                     android:id="@+id/editText_timeOfRefuel"
                     android:layout_width="wrap_content"
@@ -174,7 +186,9 @@
                     android:focusable="false"
                     android:focusableInTouchMode="false"
                     android:inputType="time" />
-
+
+
+
                 <Button
                     android:id="@+id/button_editTime"
                     android:layout_width="wrap_content"
@@ -189,7 +203,10 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/label_comments" />
-
+
+
+
+
         <EditText
             android:id="@+id/editText_comments"
             android:layout_width="match_parent"

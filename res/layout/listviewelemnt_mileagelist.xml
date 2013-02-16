@@ -13,7 +13,8 @@
         android:layout_alignParentTop="true"
         android:paddingLeft="5sp"
         android:text="yyyy-MM-dd HH:mm:ss" />
-
+
+
     <TextView
         android:id="@+id/tv_unit_amountOfOil"
         android:layout_width="wrap_content"

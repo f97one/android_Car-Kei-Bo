@@ -3,7 +3,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent" >
-    <TextView
+
+    <TextView
         android:id="@+id/tv_banner_statType"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -12,7 +13,8 @@
         android:text="@string/tv_title_statType"
         android:textColor="#ffffff"
         android:textSize="9pt" />
-
+
+
     <ListView
         android:id="@+id/lv_statValue"
         android:layout_width="match_parent"
@@ -21,7 +23,8 @@
         android:layout_below="@+id/tv_lvHeader_statPeriod" >
 
     </ListView>
-
+
+
     <Spinner
         android:id="@+id/spinner_statType"
         android:layout_width="match_parent"
@@ -30,7 +33,8 @@
         android:layout_toRightOf="@+id/tv_banner_statType"
         android:entries="@array/stayTypeArray"
         tools:listitem="@android:layout/simple_spinner_item" />
-
+
+
     <Spinner
         android:id="@+id/spinner_statPeriod"
         android:layout_width="match_parent"

@@ -4,7 +4,8 @@
 	android:layout_width="match_parent"
 	android:layout_height="match_parent"
 	android:orientation="vertical" >
-
+
+
 	<TextView
 	    android:id="@+id/tv_element_CarName"
 	    android:layout_width="wrap_content"
@@ -13,7 +14,8 @@
 	    android:text="car name is here..."
 	    android:textAppearance="?android:attr/textAppearanceLarge"
 	    android:textSize="11pt" />
-
+
+
 	<TextView
 	    android:id="@+id/tv_element_FuelMileageLabel"
 	    android:layout_width="wrap_content"
