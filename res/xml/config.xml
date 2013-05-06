@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android" android:orderingFromXml="true">
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android" android:orderingFromXml="true" android:key="CarKeiBoPreference">
 	<PreferenceCategory android:key="SortOrder" android:title="@string/pref_title_sortorder">
 	    <CheckBoxPreference android:summaryOff="@string/pref_order_ascend" android:title="@string/pref_title_descend" android:key="MileageListSortOrder" android:summaryOn="@string/pref_order_descend" android:selectable="true" android:enabled="true" android:defaultValue="true" />
 		<CheckBoxPreference android:key="RefuelStatSortOrder" android:enabled="true" android:selectable="true" android:defaultValue="true" android:title="@string/pref_title_refuelstat" android:summaryOn="@string/pref_order_descend" android:summaryOff="@string/pref_order_ascend"/>
