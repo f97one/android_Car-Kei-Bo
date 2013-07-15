@@ -10,11 +10,12 @@
 
 # generated files
 bin/
-#gen/
+gen/
+!R.java
 
 # Local configuration file (sdk path, etc)
 local.properties
-[Bb]uild[Cc]onfig.java
+BuildConfig.java
 
 # Eclipse project files
 .classpath
