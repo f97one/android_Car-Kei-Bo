@@ -107,5 +107,7 @@
 	<string name="adbuilder_toast_deletefuel"> \'s mileage has deleted.</string>
 	<string name="export_to_sd">Export to SD card</string>
 	<string name="import_from_sd">Import from SD card</string>
+	<string name="import_caution_body">All data will be erased.\nDo you want to run it?</string>
+	<string name="import_caution_title">Caution!</string>
 
 </resources>

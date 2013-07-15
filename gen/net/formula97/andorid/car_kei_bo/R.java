@@ -49,8 +49,8 @@ public final class R {
         public static final int editText_dateOfRefuel=0x7f090025;
         public static final int editText_timeOfRefuel=0x7f090028;
         public static final int editText_unitPrice=0x7f090021;
-        public static final int export_sd=0x7f09005b;
-        public static final int import_sd=0x7f09005c;
+        public static final int export_sd=0x7f09005a;
+        public static final int import_sd=0x7f090059;
         public static final int linearLayout_horiz=0x7f09002c;
         public static final int listView_CarList=0x7f090012;
         public static final int ll_horizParent=0x7f09000e;
@@ -58,9 +58,9 @@ public final class R {
         public static final int lv_mileagelist=0x7f09003e;
         public static final int lv_statValue=0x7f09004a;
         public static final int optionsmenu_addcar=0x7f090058;
-        public static final int optionsmenu_call_preference=0x7f090059;
+        public static final int optionsmenu_call_preference=0x7f09005b;
         public static final int optionsmenu_carlist=0x7f090057;
-        public static final int optionsmenu_closeAPP=0x7f09005a;
+        public static final int optionsmenu_closeAPP=0x7f09005c;
         public static final int spinner_carName=0x7f090017;
         public static final int spinner_distanceUnit=0x7f090007;
         public static final int spinner_priceUnit=0x7f090005;
@@ -159,6 +159,8 @@ public final class R {
         public static final int ctxmenutitle_carlist=0x7f07002a;
         public static final int ctxmenutitle_mileagelist=0x7f070051;
         public static final int export_to_sd=0x7f070068;
+        public static final int import_caution_body=0x7f07006a;
+        public static final int import_caution_title=0x7f07006b;
         public static final int import_from_sd=0x7f070069;
         public static final int intent_launch_aboutlicense=0x7f070050;
         public static final int label_UNIT_distance_kirometer=0x7f070012;
