@@ -581,5 +581,29 @@ public class CarList extends Activity implements OnClickListener {
 	 */
 	private void createImportMenu() {
 		Log.d("createEnportMenu","called export method.");
+
+		AlertDialog.Builder adbuilder = new AlertDialog.Builder(this);
+
+		adbuilder.setTitle(R.string.import_caution_title)
+		.setIcon(android.R.drawable.ic_dialog_alert)
+		.setMessage(R.string.import_caution_body)
+		.setCancelable(false)
+		.setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+
+			@Override
+			public void onClick(DialogInterface dialog, int which) {
+				// TODO 自動生成されたメソッド・スタブ
+
+			}
+		})
+		.setNegativeButton(android.R.string.no, new DialogInterface.OnClickListener() {
+
+			@Override
+			public void onClick(DialogInterface dialog, int which) {
+				// TODO 自動生成されたメソッド・スタブ
+
+			}
+		})
+		.show();
 	}
 }
