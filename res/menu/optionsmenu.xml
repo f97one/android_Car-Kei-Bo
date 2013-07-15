@@ -3,13 +3,15 @@
 	<item android:id="@+id/optionsmenu_carlist" android:title="@string/opmenu_carlist"></item>
 	<item android:id="@+id/optionsmenu_addcar" android:title="@string/opmenu_addcar"></item>
 
-	<item android:id="@+id/optionsmenu_call_preference"
+	<item android:id="@+id/import_sd" android:title="@string/import_from_sd"></item><item android:id="@+id/export_sd" android:title="@string/export_to_sd"></item><item android:id="@+id/optionsmenu_call_preference"
 		android:title="@string/opmenu_call_preference"
 		android:icon="@android:drawable/ic_menu_preferences"></item>
 
 	<item android:id="@+id/optionsmenu_closeAPP"
 		android:title="@string/opmenu_close_app"
 		android:icon="@android:drawable/ic_menu_close_clear_cancel"></item>
+	
+	
 
 
 

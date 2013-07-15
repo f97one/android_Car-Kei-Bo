@@ -105,5 +105,7 @@
 	<string name="toastmsg_addmileage11"> \'s fuel mileage record has modified.</string>
 	<string name="adbuilder_confirm_deletefuelrecord">Do you wish to delete this fuel mileage from database?</string>
 	<string name="adbuilder_toast_deletefuel"> \'s mileage has deleted.</string>
+	<string name="export_to_sd">Export to SD card</string>
+	<string name="import_from_sd">Import from SD card</string>
 
 </resources>
