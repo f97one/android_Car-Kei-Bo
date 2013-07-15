@@ -13,15 +13,17 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.ContextMenu;
 import android.view.ContextMenu.ContextMenuInfo;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.widget.AdapterView;
 import android.widget.AdapterView.AdapterContextMenuInfo;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ListView;
-import android.widget.AdapterView;
 import android.widget.SimpleCursorAdapter;
 import android.widget.TableLayout;
 import android.widget.TextView;
@@ -40,21 +42,41 @@ public class CarList extends Activity implements OnClickListener {
 	Cursor selectedRow = null;
 
 	// ウィジェットを扱うための定義
-    TextView textView_CarListTitleContainer;
-    TextView tv_label_value_defaultcar;
-    TableLayout TableLayout1;
-    ListView listView_CarList;
-    Button button_addFuelRecord;
+	TextView textView_CarListTitleContainer;
+	TextView tv_label_value_defaultcar;
+	TableLayout TableLayout1;
+	ListView listView_CarList;
+	Button button_addFuelRecord;
 
-    // DBから取得したデフォルト値を格納する変数
-    private int defaultCarID;
-    private String defaultCarName;
+	// DBから取得したデフォルト値を格納する変数
+	private int defaultCarID;
+	private String defaultCarName;
 
-    // ListViewのカレント値を格納する変数
-    private int currentCarID;
-    private String currentCarName;
+	// ListViewのカレント値を格納する変数
+	private int currentCarID;
+	private String currentCarName;
 
-    /**
+	private String externalFile;
+
+	/**
+	 * SDカードとやりとりするためのファイル名を取得する。
+	 * @return String型、externalFileフィールドの値を返す
+	 */
+	String getExternalFile() {
+		Log.d("getExternalFile", "returned external file name = " + externalFile);
+		return externalFile;
+	}
+
+	/**
+	 * SDカードとやりとりするためのファイル名をセットする。
+	 * @param externalFile String型、externalFileフィールドにセットする値
+	 */
+	void setExternalFile(String externalFile) {
+		this.externalFile = externalFile;
+		Log.d("setExternalFile", "set external file name = " + getExternalFile());
+	}
+
+	/**
 	 * 明示的コンストラクタ
 	 *   Activityの場合、onCreate()がコンストラクタの役割を果たすので、
 	 *   特に処理を書かなくても成立する。
@@ -70,14 +92,14 @@ public class CarList extends Activity implements OnClickListener {
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-        setContentView(R.layout.carlist);
+		setContentView(R.layout.carlist);
 
-        // ウィジェット
-        //   プログラムから扱うための定数を検索してセット
-        textView_CarListTitleContainer = (TextView)findViewById(R.id.textView_CarListTitleContainer);
-        tv_label_value_defaultcar = (TextView)findViewById(R.id.tv_label_value_defaultcar);
-        button_addFuelRecord = (Button)findViewById(R.id.button_addFuelRecord);
-        listView_CarList = (ListView)findViewById(R.id.listView_CarList);
+		// ウィジェット
+		//   プログラムから扱うための定数を検索してセット
+		textView_CarListTitleContainer = (TextView) findViewById(R.id.textView_CarListTitleContainer);
+		tv_label_value_defaultcar = (TextView) findViewById(R.id.tv_label_value_defaultcar);
+		button_addFuelRecord = (Button) findViewById(R.id.button_addFuelRecord);
+		listView_CarList = (ListView) findViewById(R.id.listView_CarList);
 	}
 
 	/**
@@ -90,12 +112,12 @@ public class CarList extends Activity implements OnClickListener {
 	public boolean onCreateOptionsMenu(Menu menu) {
 		super.onCreateOptionsMenu(menu);
 
-        // MenuInflater型のオブジェクトを、getMenuInflater()で初期化
-        MenuInflater inflater = getMenuInflater();
+		// MenuInflater型のオブジェクトを、getMenuInflater()で初期化
+		MenuInflater inflater = getMenuInflater();
 
-        // res/menu/menu.xmlの記述に従い、メニューを展開する
-        inflater.inflate(R.menu.optionsmenu, menu);
-        return true;
+		// res/menu/menu.xmlの記述に従い、メニューを展開する
+		inflater.inflate(R.menu.optionsmenu, menu);
+		return true;
 	}
 
 	/**
@@ -114,9 +136,9 @@ public class CarList extends Activity implements OnClickListener {
 		 */
 
 		// 別画面呼び出しのためのインテント宣言
-		Intent configActivity = new Intent(this, Config.class);		// 設定画面
-		Intent addCarActivity = new Intent(this, AddMyCar.class);	// 「クルマを追加」画面
-		Intent carListActivity = new Intent(this, CarList.class);	// 「クルマリスト」画面
+		Intent configActivity = new Intent(this, Config.class); // 設定画面
+		Intent addCarActivity = new Intent(this, AddMyCar.class); // 「クルマを追加」画面
+		Intent carListActivity = new Intent(this, CarList.class); // 「クルマリスト」画面
 
 		switch (item.getItemId()) {
 		case R.id.optionsmenu_closeAPP:
@@ -135,6 +157,14 @@ public class CarList extends Activity implements OnClickListener {
 			// 「クルマリスト」画面を呼び出す
 			//   CarListはこのクラスなので、呼び出しは行わずtrueのみ返す
 			//startActivity(carListActivity);
+			return true;
+		case R.id.export_sd:
+			// SDカードエクスポートのダイアログを表示する
+			createExportMenu();
+			return true;
+		case R.id.import_sd:
+			// SDカードインポートのダイアログを表示する
+			createImportMenu();
 			return true;
 		default:
 			return false;
@@ -176,77 +206,80 @@ public class CarList extends Activity implements OnClickListener {
 	protected void onResume() {
 		super.onResume();
 
-        // 参照専用でDBを開く
+		// 参照専用でDBを開く
 		db = dbman.getReadableDatabase();
 
 		// クルマリストとデフォルトカーの表示処理
-        // クルマリストのArrayをつくる
-        //   count()の結果が1レコード以上ないとAdapterが作成できないので、CAR_MASTERに１レコード以上あるかを調べ、
-        //   あった場合のみAdapterをつくる
-        if (dbman.hasCarRecords(db)) {
-        	// Adapterのもととなるレコードの取得
-            cCarList = dbman.getCarList(db);
-            Log.i("CAR_MASTER", "Got " + String.valueOf(cCarList.getCount()) + " records, including " + String.valueOf(cCarList.getColumnCount()) + " columns.");
-            for (int i =0; i < cCarList.getColumnCount(); i++) {
-            	Log.i("CAR_MASTER", "name of Column Index " + String.valueOf(i) + ":" + cCarList.getColumnName(i));
-            }
+		// クルマリストのArrayをつくる
+		//   count()の結果が1レコード以上ないとAdapterが作成できないので、CAR_MASTERに１レコード以上あるかを調べ、
+		//   あった場合のみAdapterをつくる
+		if (dbman.hasCarRecords(db)) {
+			// Adapterのもととなるレコードの取得
+			cCarList = dbman.getCarList(db);
+			Log.i("CAR_MASTER",
+					"Got " + String.valueOf(cCarList.getCount()) + " records, including "
+							+ String.valueOf(cCarList.getColumnCount()) + " columns.");
+			for (int i = 0; i < cCarList.getColumnCount(); i++) {
+				Log.i("CAR_MASTER", "name of Column Index " + String.valueOf(i) + ":" + cCarList.getColumnName(i));
+			}
 
-	        // AdapterからListViewへ差し込むデータの整形
-	        String[] from = {	"CAR_NAME",
-	        					"CURRENT_FUEL_MILEAGE",
-	        					"FUELMILEAGE_LABEL",
-	        					"CURRENT_RUNNING_COST",
-	        					"RUNNINGCOST_LABEL"};
-	        int[] to = { R.id.tv_element_CarName,
-	        			 R.id.tv_value_FuelMileage,
-	        			 R.id.tv_unit_fuelMileage,
-	        			 R.id.tv_value_RunningCosts,
-	        			 R.id.tv_unit_runningCosts};
+			// AdapterからListViewへ差し込むデータの整形
+			String[] from = { "CAR_NAME",
+					"CURRENT_FUEL_MILEAGE",
+					"FUELMILEAGE_LABEL",
+					"CURRENT_RUNNING_COST",
+					"RUNNINGCOST_LABEL" };
+			int[] to = { R.id.tv_element_CarName,
+					R.id.tv_value_FuelMileage,
+					R.id.tv_unit_fuelMileage,
+					R.id.tv_value_RunningCosts,
+					R.id.tv_unit_runningCosts };
 
-	        SimpleCursorAdapter sca = new SimpleCursorAdapter(getApplicationContext(), R.layout.listviewelement_carlist, cCarList, from, to);
-	        listView_CarList.setAdapter(sca);
+			SimpleCursorAdapter sca = new SimpleCursorAdapter(getApplicationContext(),
+					R.layout.listviewelement_carlist, cCarList, from, to);
+			listView_CarList.setAdapter(sca);
 
-	        // コンテキストメニュー表示を車クルマリストに対して登録をする
-	        registerForContextMenu(listView_CarList);
+			// コンテキストメニュー表示を車クルマリストに対して登録をする
+			registerForContextMenu(listView_CarList);
 
-	        // イベントリスナーのセット
-	        button_addFuelRecord.setOnClickListener(this);	// ボタン
+			// イベントリスナーのセット
+			button_addFuelRecord.setOnClickListener(this); // ボタン
 
-	        // 別画面呼び出し用に、デフォルト値を格納する
-	        defaultCarID = dbman.getDefaultCarId(db);
-	        defaultCarName = dbman.getDefaultCarName(db);
+			// 別画面呼び出し用に、デフォルト値を格納する
+			defaultCarID = dbman.getDefaultCarId(db);
+			defaultCarName = dbman.getDefaultCarName(db);
 
-	        // デフォルトカーの名前を取得してセット
-	        tv_label_value_defaultcar.setText(defaultCarName);
+			// デフォルトカーの名前を取得してセット
+			tv_label_value_defaultcar.setText(defaultCarName);
 
-	        // イベントリスナ（onItemClick）
-	        listView_CarList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+			// イベントリスナ（onItemClick）
+			listView_CarList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 
-	        	@Override
+				@Override
 				public void onItemClick(AdapterView<?> parent, View v, int position,
 						long id) {
-	        		// とりあえず、LogCatに流して挙動を観察
-	        		Log.d("onItemClick", "ListView item pressed.");
-	        		Log.d("onItemClick", "parent = " + parent.toString());
-	        		Log.d("onItemClick", "v = " + v.toString());
-	        		Log.d("onItemClick", "position = " + String.valueOf(position));
-	        		Log.d("onItemClick", "id = " + String.valueOf(id));
+					// とりあえず、LogCatに流して挙動を観察
+					Log.d("onItemClick", "ListView item pressed.");
+					Log.d("onItemClick", "parent = " + parent.toString());
+					Log.d("onItemClick", "v = " + v.toString());
+					Log.d("onItemClick", "position = " + String.valueOf(position));
+					Log.d("onItemClick", "id = " + String.valueOf(id));
 
-	        		// 呼び出されたListViewの要素位置を取得する
-	        		selectedRow = (Cursor)listView_CarList.getItemAtPosition(position);
+					// 呼び出されたListViewの要素位置を取得する
+					selectedRow = (Cursor) listView_CarList.getItemAtPosition(position);
 
-	        		// カレント値を変数に格納
-	        		currentCarID = selectedRow.getInt(selectedRow.getColumnIndex("_id"));
-	        		currentCarName = selectedRow.getString(selectedRow.getColumnIndex("CAR_NAME"));
+					// カレント値を変数に格納
+					currentCarID = selectedRow.getInt(selectedRow.getColumnIndex("_id"));
+					currentCarName = selectedRow.getString(selectedRow.getColumnIndex("CAR_NAME"));
 
-	        		selectedRow.close();
+					selectedRow.close();
 
-	        		// クルマの燃費記録一覧画面を呼び出す
-	        		showMileageList(currentCarID, currentCarName);
+					// クルマの燃費記録一覧画面を呼び出す
+					showMileageList(currentCarID, currentCarName);
 				}
-	        });
+			});
 
-        }
+		}
 	}
 
 	/**
@@ -273,7 +306,7 @@ public class CarList extends Activity implements OnClickListener {
 	@Override
 	public boolean onContextItemSelected(MenuItem item) {
 
-		switch(item.getItemId()) {
+		switch (item.getItemId()) {
 		case R.id.ctxitem_add_mileage:
 			// 燃費記録追加画面を呼び出す
 			addMileage(currentCarID, currentCarName);
@@ -282,10 +315,10 @@ public class CarList extends Activity implements OnClickListener {
 			// クルマを削除する
 			deleteCar(currentCarID, currentCarName);
 			break;
-//		case R.id.ctxitem_edit_car_preference:
-//			// クルマの設定を変更する
-//			editCarPreference(currentCarID, currentCarName);
-//			break;
+		//		case R.id.ctxitem_edit_car_preference:
+		//			// クルマの設定を変更する
+		//			editCarPreference(currentCarID, currentCarName);
+		//			break;
 		case R.id.ctxitem_set_default_car:
 			// デフォルトカーにする
 			changeAsDefault(currentCarID, currentCarName);
@@ -332,8 +365,8 @@ public class CarList extends Activity implements OnClickListener {
 		super.onCreateContextMenu(menu, v, menuInfo);
 
 		// 呼び出されたListViewの要素位置を取得する
-		AdapterContextMenuInfo acmi = (AdapterContextMenuInfo)menuInfo;
-		selectedRow = (Cursor)listView_CarList.getItemAtPosition(acmi.position);
+		AdapterContextMenuInfo acmi = (AdapterContextMenuInfo) menuInfo;
+		selectedRow = (Cursor) listView_CarList.getItemAtPosition(acmi.position);
 
 		// カレント値を変数に格納
 		currentCarID = selectedRow.getInt(selectedRow.getColumnIndex("_id"));
@@ -400,8 +433,8 @@ public class CarList extends Activity implements OnClickListener {
 		int iRet = dbman.changeDefaultCar(db, carId);
 
 		Log.d("changeAsDefault", String.valueOf(iRet) + " row(s) updated.");
-		Log.d("changeAsDefault" , "Set as default car, CAR_ID = "+ String.valueOf(carId));
-		Log.d("changeAsDefault" , "CAR_NAME = " + carName);
+		Log.d("changeAsDefault", "Set as default car, CAR_ID = " + String.valueOf(carId));
+		Log.d("changeAsDefault", "CAR_NAME = " + carName);
 	}
 
 	/**
@@ -494,15 +527,59 @@ public class CarList extends Activity implements OnClickListener {
 		if (db.isOpen()) {
 			if (dbman.hasCarRecords(db)) {
 				if (cCarList.isClosed() != true) {
-	        		cCarList.close();
+					cCarList.close();
 				}
 			}
-			Log.d(getApplication().toString(),"SQLite database is closing.");
+			Log.d(getApplication().toString(), "SQLite database is closing.");
 			dbman.close();
 		}
 
-//		if (selectedRow.isClosed() != true) {
-//			selectedRow.close();
-//		}
+		//		if (selectedRow.isClosed() != true) {
+		//			selectedRow.close();
+		//		}
+	}
+
+	/**
+	 * 「SDカードへのエクスポート」メニューを作成する。
+	 */
+	private void createExportMenu() {
+		Log.d("createEnportMenu","called export method.");
+		AlertDialog.Builder adbuildr = new AlertDialog.Builder(this);
+
+		// カスタムビューを使うためのView定義
+		LayoutInflater li = LayoutInflater.from(this);
+		View view = li.inflate(R.layout.import_dialog, null);
+		final EditText editText_exportFilename=(EditText)view.findViewById(R.id.editText_exportFilename);
+
+		adbuildr.setTitle(R.string.export_to_sd)
+		.setIcon(android.R.drawable.ic_dialog_info)
+		.setView(view)
+		.setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+
+			@Override
+			public void onClick(DialogInterface dialog, int which) {
+				// TODO 自動生成されたメソッド・スタブ
+				setExternalFile(editText_exportFilename.getText().toString());
+			}
+
+		})
+		.setNegativeButton(android.R.string.cancel, new DialogInterface.OnClickListener() {
+
+			@Override
+			public void onClick(DialogInterface dialog, int which) {
+				// テキストボックスの入力値をクリアしているが、
+				// キャンセルボタンを押した瞬間にダイアログが閉じるので意味なし(^^;)
+				editText_exportFilename.setText("");
+			}
+		})
+		.show();
+
+	}
+
+	/**
+	 * 「SDカードからのインポート」メニューを作成する。
+	 */
+	private void createImportMenu() {
+		Log.d("createEnportMenu","called export method.");
 	}
 }

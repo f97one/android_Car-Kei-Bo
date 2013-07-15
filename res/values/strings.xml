@@ -109,5 +109,7 @@
 	<string name="import_from_sd">Import from SD card</string>
 	<string name="import_caution_body">All data will be erased.\nDo you want to run it?</string>
 	<string name="import_caution_title">Caution!</string>
+	<string name="specify_import_file">Specify file name to import :</string>
+	<string name="specify_export_file">Specify file name to export :</string>
 
 </resources>
