@@ -29,9 +29,9 @@ public class DbManager extends SQLiteOpenHelper {
 	private static final int DB_VERSION = 1;
 
 	// テーブルの名称を定義
-	private static final String LUB_MASTER = "LUB_MASTER";
-	private static final String COSTS_MASTER = "COSTS_MASTER";
-	private static final String CAR_MASTER = "CAR_MASTER";
+	public static final String LUB_MASTER = "LUB_MASTER";
+	public static final String COSTS_MASTER = "COSTS_MASTER";
+	public static final String CAR_MASTER = "CAR_MASTER";
 
 	public DbManager(Context context) {
 		super(context, DATABASE_NAME, null, DB_VERSION);
@@ -1452,4 +1452,28 @@ public class DbManager extends SQLiteOpenHelper {
 		return q;
 	}
 
+	/**
+	 * 現在のテーブルデータを丸ごと取得する（バックアップ用）。
+	 * @param tableName String型、テーブルデータを取得するテーブル名
+	 * @param db SQLiteDatabase型、操作するDBインスタンス
+	 * @return Cursor型、
+	 */
+	protected Cursor getWholeRecords(String tableName, SQLiteDatabase db) {
+		Cursor q;
+
+		// SQL共通部分
+		String selection = null;
+		String[] selectionArgs = {};
+		String groupBy = null;
+		String having = null;
+		String orderBy = null;
+
+		// columnsを空にして、1レコード丸ごと引っこ抜く
+		String[] columns = null;
+
+		q = db.query(tableName, columns, selection, selectionArgs, groupBy, having, orderBy);
+		q.moveToFirst();
+
+		return q;
+	}
 }
