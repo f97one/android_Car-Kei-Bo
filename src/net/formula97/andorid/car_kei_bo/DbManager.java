@@ -28,6 +28,10 @@ public class DbManager extends SQLiteOpenHelper {
 	private static final String DATABASE_NAME = "fuel_mileage.db";
 	private static final int DB_VERSION = 1;
 
+	public static int getDbVersion() {
+		return DB_VERSION;
+	}
+
 	// テーブルの名称を定義
 	public static final String LUB_MASTER = "LUB_MASTER";
 	public static final String COSTS_MASTER = "COSTS_MASTER";

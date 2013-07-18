@@ -6,6 +6,7 @@ package net.formula97.andorid.car_kei_bo;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
+import java.io.IOException;
 
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -633,6 +634,11 @@ public class CarList extends Activity implements OnClickListener {
 	 * @param append
 	 */
 	private void writeAllData(String fullpath, String targetTableName, boolean append) {
+
+		if (append == false) {
+			writeDBVersionHeader(fullpath, db.getVersion());
+		}
+
 		try {
 			File target = new File(fullpath);
 			Cursor targetTable = dbman.getWholeRecords(targetTableName, db);
@@ -641,7 +647,7 @@ public class CarList extends Activity implements OnClickListener {
 			String[] headerWords = new String[maxColumn];
 			headerWords = targetTable.getColumnNames().clone();
 
-			BufferedWriter bw = new BufferedWriter(new FileWriter(target, append));
+			BufferedWriter bw = new BufferedWriter(new FileWriter(target, true));
 			StringBuilder sb = new StringBuilder();
 
 			// 最初にヘッダ行をかく
@@ -697,5 +703,20 @@ public class CarList extends Activity implements OnClickListener {
 			}
 		}
 		return false;
+	}
+
+	private void writeDBVersionHeader(String fullpath, int dbVersion) {
+		try {
+			File target = new File(fullpath);
+			StringBuilder sb = new StringBuilder();
+			BufferedWriter bw = new BufferedWriter(new FileWriter(target, false));
+			bw.write("database version : v" + String.valueOf(dbVersion));
+			bw.newLine();
+			bw.close();
+		} catch (IOException e) {
+			// TODO 自動生成された catch ブロック
+			e.printStackTrace();
+		}
+
 	}
 }
