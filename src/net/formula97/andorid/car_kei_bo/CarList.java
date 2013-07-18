@@ -3,6 +3,10 @@
  */
 package net.formula97.andorid.car_kei_bo;
 
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
+
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
@@ -10,6 +14,7 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
+import android.os.Environment;
 import android.util.Log;
 import android.view.ContextMenu;
 import android.view.ContextMenu.ContextMenuInfo;
@@ -543,36 +548,37 @@ public class CarList extends Activity implements OnClickListener {
 	 * 「SDカードへのエクスポート」メニューを作成する。
 	 */
 	private void createExportMenu() {
-		Log.d("createEnportMenu","called export method.");
+		Log.d("createEnportMenu", "called export method.");
 		AlertDialog.Builder adbuildr = new AlertDialog.Builder(this);
 
 		// カスタムビューを使うためのView定義
 		LayoutInflater li = LayoutInflater.from(this);
 		View view = li.inflate(R.layout.import_dialog, null);
-		final EditText editText_exportFilename=(EditText)view.findViewById(R.id.editText_exportFilename);
+		final EditText editText_exportFilename = (EditText) view.findViewById(R.id.editText_exportFilename);
 
 		adbuildr.setTitle(R.string.export_to_sd)
-		.setIcon(android.R.drawable.ic_dialog_info)
-		.setView(view)
-		.setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+				.setIcon(android.R.drawable.ic_dialog_info)
+				.setView(view)
+				.setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
 
-			@Override
-			public void onClick(DialogInterface dialog, int which) {
-				// TODO 自動生成されたメソッド・スタブ
-				setExternalFile(editText_exportFilename.getText().toString());
-			}
+					@Override
+					public void onClick(DialogInterface dialog, int which) {
+						// TODO 自動生成されたメソッド・スタブ
+						setExternalFile(editText_exportFilename.getText().toString());
+						writeToSD(getExternalFile());
+					}
 
-		})
-		.setNegativeButton(android.R.string.cancel, new DialogInterface.OnClickListener() {
+				})
+				.setNegativeButton(android.R.string.cancel, new DialogInterface.OnClickListener() {
 
-			@Override
-			public void onClick(DialogInterface dialog, int which) {
-				// テキストボックスの入力値をクリアしているが、
-				// キャンセルボタンを押した瞬間にダイアログが閉じるので意味なし(^^;)
-				editText_exportFilename.setText("");
-			}
-		})
-		.show();
+					@Override
+					public void onClick(DialogInterface dialog, int which) {
+						// テキストボックスの入力値をクリアしているが、
+						// キャンセルボタンを押した瞬間にダイアログが閉じるので意味なし(^^;)
+						editText_exportFilename.setText("");
+					}
+				})
+				.show();
 
 	}
 
@@ -580,30 +586,116 @@ public class CarList extends Activity implements OnClickListener {
 	 * 「SDカードからのインポート」メニューを作成する。
 	 */
 	private void createImportMenu() {
-		Log.d("createEnportMenu","called export method.");
+		Log.d("createEnportMenu", "called export method.");
 
 		AlertDialog.Builder adbuilder = new AlertDialog.Builder(this);
 
 		adbuilder.setTitle(R.string.import_caution_title)
-		.setIcon(android.R.drawable.ic_dialog_alert)
-		.setMessage(R.string.import_caution_body)
-		.setCancelable(false)
-		.setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+				.setIcon(android.R.drawable.ic_dialog_alert)
+				.setMessage(R.string.import_caution_body)
+				.setCancelable(false)
+				.setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
 
-			@Override
-			public void onClick(DialogInterface dialog, int which) {
-				// TODO 自動生成されたメソッド・スタブ
+					@Override
+					public void onClick(DialogInterface dialog, int which) {
+						// TODO 自動生成されたメソッド・スタブ
 
+					}
+				})
+				.setNegativeButton(android.R.string.no, new DialogInterface.OnClickListener() {
+
+					@Override
+					public void onClick(DialogInterface dialog, int which) {
+						// TODO 自動生成されたメソッド・スタブ
+
+					}
+				})
+				.show();
+	}
+
+	/**
+	 * SDカードにテーブルデータをエクスポートする。
+	 * @param filename String型、エクスポートするファイル名
+	 */
+	private void writeToSD(String filename) {
+		String fullpath = Environment.getExternalStorageDirectory().getPath() + "/" + filename;
+
+		writeAllData(fullpath, DbManager.CAR_MASTER, false);
+		writeAllData(fullpath, DbManager.LUB_MASTER, true);
+		writeAllData(fullpath, DbManager.COSTS_MASTER, true);
+
+	}
+
+	/**
+	 * テーブルからデータを取得し、指定したパスのファイルへ書き込む。
+	 * @param fullpath
+	 * @param targetTableName
+	 * @param append
+	 */
+	private void writeAllData(String fullpath, String targetTableName, boolean append) {
+		try {
+			File target = new File(fullpath);
+			Cursor targetTable = dbman.getWholeRecords(targetTableName, db);
+
+			int maxColumn = targetTable.getColumnCount();
+			String[] headerWords = new String[maxColumn];
+			headerWords = targetTable.getColumnNames().clone();
+
+			BufferedWriter bw = new BufferedWriter(new FileWriter(target, append));
+			StringBuilder sb = new StringBuilder();
+
+			// 最初にヘッダ行をかく
+			bw.write("Table name : " + targetTableName);
+			bw.newLine();
+
+			for (String str: headerWords) {
+				sb.append(str).append(",");
 			}
-		})
-		.setNegativeButton(android.R.string.no, new DialogInterface.OnClickListener() {
+			String header = sb.append(headerWords[maxColumn - 1]).toString();
+			Log.d("writeToSD", "header string = " + header);
 
-			@Override
-			public void onClick(DialogInterface dialog, int which) {
-				// TODO 自動生成されたメソッド・スタブ
+			bw.write(header);
+			bw.newLine();
 
+			if (targetTable.isFirst() == false) {
+				targetTable.moveToFirst();
 			}
-		})
-		.show();
+
+			while(targetTable.isAfterLast() == false) {
+				StringBuilder sbRow = new StringBuilder();
+
+				for (int i = 0; i < maxColumn -1; i++) {
+					sbRow.append(targetTable.getString(i)).append(",");
+				}
+				String rowLine = sbRow.append(targetTable.getString(maxColumn -1)).toString();
+
+				bw.write(rowLine);
+				bw.newLine();
+
+				targetTable.moveToNext();
+			}
+
+			bw.newLine();
+			bw.close();
+			if (targetTable.isClosed() == false) targetTable.close();
+
+		} catch (Exception e) {
+			// TODO 自動生成された catch ブロック
+			e.printStackTrace();
+		}
+	}
+
+	/**
+	 * 目標のファイルが書き込み可能かどうかをチェックする。
+	 * @param targetFile File型、書き込みを開始する予定のファイル
+	 * @return boolean型、目標のファイルが存在し、かつ書き込み可能である場合はtrue、そうでない場合はfalse
+	 */
+	private boolean isReadyToWriteFile(File targetFile) {
+		if (targetFile.exists()) {
+			if(targetFile.isFile() && targetFile.canWrite()) {
+				return true;
+			}
+		}
+		return false;
 	}
 }
