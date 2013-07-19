@@ -705,12 +705,17 @@ public class CarList extends Activity implements OnClickListener {
 		return false;
 	}
 
+	/**
+	 * DBのバージョンをファイルに書き込む。
+	 * @param fullpath String型、書き込むファイルのフルパス
+	 * @param dbVersion 書き込むDBのバージョン番号
+	 */
 	private void writeDBVersionHeader(String fullpath, int dbVersion) {
 		try {
 			File target = new File(fullpath);
 			StringBuilder sb = new StringBuilder();
 			BufferedWriter bw = new BufferedWriter(new FileWriter(target, false));
-			bw.write("database version : v" + String.valueOf(dbVersion));
+			bw.write("database version : " + String.valueOf(dbVersion));
 			bw.newLine();
 			bw.close();
 		} catch (IOException e) {
