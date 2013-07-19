@@ -12,6 +12,7 @@ import android.database.Cursor;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.text.TextUtils;
 import android.util.Log;
 
 /**
@@ -1460,7 +1461,7 @@ public class DbManager extends SQLiteOpenHelper {
 	 * 現在のテーブルデータを丸ごと取得する（バックアップ用）。
 	 * @param tableName String型、テーブルデータを取得するテーブル名
 	 * @param db SQLiteDatabase型、操作するDBインスタンス
-	 * @return Cursor型、
+	 * @return Cursor型、取得したレコードのCursorオブジェクト
 	 */
 	protected Cursor getWholeRecords(String tableName, SQLiteDatabase db) {
 		Cursor q;
@@ -1479,5 +1480,43 @@ public class DbManager extends SQLiteOpenHelper {
 		q.moveToFirst();
 
 		return q;
+	}
+
+	/**
+	 * テキストファイルからSQLiteにテーブル情報をインポートする。
+	 * @param importFilename String型、インポートするファイルの名称
+	 * @param tableName String型、インポートするテーブル名称
+	 * @param separator String型、セパレータ記号、nullを指定すると「,」を仮定する
+	 * @param db SQLiteDatabase型、操作するDBインスタンス
+	 */
+	protected void importTableFromFile(String importFilename, String tableName, String separator, SQLiteDatabase db) {
+		// システム定義されている改行コードを取得する
+		String lineSeparator;
+		try {
+			lineSeparator = System.getProperty("line.separator");
+		} catch (SecurityException se) {
+			// セキュリティ権限で取得できなかったときは、CRLFにする
+			se.printStackTrace();
+			lineSeparator = "\r\n";
+		}
+
+		// separator引数がnull、または""の場合は、「,」を仮定する
+		String sp;
+		if (TextUtils.isEmpty(separator)) {
+			sp = ",";
+		} else {
+			sp = separator;
+		}
+
+		// SQLiteに引き渡すSQLステートメントを組み立てる
+		String sql = ".sepatator " + sp + lineSeparator
+				+ ".import " + importFilename + " " + tableName;
+
+		try {
+			db.execSQL(sql);
+		} catch (SQLException sqle) {
+			// TODO 自動生成された catch ブロック
+			sqle.printStackTrace();
+		}
 	}
 }
